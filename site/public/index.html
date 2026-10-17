@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Iron Neck Revenue Projection</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<script src="chart.umd.js"></script>
+<style>
+:root{
+  --bg:#f4f5f7; --surface:#fcfcfb; --surface-2:#eef0f3; --ink:#14171c; --ink-2:#4a5260; --ink-3:#7b8494;
+  --line:#dde1e7; --grid:#e8ebef;
+  --in:#006BD6; --ha:#CA0808; --amz:#0E8A63; --ddo:#7A4FD6; --neutral:#8a93a3;
+  --pos:#0E7A4F; --neg:#B42318; --accent:#006BD6;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#111214; --surface:#1a1a19; --surface-2:#232427; --ink:#eef0f3; --ink-2:#b4bac5; --ink-3:#848b98;
+    --line:#2e3034; --grid:#26282c;
+    --in:#3D8CE6; --ha:#E5453A; --amz:#1FA37A; --ddo:#9B7BEA; --neutral:#7c8494; --pos:#3cc489; --neg:#ff6b5e; --accent:#3D8CE6;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#111214; --surface:#1a1a19; --surface-2:#232427; --ink:#eef0f3; --ink-2:#b4bac5; --ink-3:#848b98;
+  --line:#2e3034; --grid:#26282c;
+  --in:#3D8CE6; --ha:#E5453A; --amz:#1FA37A; --ddo:#9B7BEA; --neutral:#7c8494; --pos:#3cc489; --neg:#ff6b5e; --accent:#3D8CE6;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1320px;margin:0 auto;padding:28px 24px 64px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+h1{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:0}
+.sub{color:var(--ink-3);font-size:13px;margin-top:4px}
+.tabs{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:10px}
+.tabs button{border:0;background:transparent;color:var(--ink-2);font:500 13px Inter;padding:7px 14px;border-radius:7px;cursor:pointer}
+.tabs button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.kpi .lbl{color:var(--ink-3);font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.kpi .val{font-size:24px;white-space:nowrap;font-weight:700;letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums}
+.kpi .note{font-size:12.5px;color:var(--ink-2);margin-top:2px}
+.pos{color:var(--pos)} .neg{color:var(--neg)}
+.grid2{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start}
+.grid2>.card:first-child{grid-row:span 3}
+@media(max-width:980px){.grid2>.card{grid-column:auto!important}}
+@media(max-width:980px){.grid2{grid-template-columns:1fr}}
+h2{font-size:15px;font-weight:600;margin:0 0 2px}
+.cap{font-size:12.5px;color:var(--ink-3);margin:0 0 14px}
+.lever{margin-bottom:14px}
+.lever .top{display:flex;justify-content:space-between;font-size:13px;font-weight:500}
+.lever .top span:last-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-2)}
+.lever small{display:block;color:var(--ink-3);font-size:11.5px;line-height:1.35;margin-top:1px}
+input[type=range]{width:100%;accent-color:var(--accent);margin:6px 0 0}
+.btn{border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 12.5px Inter;padding:6px 12px;border-radius:8px;cursor:pointer}
+.scen{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;padding-top:12px;border-top:1px solid var(--line)}
+.scen div{font-size:12px;color:var(--ink-3)} .scen b{display:block;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
+.chartbox{position:relative;height:360px}
+.small .chartbox{height:210px}
+.drivers{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:16px;margin-top:16px}
+@media(max-width:520px){.drivers{grid-template-columns:1fr}}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);margin:0 0 10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.legend i.dash{height:0;border-top:2px dashed var(--ink-2);border-radius:0;width:14px;vertical-align:3px}
+.legend i.band{background:var(--neutral);opacity:.3}
+table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{color:var(--ink-3);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0;background:var(--surface)}
+tr.fc td{color:var(--ink-2)} tr.yr td{font-weight:600;background:var(--surface-2)}
+.tablewrap{overflow:auto;max-height:560px}
+.notes{columns:2 380px;column-gap:28px;font-size:13px;color:var(--ink-2)}
+.notes p{margin:0 0 10px;break-inside:avoid}
+.notes b{color:var(--ink)}
+.pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--surface-2);color:var(--ink-2);margin-left:6px;vertical-align:2px}
+.view{display:none}.view.on{display:block}
+.gap{height:16px}
+.seg{display:inline-flex;gap:2px;background:var(--surface-2);padding:3px;border-radius:8px}
+.seg button{border:0;background:transparent;color:var(--ink-2);font:500 12px Inter;padding:4px 10px;border-radius:6px;cursor:pointer}
+.seg button.on{background:var(--surface);color:var(--ink)}
+.row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.row>div:first-child{flex:1;min-width:0}
+@media(max-width:620px){.row{flex-wrap:wrap}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div>
+    <h1>Iron Neck Revenue Projection</h1>
+    <div class="sub" id="stamp">Loading…</div>
+  </div>
+  <div class="tabs" id="tabs">
+    <button class="on" data-v="overview">Projection</button>
+    <button data-v="drivers">Drivers</button>
+    <button data-v="table">Monthly table</button>
+    <button data-v="method">Method &amp; accuracy</button>
+  </div>
+</header>
+
+<div class="kpis" id="kpis"></div>
+
+<section class="view on" id="v-overview">
+  <div class="grid2">
+    <div class="card">
+      <div class="row"><h2>Scenario levers</h2><button class="btn" id="reset">Reset</button></div>
+      <p class="cap">Applied to every projected month. History never changes.</p>
+      <div id="levers"></div>
+      <div class="scen" id="scen"></div>
+    </div>
+    <div class="card">
+      <div class="row">
+        <div><h2>Monthly revenue</h2><p class="cap">Actuals (O&amp;F Targets tab) solid, projection lighter. Shopify split by product funnel, then Amazon and D/D/O.</p></div>
+        <div class="seg" id="range"><button data-r="2023">2023+</button><button class="on" data-r="2025">2025+</button></div>
+      </div>
+      <div class="legend">
+        <span><i style="background:var(--in)"></i>Shopify: Iron Neck</span>
+        <span><i style="background:var(--ha)"></i>Shopify: Harness + accessories</span>
+        <span><i style="background:var(--amz)"></i>Amazon</span>
+        <span><i style="background:var(--ddo)"></i>D/D/O</span>
+        <span><i class="dash"></i>Base case total (when levers move)</span>
+        <span><i style="background:var(--ink);width:6px;height:6px;border-radius:50%"></i>Plan (Targets tab)</span>
+      </div>
+      <div class="chartbox"><canvas id="cRev"></canvas></div>
+    </div>
+  <div class="card" style="grid-column:2">
+    <h2>Total revenue vs plan, with uncertainty</h2>
+    <p class="cap">Band = backtested error at each horizon. It is wider on the downside because past misses were over-forecasts.</p>
+    <div class="legend">
+      <span><i style="background:var(--ink)"></i>Actual</span>
+      <span><i style="background:var(--accent)"></i>Projection (with levers)</span>
+      <span><i class="band"></i>Likely range</span>
+      <span><i style="background:var(--ink-3);width:6px;height:6px;border-radius:50%"></i>Plan</span>
+    </div>
+    <div class="chartbox" style="height:300px"><canvas id="cTot"></canvas></div>
+  </div>
+  <div class="card" style="grid-column:2">
+    <h2>Net income by month</h2>
+    <p class="cap">Actuals from the Targets tab. Projection = revenue x (1 − COGS %) − ad spend − fixed costs, on the same definitions.</p>
+    <div class="legend">
+      <span><i style="background:var(--pos)"></i>Profit</span>
+      <span><i style="background:var(--neg)"></i>Loss</span>
+      <span><i style="background:var(--ink-3);width:6px;height:6px;border-radius:50%"></i>Plan</span>
+    </div>
+    <div class="chartbox" style="height:260px"><canvas id="cNi"></canvas></div>
+  </div>
+  </div>
+</section>
+
+<section class="view" id="v-drivers">
+  <div class="drivers small" id="driverGrid"></div>
+</section>
+
+<section class="view" id="v-table">
+  <div class="card">
+    <div class="row"><div><h2>Month by month</h2><p class="cap" id="tblcap">Includes the current lever settings.</p></div>
+    <button class="btn" id="csv">Download CSV</button></div>
+    <div class="tablewrap"><table id="tbl"></table></div>
+  </div>
+</section>
+
+<section class="view" id="v-method">
+  <div class="card">
+    <h2>Backtest: what the model would have said</h2>
+    <p class="cap" id="btcap"></p>
+    <div class="chartbox" style="height:300px"><canvas id="cBt"></canvas></div>
+  </div>
+  <div class="gap"></div>
+  <div class="card notes" id="notes"></div>
+</section>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const css = v => getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt$ = (v, d=0) => v == null || isNaN(v) ? '–' : (v < 0 ? '-$' : '$') + Math.abs(v).toLocaleString('en-US', {maximumFractionDigits: d});
+const fmtK = v => v == null || isNaN(v) ? '–' : (Math.abs(v) >= 1e6 ? (v/1e6).toFixed(2) + 'M' : Math.abs(v) >= 1e4 || Math.abs(v) === 0 ? Math.round(v/1e3) + 'k' : (Math.abs(v) >= 1e3 ? (v/1e3).toFixed(1) + 'k' : String(Math.round(v))));
+const fmtKd = v => (v < 0 ? '-$' : '$') + fmtK(Math.abs(v));
+const pct = (v, d=0) => (v > 0 ? '+' : '') + (v*100).toFixed(d) + '%';
+const MN = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const lab = ym => MN[+ym.slice(5)-1] + " '" + ym.slice(2,4);
+
+const LEVERS = [
+  {k:'meta',  name:'Meta spend', min:-20, max:20, help:'Moves paid social traffic (elasticity from 2026 spend vs paid sessions) and the spend line in net income.'},
+  {k:'google',name:'Google spend', min:-20, max:20, help:'Assumes ~40% of search-referred orders are paid search, with diminishing returns.'},
+  {k:'brand', name:'Brand search', min:-20, max:20, help:'Google searches for "iron neck". Elasticities measured on 2025 to 2026 (Rogan excluded). Not something we control: use it for risk.'},
+  {k:'cr',    name:'Conversion rate', min:-20, max:20, help:'All Shopify traffic segments.'},
+  {k:'aov',   name:'AOV', min:-20, max:20, help:'Price, bundles, or mix shifting toward Iron Neck devices.'},
+  {k:'email', name:'Email signups', min:-20, max:20, help:'List growth to email revenue (elasticity from history), counted at 60% incremental.'},
+  {k:'sms',   name:'SMS signups', min:-20, max:20, help:'Attentive subscriber growth to SMS revenue (elasticity from Attentive history), counted at 60% incremental.'},
+  {k:'blog',  name:'Blog traffic', min:-100, max:100, help:'Converts at ~0.06%. Doubling it barely moves revenue, by design.'},
+  {k:'amazon',name:'Amazon sales', min:-20, max:20, help:'Direct adjustment to Amazon revenue.'},
+  {k:'ddo',   name:'D/D/O', min:-20, max:20, help:'Direct, distributor and other sales. Base is the 2026 average only.'},
+];
+const L = Object.fromEntries(LEVERS.map(l => [l.k, 0]));
+let D, charts = {}, range = '2025';
+
+function calc(r){
+  const P = D.params, sh = D.shares;
+  const blogOrd = r.seg.B.ses * r.seg.B.cr;
+  const nonBlog = r.orders - blogOrd;
+  const mMeta = 1 + sh.social * (Math.pow(1 + L.meta/100, P.e_meta) - 1);
+  const mGoogle = 1 + sh.search * 0.4 * (Math.pow(1 + L.google/100, 0.5) - 1);
+  const B = D.brand, mBrand = Math.pow(1 + L.brand/100, B.e_shop);
+  const orders = (nonBlog * mMeta * mGoogle * mBrand + blogOrd * (1 + L.blog/100)) * (1 + L.cr/100);
+  const aov = r.aov * (1 + L.aov/100);
+  const emailInc = r.email * (Math.pow(1 + L.email/100, P.e_email) - 1) * P.email_incr;
+  const smsInc = (r.sms || 0) * (Math.pow(1 + L.sms/100, P.e_sms) - 1) * P.email_incr;
+  const d2c = (orders * aov + emailInc + smsInc) * D.fin_ratio;
+  const amazon = r.amazon * (1 + L.amazon/100) * Math.pow(1 + L.brand/100, B.e_amz);
+  const ddo = r.ddo * (1 + L.ddo/100);
+  const meta = r.meta * (1 + L.meta/100), google = r.google * (1 + L.google/100), amzAds = r.amz_ads;
+  const ha = d2c * r.ha_share, inl = d2c - ha;
+  const biz = d2c + amazon + ddo;
+  const ni = biz * (1 - D.pnl.cogs_pct) - (meta + google + amzAds) * D.pnl.ad_ratio - r.fixed;
+  return {month:r.month, d2c, inl, ha, amazon, ddo, ecom:d2c+amazon, total:biz, orders, aov, meta, google, amzAds,
+          ni, sessions: Object.values(r.seg).reduce((a,s)=>a+s.ses,0), band:r.band, fixed:r.fixed, nowcast:r.nowcast};
+}
+function baseCalc(r){ const save = {...L}; Object.keys(L).forEach(k=>L[k]=0); const o = calc(r); Object.assign(L, save); return o; }
+
+function histRow(h, i){
+  const T = h.tgt || {};
+  const d2c = T.shop != null ? T.shop : h.d2c * D.fin_ratio;      // Targets tab = official books
+  const lineTot = h.line_in + h.line_ha;
+  const ha = d2c * h.line_ha / lineTot, inl = d2c - ha;
+  const amazon = T.amz != null ? T.amz : h.amazon, ddo = T.ddo;
+  const total = amazon == null ? null : d2c + amazon + (ddo || 0);
+  return {month:h.month, d2c, inl, ha, amazon, ddo, ecom: amazon == null ? null : d2c + amazon, total,
+          orders:h.orders, aov:h.aov, meta:h.meta, google:h.google, amzAds:h.amz_ads, ni: T.ni != null ? T.ni : null,
+          sessions:h.sessions, actual:true, partial:h.partial};
+}
+function goalFor(ym){
+  const g = D.goals[ym]; if (!g || g.shop == null) return null;
+  return {shop:g.shop, amz:g.amz||0, ddo:g.ddo||0, ecom:g.shop+(g.amz||0), total:g.shop+(g.amz||0)+(g.ddo||0), ni:g.ni};
+}
+const goalYear = (y, k='total') => Object.entries(D.goals).filter(([m])=>m.startsWith(y)).reduce((a,[m])=>a+(goalFor(m)[k]||0),0);
+
+// ---------- build
+fetch('data.json?v=' + Date.now()).then(r=>r.json()).then(d=>{ D = d; init(); });
+
+function init(){
+  const nc = D.nowcast;
+  $('#stamp').textContent = `Model run ${D.generated} · refreshes daily · ${lab(D.partial_month)} = actuals through ${nc ? nc.through.slice(5).replace('-','/') : 'today'} plus projection for the rest of the month`;
+  const box = $('#levers');
+  LEVERS.forEach(l=>{
+    const el = document.createElement('div'); el.className='lever';
+    el.innerHTML = `<div class="top"><span>${l.name}</span><span id="lv-${l.k}">0%</span></div>
+      <input type="range" min="${l.min}" max="${l.max}" step="${l.max>20?10:5}" value="0" data-k="${l.k}" aria-label="${l.name} change">
+      <small>${l.help}</small>`;
+    box.appendChild(el);
+  });
+  box.addEventListener('input', e=>{ if(e.target.dataset.k){ L[e.target.dataset.k] = +e.target.value; $('#lv-'+e.target.dataset.k).textContent = pct(+e.target.value/100); render(); }});
+  $('#reset').onclick = ()=>{ Object.keys(L).forEach(k=>L[k]=0); box.querySelectorAll('input').forEach(i=>i.value=0); box.querySelectorAll('[id^=lv-]').forEach(s=>s.textContent='0%'); render(); };
+  $('#tabs').onclick = e=>{ const v=e.target.dataset.v; if(!v) return; document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on', b===e.target)); document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on', s.id==='v-'+v)); if(v==='drivers') drawDrivers(); if(v==='method') drawMethod(); };
+  $('#range').onclick = e=>{ const r=e.target.dataset.r; if(!r) return; range=r; document.querySelectorAll('#range button').forEach(b=>b.classList.toggle('on', b===e.target)); render(); };
+  $('#csv').onclick = downloadCSV;
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{ render(); if($('#v-drivers').classList.contains('on')) drawDrivers(); });
+  render();
+}
+
+function series(){
+  const H = D.hist.filter(h=>!h.partial).map(histRow);
+  const F = D.fut.map(calc), B = D.fut.map(baseCalc);
+  return {H, F, B};
+}
+
+function yearSum(rows, y, key){ return rows.filter(r=>r.month.startsWith(y)).reduce((a,r)=>a+(r[key]||0),0); }
+
+function render(){
+  const {H, F, B} = series();
+  const all = [...H, ...F];
+  // ---- KPIs
+  const PY = D.partial_month.slice(0,4), NY = String(+PY+1);
+  const y26 = k => yearSum(H,PY,k) + yearSum(F,PY,k);
+  const g26 = goalYear(PY), gni = goalYear(PY,'ni');
+  const t26 = y26('total'), t27 = yearSum(F,NY,'total'), b27 = yearSum(B,NY,'total');
+  const ni26 = y26('ni'), ni27 = yearSum(F,NY,'ni');
+  const restF = F.filter(r=>r.month.startsWith(PY));
+  const q4 = restF.reduce((a,r)=>a+r.total,0);
+  const q4g = restF.reduce((a,r)=>a+(goalFor(r.month)?goalFor(r.month).total:0),0);
+  const vs = (a,b) => `<span class="${a>=b?'pos':'neg'}">${pct(a/b-1)}</span>`;
+  const k = [
+    [PY+' total revenue (projected)', fmtKd(t26), g26 ? `${vs(t26,g26)} vs ${fmtKd(g26)} plan` : ''],
+    [`Rest of ${PY} (${lab(restF[0].month)} to Dec)`, fmtKd(q4), `${vs(q4,q4g)} vs ${fmtKd(q4g)} plan`],
+    [NY+' total revenue', fmtKd(t27), `${pct(t27/t26-1)} vs ${PY}` + (Math.abs(t27-b27)>1 ? ` · base ${fmtKd(b27)}` : '')],
+    [NY+' Shopify / Amazon', `${fmtKd(yearSum(F,NY,'d2c'))} / ${fmtKd(yearSum(F,NY,'amazon'))}`, `+ ${fmtKd(yearSum(F,NY,'ddo'))} D/D/O · Harness ${Math.round(yearSum(F,NY,'ha')/yearSum(F,NY,'d2c')*100)}% of Shopify`],
+    [`Net income ${PY} / ${NY}`, `${fmtKd(ni26)} / ${fmtKd(ni27)}`, gni ? `${PY} plan ${fmtKd(gni)} · ${ni26>=gni?'<span class="pos">ahead</span>':'<span class="neg">behind</span>'}` : 'After COGS, ads and fixed costs'],
+  ];
+  $('#kpis').innerHTML = k.map(([l,v,n])=>`<div class="card kpi"><div class="lbl">${l}</div><div class="val">${v}</div><div class="note">${n}</div></div>`).join('');
+  // scenario summary
+  const d = (a,b)=> a===b ? '' : ` <span class="${a>b?'pos':'neg'}">${pct(a/b-1,1)}</span>`;
+  const sumF = (rows,k)=>rows.reduce((a,r)=>a+r[k],0);
+  $('#scen').innerHTML = `<div>Projected revenue (15 mo)<b>${fmtKd(sumF(F,'total'))}${d(sumF(F,'total'),sumF(B,'total'))}</b></div>
+    <div>Projected net income<b>${fmtKd(sumF(F,'ni'))}</b></div>
+    <div>Ad spend (Meta + Google)<b>${fmtKd(sumF(F,'meta')+sumF(F,'google'))}</b></div>
+    <div>Shopify orders<b>${Math.round(sumF(F,'orders')).toLocaleString()}${d(sumF(F,'orders'),sumF(B,'orders'))}</b></div>`;
+  drawRev(H, F, B);
+  drawTot(H, F, B);
+  drawNi(H, F);
+  drawTable(H, F);
+}
+
+function baseOpts(extra={}){
+  const grid = css('--grid'), ink3 = css('--ink-3');
+  return Object.assign({
+    responsive:true, maintainAspectRatio:false, animation:false,
+    interaction:{mode:'index', intersect:false},
+    plugins:{legend:{display:false}, tooltip:{backgroundColor:css('--surface'), titleColor:css('--ink'), bodyColor:css('--ink-2'), borderColor:css('--line'), borderWidth:1, padding:10, boxPadding:4, usePointStyle:true}},
+    scales:{x:{grid:{display:false}, ticks:{color:ink3, maxRotation:0, autoSkip:true, autoSkipPadding:14, font:{size:11}}, border:{color:css('--line')}},
+            y:{grid:{color:grid}, border:{display:false}, ticks:{color:ink3, font:{size:11}, callback:v=>fmtKd(v)}, beginAtZero:true}}
+  }, extra);
+}
+const todayLine = {id:'today', afterDatasetsDraw(c, a, o){ const i = o.index; if(i==null||i<0) return; const x = c.scales.x;
+  const px = (x.getPixelForValue(i-1) + x.getPixelForValue(i))/2; const ctx=c.ctx; ctx.save(); ctx.strokeStyle=css('--ink-3'); ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(px,c.chartArea.top); ctx.lineTo(px,c.chartArea.bottom); ctx.stroke();
+  ctx.fillStyle=css('--ink-3'); ctx.font='11px Inter'; ctx.fillText('Projection →', px+6, c.chartArea.top+12); ctx.restore(); }};
+
+function alpha(hex, a){ const h=hex.replace('#',''); const n=parseInt(h,16); return `rgba(${n>>16&255},${n>>8&255},${n&255},${a})`; }
+
+function drawRev(H, F, B){
+  const rows = [...H, ...F].filter(r=>r.month >= range);
+  const base = [...H.map(()=>null), ...B.map(r=>r.total)].slice([...H, ...F].length - rows.length);
+  const fi = rows.findIndex(r=>!r.actual);
+  const col = (v, r)=> r.actual ? css(v) : alpha(css(v), .45);
+  const surf = css('--surface');
+  const ds = (label, key, v)=>({type:'bar', label, data:rows.map(r=>r[key]), backgroundColor:rows.map(r=>col(v,r)), borderColor:surf, borderWidth:{top:2}, borderSkipped:'bottom', stack:'s', borderRadius:0, barPercentage:.82, categoryPercentage:.9});
+  const sets = [ds('Shopify: Iron Neck','inl','--in'), ds('Shopify: Harness + acc.','ha','--ha'), ds('Amazon','amazon','--amz'), ds('D/D/O','ddo','--ddo')];
+  sets[3].borderRadius = {topLeft:4, topRight:4};
+  const moved = Object.values(L).some(v=>v!==0);
+  sets.push({type:'line', label:'Base case total', data: moved ? base : [], borderColor:css('--ink-2'), borderDash:[5,4], borderWidth:2, pointRadius:0, stack:'b'});
+  sets.push({type:'line', label:'Plan (total)', data:rows.map(r=>{const g=goalFor(r.month); return g?g.total:null;}), showLine:false, pointRadius:4, pointBackgroundColor:css('--ink'), pointBorderColor:surf, pointBorderWidth:2, stack:'g'});
+  const opts = baseOpts();
+  opts.scales.x.stacked = true; opts.scales.y.stacked = true;
+  opts.plugins.today = {index: fi};
+  opts.plugins.tooltip.callbacks = {
+    title: it => lab(rows[it[0].dataIndex].month) + (rows[it[0].dataIndex].actual ? ' · actual' : ' · projected'),
+    label: c => c.raw == null ? null : `${c.dataset.label}: ${fmt$(c.raw)}`,
+    footer: it => { const r = rows[it[0].dataIndex]; const g = goalFor(r.month); return r.total == null ? '' : `Total: ${fmt$(r.total)}` + (g ? ` · plan ${fmt$(g.total)}` : '') + (r.nowcast ? '\nIncludes actuals through ' + D.nowcast.through : ''); }
+  };
+  opts.plugins.tooltip.filter = c => c.raw != null;
+  opts.scales.y.stacked = true;
+  if (charts.rev) charts.rev.destroy();
+  charts.rev = new Chart($('#cRev'), {data:{labels:rows.map(r=>lab(r.month)), datasets:sets}, options:opts, plugins:[todayLine]});
+}
+
+function drawTot(H, F, B){
+  const rows = [...H.filter(r=>r.month>='2024-01'), ...F];
+  const fi = rows.findIndex(r=>!r.actual);
+  const hi = rows.map(r=> r.actual ? null : r.total * (1 + r.band*0.6));
+  const lo = rows.map(r=> r.actual ? null : r.total * (1 - r.band));
+  // connect projection to last actual
+  const proj = rows.map((r,i)=> r.actual ? (i===fi-1 ? r.total : null) : r.total);
+  const opts = baseOpts();
+  opts.plugins.today = {index: fi};
+  opts.plugins.tooltip.callbacks = {title: it => lab(rows[it[0].dataIndex].month), label: c => c.raw==null?null:`${c.dataset.label}: ${fmt$(c.raw)}`};
+  opts.plugins.tooltip.filter = c => c.raw != null && c.dataset.label !== '';
+  if (charts.tot) charts.tot.destroy();
+  charts.tot = new Chart($('#cTot'), {type:'line', data:{labels:rows.map(r=>lab(r.month)), datasets:[
+    {label:'High', data:hi, borderWidth:0, pointRadius:0, fill:false},
+    {label:'Low', data:lo, borderWidth:0, pointRadius:0, fill:'-1', backgroundColor:alpha(css('--neutral'), .22)},
+    {label:'Actual', data:rows.map(r=>r.actual?r.total:null), borderColor:css('--ink'), borderWidth:2, pointRadius:0, spanGaps:false},
+    {label:'Projection', data:proj, borderColor:css('--accent'), borderWidth:2, pointRadius:0},
+    {label:'Goal', data:rows.map(r=>{const g=goalFor(r.month);return g?g.total:null;}), showLine:false, pointRadius:4, pointBackgroundColor:css('--ink-3'), pointBorderColor:css('--surface'), pointBorderWidth:2},
+  ]}, options:opts, plugins:[todayLine]});
+}
+
+function drawNi(H, F){
+  const rows = [...H.filter(r=>r.month>='2024-01'), ...F];
+  const fi = rows.findIndex(r=>!r.actual);
+  const c = (v, r) => r.actual ? css(v) : alpha(css(v), .45);
+  const opts = baseOpts(); opts.plugins.today = {index: fi};
+  opts.scales.y.beginAtZero = true;
+  opts.plugins.tooltip.callbacks = {title: it => lab(rows[it[0].dataIndex].month) + (rows[it[0].dataIndex].actual ? ' · actual' : ' · projected'), label: t => t.raw==null?null:`${t.dataset.label}: ${fmt$(t.raw)}`};
+  opts.plugins.tooltip.filter = t => t.raw != null;
+  if (charts.ni) charts.ni.destroy();
+  charts.ni = new Chart($('#cNi'), {data:{labels:rows.map(r=>lab(r.month)), datasets:[
+    {type:'bar', label:'Net income', data:rows.map(r=>r.ni), backgroundColor:rows.map(r=>c(r.ni>=0?'--pos':'--neg', r)), borderRadius:3, barPercentage:.8, categoryPercentage:.9},
+    {type:'line', label:'Plan', data:rows.map(r=>{const g=goalFor(r.month); return g&&g.ni!=null?g.ni:null;}), showLine:false, pointRadius:4, pointBackgroundColor:css('--ink-3'), pointBorderColor:css('--surface'), pointBorderWidth:2},
+  ]}, options:opts, plugins:[todayLine]});
+}
+
+function drawTable(H, F){
+  const rows = [...H.filter(r=>r.month>=D.partial_month.slice(0,4)+'-01'), ...F];
+  const head = ['Month','Sessions','Orders','AOV','Shopify: Iron Neck','Shopify: Harness','Shopify total','Amazon','D/D/O','Total','Plan','vs plan','Meta','Google','Amazon ads','Net income','NI plan'];
+  $('#tblcap').textContent = `Includes the current lever settings. Closed months are the O&F Targets tab. Projected net income uses ${Math.round(D.pnl.cogs_pct*1000)/10}% COGS (last 12 months), ad spend scaled to Targets (${D.pnl.ad_ratio.toFixed(2)}x) and the finance sheet's fixed costs.`;
+  let html = '<thead><tr>' + head.map(h=>`<th>${h}</th>`).join('') + '</tr></thead><tbody>';
+  const line = (r, cls='')=>{ const g = goalFor(r.month); const gt = r.plan != null ? r.plan : (g ? g.total : null); const gn = r.planNi != null ? r.planNi : (g ? g.ni : null);
+    const vs = gt && r.total ? r.total/gt - 1 : null;
+    return `<tr class="${cls}"><td>${r.label || lab(r.month)}${r.actual?'':' <span class="pill">proj</span>'}</td><td>${r.sessions?Math.round(r.sessions).toLocaleString():'–'}</td><td>${Math.round(r.orders).toLocaleString()}</td><td>${fmt$(r.aov)}</td>
+      <td>${fmt$(r.inl)}</td><td>${fmt$(r.ha)}</td><td>${fmt$(r.d2c)}</td><td>${fmt$(r.amazon)}</td><td>${fmt$(r.ddo)}</td><td>${fmt$(r.total)}</td><td>${gt?fmt$(gt):'–'}</td>
+      <td class="${vs==null?'':vs>=0?'pos':'neg'}">${vs==null?'–':pct(vs)}</td><td>${fmt$(r.meta)}</td><td>${fmt$(r.google)}</td><td>${fmt$(r.amzAds)}</td><td class="${r.ni==null?'':r.ni>=0?'pos':'neg'}">${fmt$(r.ni)}</td><td>${gn==null?'–':fmt$(gn)}</td></tr>`; };
+  const PY = D.partial_month.slice(0,4);
+  for (const y of [PY, String(+PY+1)]){
+    const yr = rows.filter(r=>r.month.startsWith(y));
+    yr.forEach(r=> html += line(r, r.actual?'':'fc'));
+    const s = k => yr.reduce((a,r)=>a+(r[k]||0),0);
+    const tot = {label:y+' total', month:y+'-00', actual:true, sessions:s('sessions'), orders:s('orders'), aov:s('d2c')/D.fin_ratio/s('orders'), inl:s('inl'), ha:s('ha'), d2c:s('d2c'), amazon:s('amazon'), ddo:s('ddo'), total:s('total'), meta:s('meta'), google:s('google'), amzAds:s('amzAds'), ni:s('ni')};
+    if (goalYear(y)) { tot.plan = goalYear(y); tot.planNi = goalYear(y,'ni'); }
+    html += line(tot, 'yr');
+  }
+  $('#tbl').innerHTML = html + '</tbody>';
+}
+
+function downloadCSV(){
+  const {H, F} = series();
+  const rows = [...H, ...F];
+  const keys = ['month','sessions','orders','aov','inl','ha','d2c','amazon','ddo','total','meta','google','amzAds','ni'];
+  const csv = ['month,status,sessions,orders,aov,shopify_iron_neck,shopify_harness,shopify_total,amazon,ddo,total,meta_spend,google_spend,amazon_ads,net_income']
+    .concat(rows.map(r=>[r.month, r.actual?'actual':'projected', ...keys.slice(1).map(k=>r[k]==null?'':Math.round(r[k]))].join(','))).join('\n');
+  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download = 'iron-neck-projection.csv'; a.click();
+}
+
+// ---------- drivers
+function drawDrivers(){
+  const grid = $('#driverGrid');
+  const hist = D.hist.filter(h=>!h.partial), fut = D.fut;
+  const labels = [...hist, ...fut].map(r=>lab(r.month));
+  const fi = hist.length;
+  const H = (f)=>[...hist.map(f), ...fut.map(()=>null)];
+  const Fz = (f)=>[...hist.map((_,i)=> i===fi-1 ? f(hist[i], true) : null), ...fut.map(r=>f(r,false))];
+  const cards = [
+    {id:'dTraffic', t:'Traffic by quality', c:'Blog is split out: it converts at ~0.06% vs ~2% for product pages. Blog was deindexed Mar 2025 to Apr 2026.',
+     y:v=>fmtK(v), sets:[
+      {label:'Non-blog sessions', color:'--in', h:H(h=>h.sessions - h.seg.B.ses), f:Fz((r,a)=> a ? r.sessions-r.seg.B.ses : Object.entries(r.seg).filter(([k])=>k!=='B').reduce((s,[,v])=>s+v.ses,0))},
+      {label:'Blog sessions', color:'--neutral', h:H(h=>h.seg.B.ses), f:Fz((r,a)=> a ? r.seg.B.ses : r.seg.B.ses)}]},
+    {id:'dCR', t:'Conversion rate (non-blog sessions)', c:'Orders / non-blog sessions. Rose through 2025 to H1 2026 as the Harness funnel scaled, then fell from July 2026.',
+     y:v=>(v*100).toFixed(1)+'%', sets:[
+      {label:'Conversion rate', color:'--in', h:H(h=>{const c=Object.values(h.seg).reduce((a,s)=>a+s.conv,0); return (h.orders/(h.sessions-h.seg.B.ses));}), f:Fz((r,a)=> a ? r.orders/(r.sessions-r.seg.B.ses) : (r.orders - r.seg.B.ses*r.seg.B.cr)/Object.entries(r.seg).filter(([k])=>k!=='B').reduce((s,[,v])=>s+v.ses,0))}]},
+    {id:'dAOV', t:'AOV', c:`Driven by product mix: fitted $${Math.round(D.a_in)} per Iron Neck order vs $${Math.round(D.a_ha)} per Harness order (last 18 months).`,
+     y:v=>'$'+Math.round(v), sets:[{label:'AOV', color:'--in', h:H(h=>h.aov), f:Fz((r,a)=>r.aov)}]},
+    {id:'dMix', t:'Harness + accessories share of Shopify revenue', c:'The 2026 funnel split. Higher share means more orders at a lower AOV.',
+     y:v=>Math.round(v*100)+'%', sets:[{label:'Harness share', color:'--ha', h:H(h=>h.line_ha/(h.line_in+h.line_ha)), f:Fz((r,a)=> a ? r.line_ha/(r.line_in+r.line_ha) : r.ha_share)}]},
+    {id:'dBrand', t:'Brand search', c:`Google clicks on "iron neck" (Search Console) and Amazon brand searches (Brand Analytics, partial). Rogan added ~${fmtK(D.brand.rogan.clicks.excess)} Google clicks in Jan to Feb 2025; it is excluded from trend and seasonality.`,
+     y:v=>fmtK(v), sets:[{label:'Google brand clicks', color:'--in', h:H(h=>h.brand_clicks), f:Fz((r,a)=>r.brand_clicks)},
+                        {label:'Amazon brand searches', color:'--amz', h:H(h=>h.amz_brand), f:Fz(()=>null)}], mark:['2025-01','2025-02']},
+    {id:'dDdo', t:'D/D/O revenue', c:`Direct, distributor and other. Pre-2026 included Amazon resellers that are gone, so the projection is the 2026 average only (${fmtKd(D.pnl.ddo_level)} a month), flat.`,
+     y:v=>'$'+fmtK(v), sets:[{label:'D/D/O', color:'--ddo', h:H(h=>h.tgt?h.tgt.ddo:null), f:Fz((r,a)=> a ? r.tgt.ddo : r.ddo)}]},
+    {id:'dEmail', t:'Email revenue', c:'Klaviyo-attributed email revenue (SMS moved to Attentive in Oct 2024).',
+     y:v=>'$'+fmtK(v), sets:[{label:'Email revenue', color:'--in', h:H(h=>h.email), f:Fz((r,a)=>r.email)}]},
+    {id:'dSignup', t:'Email signups', c:'Bulk list imports (2023 to 2024) are blanked out and excluded from the trend.',
+     y:v=>fmtK(v), sets:[{label:'Signups', color:'--in', h:H(h=>h.signup_import?null:h.signups), f:Fz((r,a)=>r.signups)}]},
+    {id:'dSms', t:'SMS revenue (Attentive)', c:'Attentive campaigns + journeys, Attentive attribution (Klaviyo SMS before Nov 2024). Down roughly 80% from early 2025 as signups fell.',
+     y:v=>'$'+fmtK(v), sets:[{label:'SMS revenue', color:'--in', h:H(h=>h.month>='2024-11'?h.sms:null), f:Fz((r,a)=>r.sms)}]},
+    {id:'dSmsSub', t:'SMS signups', c:'Attentive sign-up units. The Nov 2024 migration import is excluded.',
+     y:v=>fmtK(v), sets:[{label:'SMS signups', color:'--in', h:H(h=>h.month>='2024-12'?h.sms_signups:null), f:Fz((r,a)=>r.sms_signups)}]},
+    {id:'dImpr', t:'Signup popup impressions', c:'How many visitors saw an Attentive sign-up unit. Falls with non-blog traffic; the Sept 2026 dip includes the signup-unit outage.',
+     y:v=>fmtK(v), sets:[{label:'Impressions', color:'--neutral', h:H(h=>h.month>='2024-11'?h.popup_impr:null), f:Fz(()=>null)}], noProj:true},
+    {id:'dSpend', t:'Ad spend', c:'Meta from the ad account (Oct 2023 on). Google from the finance sheets (Jun 2024 on). Amazon ads from Seller Board (Jul 2023 on). Projected as recent trend x seasonal shape.',
+     y:v=>'$'+fmtK(v), sets:[{label:'Meta', color:'--in', h:H(h=>h.meta), f:Fz((r,a)=>r.meta)}, {label:'Google', color:'--ha', h:H(h=>h.google), f:Fz((r,a)=>r.google)}, {label:'Amazon ads', color:'--amz', h:H(h=>h.amz_ads), f:Fz((r,a)=>r.amz_ads)}]},
+    {id:'dAmz', t:'Amazon revenue', c:'Targets tab history from Jan 2023. Own seasonal shape, recent years weighted most; Q4 peak has shrunk each year.',
+     y:v=>'$'+fmtK(v), sets:[{label:'Amazon', color:'--amz', h:H(h=>h.amazon), f:Fz((r,a)=>r.amazon)}]},
+  ];
+  grid.innerHTML = cards.map(c=>`<div class="card"><h2>${c.t}</h2><p class="cap">${c.c}</p>
+    <div class="legend">${[...c.sets, ...(c.two?[c.two]:[])].map(s=>`<span><i style="background:var(${s.color})"></i>${s.label}</span>`).join('')}${c.noProj?'':'<span><i class="dash"></i>Projection</span>'}</div>
+    <div class="chartbox"><canvas id="${c.id}"></canvas></div></div>`).join('');
+  cards.forEach(c=>{
+    const ds = [];
+    const add = (s, axis='y')=>{ ds.push({label:s.label, data:s.h, borderColor:css(s.color), borderWidth:2, pointRadius:0, spanGaps:false, yAxisID:axis});
+      ds.push({label:s.label+' (proj.)', data:s.f, borderColor:css(s.color), borderDash:[5,4], borderWidth:2, pointRadius:0, yAxisID:axis}); };
+    c.sets.forEach(s=>add(s));
+    const o = baseOpts(); o.scales.y.ticks.callback = c.y; o.plugins.today = {index: fi};
+    o.plugins.tooltip.filter = t => t.raw != null;
+    o.plugins.tooltip.callbacks = {label: t => `${t.dataset.label}: ${t.dataset.yAxisID==='y2' ? Math.round(t.raw).toLocaleString() : c.y(t.raw)}`};
+    if (c.two){ add(c.two, 'y2'); o.scales.y2 = {display:false, beginAtZero:true}; }
+    const plugins = [todayLine];
+    if (c.mark) plugins.push({id:'mark', beforeDatasetsDraw(ch){ const x=ch.scales.x, ctx=ch.ctx; c.mark.forEach(m=>{ const i=[...hist,...fut].findIndex(r=>r.month===m); if(i<0) return; const w=x.getPixelForValue(1)-x.getPixelForValue(0); ctx.save(); ctx.fillStyle=alpha(css('--neutral'),.18); ctx.fillRect(x.getPixelForValue(i)-w/2, ch.chartArea.top, w, ch.chartArea.bottom-ch.chartArea.top); ctx.restore(); }); const i=[...hist,...fut].findIndex(r=>r.month===c.mark[0]); ctx.save(); ctx.fillStyle=css('--ink-3'); ctx.font='11px Inter'; ctx.fillText('Rogan', x.getPixelForValue(i)+6, ch.chartArea.top+12); ctx.restore(); }});
+    if (charts[c.id]) charts[c.id].destroy();
+    charts[c.id] = new Chart($('#'+c.id), {type:'line', data:{labels, datasets:ds}, options:o, plugins});
+  });
+}
+
+// ---------- method
+function drawMethod(){
+  const B = D.backtest;
+  $('#btcap').innerHTML = `The model was refit at five past dates using only the data available then, and asked to forecast the next 12 months of Shopify revenue. Average miss: <b>${Math.round(B.mape*100)}%</b> (a same-month-last-year guess misses by ${Math.round(B.snaive_mape*100)}%). Misses have leaned high (average ${pct(B.bias)}): the model did not foresee the 2025 decline or the July 2026 conversion drop.`;
+  const months = D.hist.filter(h=>h.month>='2025-01' && !h.partial).map(h=>h.month);
+  const ds = [{label:'Actual Shopify net sales', data:months.map(m=>D.hist.find(h=>h.month===m).d2c), borderColor:css('--ink'), borderWidth:2.5, pointRadius:0}];
+  const shades = ['--neutral','--ha','--amz','--in','--ink-2'];
+  B.origins.forEach((o,i)=> ds.push({label:'From '+lab(o.origin)+` (${Math.round(o.mape*100)}% off)`, data:months.map(m=>{const r=o.rows.find(x=>x.month===m); return r?r.forecast:null;}), borderColor:alpha(css(shades[i]),.85), borderDash:[4,3], borderWidth:1.5, pointRadius:0}));
+  const o = baseOpts(); o.plugins.legend = {display:true, position:'bottom', labels:{color:css('--ink-2'), boxWidth:14, boxHeight:2, font:{size:11}}};
+  o.plugins.tooltip.filter = t=>t.raw!=null; o.plugins.tooltip.callbacks = {label:t=>`${t.dataset.label}: ${fmt$(t.raw)}`};
+  if (charts.bt) charts.bt.destroy();
+  charts.bt = new Chart($('#cBt'), {type:'line', data:{labels:months.map(lab), datasets:ds}, options:o});
+  const P = D.params;
+  $('#notes').innerHTML = `
+  <p><b>Shopify revenue = orders x AOV.</b> Orders come from a quality-weighted traffic index: each traffic segment (product pages, collections, homepage, landing pages, blog, other) is weighted by its own conversion rate over the last 12 months, so traffic moving between page types or a blog surge does not read as growth. Seasonality is applied once, at the order level, and the trend is damped (${P.phi} per month) so nothing runs away by late 2027.</p>
+  <p><b>AOV follows the product mix.</b> 1/AOV = (1 − h)/a<sub>IN</sub> + h/a<sub>HA</sub>, where h is the Harness + accessories share of revenue. Fitted values: $${Math.round(D.a_in)} per Iron Neck order, $${Math.round(D.a_ha)} per Harness order (4 to 5% average error). This is the 2026 funnel split in one line: more Harness orders lifts conversion and pulls AOV down.</p>
+  <p><b>One-offs are masked, not modeled.</b> The Joe Rogan mention (Jan to Feb 2025) is excluded from every trend and seasonal fit, so no repeat is assumed. Blog deindexing (Mar 2025 to Apr 2026) is excluded from blog seasonality, and the blog is held at its recent level rather than extrapolated through the recovery. Bulk Klaviyo imports (${D.flags.signup_imports.map(lab).join(', ')}) are excluded from signup trends.</p>
+  <p><b>What Rogan was worth.</b> Taking Jan to Feb 2024 and scaling by how the rest of 2025 ran against 2024 gives the baseline. Against that, Jan to Feb 2025 had about ${fmtK(D.brand.rogan.clicks.excess)} extra Google brand clicks (${fmtK(D.brand.rogan.clicks.actual)} vs ${fmtK(D.brand.rogan.clicks.baseline)}), about ${fmtKd(D.brand.rogan.shop.excess)} extra Shopify revenue and ${fmtKd(D.brand.rogan.amz.excess)} extra Amazon revenue: roughly $${Math.round(D.brand.rogan.per_click)} of ecommerce revenue per extra branded click. Amazon brand searches hit 12.8k that January against about 2k in a normal month.</p>
+  <p><b>Brand search as a driver.</b> Google brand clicks are projected like Amazon (own seasonal shape, recent level, damped year-over-year trend: ${(D.brand.slope*1200).toFixed(0)}% a year now). The brand lever uses elasticities measured on ${D.brand.n_pairs} year-over-year month pairs since 2025, Rogan excluded: Shopify orders ${D.brand.e_shop.toFixed(2)}, Amazon ${D.brand.e_amz.toFixed(2)}. These are correlations, not tests, so treat the lever as a risk range.</p>
+  <p><b>Amazon</b> uses the Targets tab history back to Jan 2023 and its own seasonal shape, weighted hard toward recent years because the Amazon Q4 peak has shrunk each year (November was 2.6x October in 2023, 2.0x in 2024, 1.25x in 2025). Level is the last 3 months; trend is the trailing 12-month year-over-year change (${(P.amz_slope*1200).toFixed(1)}% a year), damped. Seller Board raw sales are kept as a cross-check.</p>
+  <p><b>D/D/O</b> (direct, distributor, other) is projected flat at the 2026 average (${fmtKd(D.pnl.ddo_level)} a month). Earlier years included Amazon resellers, with some six-figure months, so nothing before Jan 2026 is used.</p>
+  <p><b>Meta and Google spend</b> use the D2C demand calendar as their seasonal shape, with strength fitted per series (Meta ${P.meta_beta.toFixed(2)}x), and the trend from 2026. This is how August 2027 spend is predicted from what you typically spend in August plus where spend is trending.</p>
+  <p><b>Month in progress.</b> ${lab(D.partial_month)} = actuals through ${D.nowcast ? D.nowcast.through : '–'} from the daily net income sheet (Shopify, Amazon, Meta, Google, Amazon ads; grayed projection days are ignored) plus the model's full-month value for the ${D.nowcast ? Math.round(D.nowcast.share_left*100) : '–'}% of the month still to come.</p>
+  <p><b>Levers.</b> Meta: elasticity of paid sessions to spend measured on 2026 (${P.e_meta.toFixed(2)}), applied to the ${Math.round(D.shares.social*100)}% of orders that arrive via social. Email: elasticity of email revenue to 6-month signups (${P.e_email.toFixed(2)}). SMS: elasticity of Attentive revenue to 6-month SMS signups (${P.e_sms.toFixed(2)}). Both counted at ${P.email_incr*100}% incremental.</p>
+  <p><b>Finance basis.</b> History is the O&amp;F Targets tab (official monthly P&amp;L). Projected Shopify = Shopify net sales x ${D.fin_ratio.toFixed(3)} (Targets Shopify vs Shopify analytics, last 12 months). Net income = (Shopify + Amazon + D/D/O) x (1 − ${(D.pnl.cogs_pct*100).toFixed(1)}% COGS) − ad spend x ${D.pnl.ad_ratio.toFixed(2)} (Targets ad spend vs Meta + Google + Amazon ads) − fixed costs (other SMA, payroll, G&amp;A, other: the finance sheet's 2026 values, repeated for 2027). Plan = the Targets tab's Est. columns.</p>
+  <p><b>Still missing.</b> Google spend before Jun 2024. Search Console only keeps 16 months, so brand search starts Jan 2024 (from your sheet). Amazon Brand Analytics has gaps (2024 before Aug, 2025 after Sep). Attentive has no connector, so SMS updates when new exports are uploaded.</p>
+  <p><b>Refresh.</b> Shopify sessions, orders and product mix plus Klaviyo signups and email revenue are re-pulled daily; the Iron Neck Master is re-read for spend, fixed costs and month-to-date actuals, and the Targets tab for closed months. The model refits each run, so the projection moves as new months land.</p>`;
+}
+</script>
+</body>
+</html>

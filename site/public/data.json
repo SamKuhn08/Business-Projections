@@ -1,0 +1,4327 @@
+{
+ "shares": {
+  "social": 0.1785591175456739,
+  "search": 0.3367804205446398,
+  "direct": 0.4567390554981041
+ },
+ "a_in": 404.57001556287304,
+ "a_ha": 125.10498750763254,
+ "generated": "2026-10-16",
+ "partial_month": "2026-10",
+ "mtd_days": 16,
+ "fin_ratio": 1.0282421036661762,
+ "cogs": 0.22037369336338325,
+ "hist": [
+  {
+   "month": "2023-01",
+   "d2c": 402733,
+   "orders": 1307,
+   "sessions": 183927,
+   "aov": 308.1354246365723,
+   "cr": 0.006758115991670609,
+   "seg": {
+    "P": {
+     "ses": 16472,
+     "conv": 294
+    },
+    "C": {
+     "ses": 11084,
+     "conv": 184
+    },
+    "H": {
+     "ses": 17440,
+     "conv": 403
+    },
+    "L": {
+     "ses": 100788,
+     "conv": 238
+    },
+    "B": {
+     "ses": 36005,
+     "conv": 20
+    }
+   },
+   "brand": 79153,
+   "line_in": 387154,
+   "line_ha": 12928,
+   "email": 90673,
+   "signups": 1744,
+   "sms": 9549,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 101812,
+   "meta": null,
+   "google": null,
+   "amz_ads": null,
+   "ddo": 39431,
+   "tgt": {
+    "shop": 413667,
+    "amz": 101812,
+    "ddo": 39431,
+    "total": 554910,
+    "cogs": 197097,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 108470,
+    "ga": 62540,
+    "other": 12968,
+    "ni": -71617
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2023-02",
+   "d2c": 393544,
+   "orders": 1213,
+   "sessions": 119979,
+   "aov": 324.43858202802966,
+   "cr": 0.009901732803240568,
+   "seg": {
+    "P": {
+     "ses": 15102,
+     "conv": 285
+    },
+    "C": {
+     "ses": 8100,
+     "conv": 238
+    },
+    "H": {
+     "ses": 14745,
+     "conv": 336
+    },
+    "L": {
+     "ses": 45830,
+     "conv": 212
+    },
+    "B": {
+     "ses": 34330,
+     "conv": 8
+    }
+   },
+   "brand": 49575,
+   "line_in": 380217,
+   "line_ha": 10411,
+   "email": 121681,
+   "signups": 1484,
+   "sms": 8722,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 76770,
+   "meta": null,
+   "google": null,
+   "amz_ads": null,
+   "ddo": 41988,
+   "tgt": {
+    "shop": 403400,
+    "amz": 76770,
+    "ddo": 41988,
+    "total": 522158,
+    "cogs": 149483,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 106141,
+    "ga": 64781,
+    "other": 4526,
+    "ni": -8259
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2023-03",
+   "d2c": 353013,
+   "orders": 1035,
+   "sessions": 109768,
+   "aov": 341.0753623188406,
+   "cr": 0.009101013045696377,
+   "seg": {
+    "P": {
+     "ses": 11575,
+     "conv": 250
+    },
+    "C": {
+     "ses": 6939,
+     "conv": 189
+    },
+    "H": {
+     "ses": 12794,
+     "conv": 328
+    },
+    "L": {
+     "ses": 36054,
+     "conv": 132
+    },
+    "B": {
+     "ses": 41181,
+     "conv": 17
+    }
+   },
+   "brand": 49081,
+   "line_in": 335452,
+   "line_ha": 13989,
+   "email": 100416,
+   "signups": 1200,
+   "sms": 12670,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 105667,
+   "meta": null,
+   "google": null,
+   "amz_ads": null,
+   "ddo": 33310,
+   "tgt": {
+    "shop": 362374,
+    "amz": 105667,
+    "ddo": 33310,
+    "total": 501351,
+    "cogs": 105289,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 103870,
+    "ga": 62620,
+    "other": 7898,
+    "ni": 30395
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2023-04",
+   "d2c": 257243,
+   "orders": 749,
+   "sessions": 91773,
+   "aov": 343.4485981308411,
+   "cr": 0.007725583777363713,
+   "seg": {
+    "P": {
+     "ses": 8942,
+     "conv": 240
+    },
+    "C": {
+     "ses": 5950,
+     "conv": 106
+    },
+    "H": {
+     "ses": 10507,
+     "conv": 215
+    },
+    "L": {
+     "ses": 30412,
+     "conv": 91
+    },
+    "B": {
+     "ses": 34934,
+     "conv": 10
+    }
+   },
+   "brand": 52622,
+   "line_in": 240575,
+   "line_ha": 12187,
+   "email": 63360,
+   "signups": 1079,
+   "sms": 8804,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 110140,
+   "meta": null,
+   "google": null,
+   "amz_ads": null,
+   "ddo": 45602,
+   "tgt": {
+    "shop": 264361,
+    "amz": 110140,
+    "ddo": 45602,
+    "total": 420103,
+    "cogs": 139613,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 103336,
+    "ga": 57577,
+    "other": 13152,
+    "ni": -27546
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2023-05",
+   "d2c": 305209,
+   "orders": 871,
+   "sessions": 101817,
+   "aov": 350.4121699196326,
+   "cr": 0.00796527102546726,
+   "seg": {
+    "P": {
+     "ses": 9237,
+     "conv": 222
+    },
+    "C": {
+     "ses": 7030,
+     "conv": 145
+    },
+    "H": {
+     "ses": 10575,
+     "conv": 224
+    },
+    "L": {
+     "ses": 39745,
+     "conv": 126
+    },
+    "B": {
+     "ses": 33828,
+     "conv": 15
+    }
+   },
+   "brand": 51848,
+   "line_in": 285423,
+   "line_ha": 14297,
+   "email": 86735,
+   "signups": 2159,
+   "sms": 13009,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 117089,
+   "meta": null,
+   "google": null,
+   "amz_ads": null,
+   "ddo": 62382,
+   "tgt": {
+    "shop": 312693,
+    "amz": 117089,
+    "ddo": 62382,
+    "total": 492164,
+    "cogs": 151412,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 107039,
+    "ga": 58865,
+    "other": -295508,
+    "ni": 274472
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2023-06",
+   "d2c": 432666,
+   "orders": 1254,
+   "sessions": 103931,
+   "aov": 345.0287081339713,
+   "cr": 0.011488391336559833,
+   "seg": {
+    "P": {
+     "ses": 13499,
+     "conv": 312
+    },
+    "C": {
+     "ses": 6836,
+     "conv": 185
+    },
+    "H": {
+     "ses": 10366,
+     "conv": 339
+    },
+    "L": {
+     "ses": 40896,
+     "conv": 251
+    },
+    "B": {
+     "ses": 30700,
+     "conv": 9
+    }
+   },
+   "brand": 47175,
+   "line_in": 416184,
+   "line_ha": 14281,
+   "email": 90667,
+   "signups": 1246,
+   "sms": 8751,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 148955,
+   "meta": null,
+   "google": null,
+   "amz_ads": null,
+   "ddo": 21399,
+   "tgt": {
+    "shop": 442695,
+    "amz": 148955,
+    "ddo": 21399,
+    "total": 613048,
+    "cogs": 116101,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 109400,
+    "ga": 63893,
+    "other": 64415,
+    "ni": 4421
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2023-07",
+   "d2c": 269634,
+   "orders": 836,
+   "sessions": 99866,
+   "aov": 322.5287081339713,
+   "cr": 0.00789057336831354,
+   "seg": {
+    "P": {
+     "ses": 13078,
+     "conv": 204
+    },
+    "C": {
+     "ses": 5127,
+     "conv": 134
+    },
+    "H": {
+     "ses": 11654,
+     "conv": 236
+    },
+    "L": {
+     "ses": 37569,
+     "conv": 137
+    },
+    "B": {
+     "ses": 31333,
+     "conv": 10
+    }
+   },
+   "brand": 51105,
+   "line_in": 258295,
+   "line_ha": 9550,
+   "email": 56913,
+   "signups": 1502,
+   "sms": 9502,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 137779,
+   "meta": null,
+   "google": null,
+   "amz_ads": 10799,
+   "ddo": 40301,
+   "tgt": {
+    "shop": 277397,
+    "amz": 137779,
+    "ddo": 40301,
+    "total": 455478,
+    "cogs": 109117,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 113323,
+    "ga": 67812,
+    "other": 8487,
+    "ni": -60765
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2023-08",
+   "d2c": 247503,
+   "orders": 805,
+   "sessions": 78285,
+   "aov": 307.45714285714286,
+   "cr": 0.009503736347959379,
+   "seg": {
+    "P": {
+     "ses": 9691,
+     "conv": 232
+    },
+    "C": {
+     "ses": 4766,
+     "conv": 115
+    },
+    "H": {
+     "ses": 9495,
+     "conv": 184
+    },
+    "L": {
+     "ses": 23174,
+     "conv": 153
+    },
+    "B": {
+     "ses": 30087,
+     "conv": 5
+    }
+   },
+   "brand": 40681,
+   "line_in": 231582,
+   "line_ha": 12002,
+   "email": 55468,
+   "signups": 756,
+   "sms": 4862,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 123369,
+   "meta": null,
+   "google": null,
+   "amz_ads": 10496,
+   "ddo": 41461,
+   "tgt": {
+    "shop": 256431,
+    "amz": 123369,
+    "ddo": 41461,
+    "total": 421261,
+    "cogs": 80690,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 121818,
+    "ga": 76906,
+    "other": 3233,
+    "ni": -14435
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2023-09",
+   "d2c": 189064,
+   "orders": 649,
+   "sessions": 70716,
+   "aov": 291.31587057010785,
+   "cr": 0.008399796368572883,
+   "seg": {
+    "P": {
+     "ses": 10316,
+     "conv": 165
+    },
+    "C": {
+     "ses": 4243,
+     "conv": 113
+    },
+    "H": {
+     "ses": 10075,
+     "conv": 174
+    },
+    "L": {
+     "ses": 21563,
+     "conv": 101
+    },
+    "B": {
+     "ses": 22502,
+     "conv": 7
+    }
+   },
+   "brand": 37694,
+   "line_in": 175627,
+   "line_ha": 10225,
+   "email": 49222,
+   "signups": 9503,
+   "sms": 4798,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": true,
+   "amazon": 93857,
+   "meta": null,
+   "google": null,
+   "amz_ads": 7334,
+   "ddo": 36160,
+   "tgt": {
+    "shop": 196248,
+    "amz": 93857,
+    "ddo": 36160,
+    "total": 326264,
+    "cogs": 71233,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 130168,
+    "ga": 63942,
+    "other": 5817,
+    "ni": -76090
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2023-10",
+   "d2c": 437832,
+   "orders": 1372,
+   "sessions": 137744,
+   "aov": 319.1195335276968,
+   "cr": 0.009437797653618307,
+   "seg": {
+    "P": {
+     "ses": 12694,
+     "conv": 259
+    },
+    "C": {
+     "ses": 6909,
+     "conv": 160
+    },
+    "H": {
+     "ses": 16122,
+     "conv": 367
+    },
+    "L": {
+     "ses": 68526,
+     "conv": 425
+    },
+    "B": {
+     "ses": 32172,
+     "conv": 13
+    }
+   },
+   "brand": 92718,
+   "line_in": 402150,
+   "line_ha": 29781,
+   "email": 85957,
+   "signups": 1995,
+   "sms": 22566,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 160579,
+   "meta": 174026,
+   "google": null,
+   "amz_ads": 19334,
+   "ddo": 24903,
+   "tgt": {
+    "shop": 448699,
+    "amz": 160579,
+    "ddo": 24903,
+    "total": 634181,
+    "cogs": 129575,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 122764,
+    "ga": 64016,
+    "other": 6351,
+    "ni": 35539
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2023-11",
+   "d2c": 1265759,
+   "orders": 4169,
+   "sessions": 204591,
+   "aov": 303.61213720316624,
+   "cr": 0.019438782742153857,
+   "seg": {
+    "P": {
+     "ses": 18502,
+     "conv": 801
+    },
+    "C": {
+     "ses": 14997,
+     "conv": 543
+    },
+    "H": {
+     "ses": 24918,
+     "conv": 1093
+    },
+    "L": {
+     "ses": 102102,
+     "conv": 1225
+    },
+    "B": {
+     "ses": 40895,
+     "conv": 28
+    }
+   },
+   "brand": 130688,
+   "line_in": 1182141,
+   "line_ha": 67837,
+   "email": 181747,
+   "signups": 4768,
+   "sms": 48512,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 399044,
+   "meta": 495607,
+   "google": null,
+   "amz_ads": 44047,
+   "ddo": 82417,
+   "tgt": {
+    "shop": 1303307,
+    "amz": 399044,
+    "ddo": 82417,
+    "total": 1784768,
+    "cogs": 412094,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 124812,
+    "ga": 99444,
+    "other": 14115,
+    "ni": 386979
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2023-12",
+   "d2c": 644559,
+   "orders": 2833,
+   "sessions": 161785,
+   "aov": 227.51817860924814,
+   "cr": 0.017059677967673145,
+   "seg": {
+    "P": {
+     "ses": 13101,
+     "conv": 821
+    },
+    "C": {
+     "ses": 12169,
+     "conv": 474
+    },
+    "H": {
+     "ses": 20838,
+     "conv": 652
+    },
+    "L": {
+     "ses": 73430,
+     "conv": 608
+    },
+    "B": {
+     "ses": 38093,
+     "conv": 21
+    }
+   },
+   "brand": 77880,
+   "line_in": 592127,
+   "line_ha": 43563,
+   "email": 139521,
+   "signups": 3305,
+   "sms": 31130,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 300157,
+   "meta": 317149,
+   "google": null,
+   "amz_ads": 40332,
+   "ddo": 51700,
+   "tgt": {
+    "shop": 667224,
+    "amz": 300157,
+    "ddo": 51700,
+    "total": 1019080,
+    "cogs": 382330,
+    "ad": null,
+    "other_sma": null,
+    "payroll": 183834,
+    "ga": 183583,
+    "other": 49982,
+    "ni": -278602
+   },
+   "brand_clicks": null,
+   "brand_impr": null,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2024-01",
+   "d2c": 312927,
+   "orders": 1340,
+   "sessions": 116782,
+   "aov": 233.5276119402985,
+   "cr": 0.010489630251237348,
+   "seg": {
+    "P": {
+     "ses": 8969,
+     "conv": 265
+    },
+    "C": {
+     "ses": 7172,
+     "conv": 227
+    },
+    "H": {
+     "ses": 16665,
+     "conv": 306
+    },
+    "L": {
+     "ses": 37060,
+     "conv": 330
+    },
+    "B": {
+     "ses": 45612,
+     "conv": 17
+    }
+   },
+   "brand": 52480,
+   "line_in": 281635,
+   "line_ha": 23372,
+   "email": 77241,
+   "signups": 2014,
+   "sms": 19537,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 134079,
+   "meta": 228510,
+   "google": null,
+   "amz_ads": 25498,
+   "ddo": 44548,
+   "tgt": {
+    "shop": 322830,
+    "amz": 134079,
+    "ddo": 44548,
+    "total": 501457,
+    "cogs": 119394,
+    "ad": 218580,
+    "other_sma": 56655,
+    "payroll": 107385,
+    "ga": 86316,
+    "other": 6784,
+    "ni": -93656
+   },
+   "brand_clicks": 2760,
+   "brand_impr": 15321,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2024-02",
+   "d2c": 260203,
+   "orders": 974,
+   "sessions": 99558,
+   "aov": 267.1488706365503,
+   "cr": 0.009009823419514253,
+   "seg": {
+    "P": {
+     "ses": 13258,
+     "conv": 256
+    },
+    "C": {
+     "ses": 3398,
+     "conv": 90
+    },
+    "H": {
+     "ses": 11444,
+     "conv": 230
+    },
+    "L": {
+     "ses": 28578,
+     "conv": 237
+    },
+    "B": {
+     "ses": 42229,
+     "conv": 21
+    }
+   },
+   "brand": 37713,
+   "line_in": 234741,
+   "line_ha": 20592,
+   "email": 74542,
+   "signups": 1711,
+   "sms": 15160,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 91453,
+   "meta": 101852,
+   "google": null,
+   "amz_ads": 19576,
+   "ddo": 77821,
+   "tgt": {
+    "shop": 269341,
+    "amz": 91453,
+    "ddo": 77821,
+    "total": 438615,
+    "cogs": 100080,
+    "ad": 163660,
+    "other_sma": 37299,
+    "payroll": 105088,
+    "ga": 58342,
+    "other": 6641,
+    "ni": -32494
+   },
+   "brand_clicks": 2262,
+   "brand_impr": 12554,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2024-03",
+   "d2c": 197731,
+   "orders": 851,
+   "sessions": 94772,
+   "aov": 232.35135135135135,
+   "cr": 0.008072004389482126,
+   "seg": {
+    "P": {
+     "ses": 17827,
+     "conv": 218
+    },
+    "C": {
+     "ses": 6943,
+     "conv": 118
+    },
+    "H": {
+     "ses": 10488,
+     "conv": 211
+    },
+    "L": {
+     "ses": 18014,
+     "conv": 145
+    },
+    "B": {
+     "ses": 40959,
+     "conv": 18
+    }
+   },
+   "brand": 46461,
+   "line_in": 171739,
+   "line_ha": 22203,
+   "email": 49594,
+   "signups": 1302,
+   "sms": 7741,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 104344,
+   "meta": 58462,
+   "google": null,
+   "amz_ads": 21897,
+   "ddo": 44745,
+   "tgt": {
+    "shop": 207202,
+    "amz": 104344,
+    "ddo": 44745,
+    "total": 356292,
+    "cogs": 74709,
+    "ad": 118334,
+    "other_sma": 47509,
+    "payroll": 95616,
+    "ga": 80955,
+    "other": 7143,
+    "ni": -67975
+   },
+   "brand_clicks": 2314,
+   "brand_impr": 13038,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2024-04",
+   "d2c": 231031,
+   "orders": 927,
+   "sessions": 92089,
+   "aov": 249.22437971952536,
+   "cr": 0.008915288470935725,
+   "seg": {
+    "P": {
+     "ses": 19998,
+     "conv": 256
+    },
+    "C": {
+     "ses": 5959,
+     "conv": 144
+    },
+    "H": {
+     "ses": 9190,
+     "conv": 191
+    },
+    "L": {
+     "ses": 19117,
+     "conv": 176
+    },
+    "B": {
+     "ses": 37226,
+     "conv": 12
+    }
+   },
+   "brand": 45585,
+   "line_in": 201831,
+   "line_ha": 25570,
+   "email": 53815,
+   "signups": 1860,
+   "sms": 3581,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 113877,
+   "meta": 54218,
+   "google": null,
+   "amz_ads": 19231,
+   "ddo": 17028,
+   "tgt": {
+    "shop": 240200,
+    "amz": 113877,
+    "ddo": 17028,
+    "total": 371106,
+    "cogs": 78832,
+    "ad": 137845,
+    "other_sma": 52423,
+    "payroll": 88295,
+    "ga": 74165,
+    "other": 7223,
+    "ni": -67678
+   },
+   "brand_clicks": 2091,
+   "brand_impr": 11271,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2024-05",
+   "d2c": 261033,
+   "orders": 1064,
+   "sessions": 114653,
+   "aov": 245.33176691729324,
+   "cr": 0.008277149311400486,
+   "seg": {
+    "P": {
+     "ses": 31183,
+     "conv": 270
+    },
+    "C": {
+     "ses": 9068,
+     "conv": 139
+    },
+    "H": {
+     "ses": 9384,
+     "conv": 238
+    },
+    "L": {
+     "ses": 26985,
+     "conv": 240
+    },
+    "B": {
+     "ses": 37346,
+     "conv": 9
+    }
+   },
+   "brand": 68512,
+   "line_in": 228349,
+   "line_ha": 28359,
+   "email": 64708,
+   "signups": 78779,
+   "sms": 12093,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": true,
+   "amazon": 88751,
+   "meta": 86074,
+   "google": null,
+   "amz_ads": 17609,
+   "ddo": 58903,
+   "tgt": {
+    "shop": 270097,
+    "amz": 88751,
+    "ddo": 58903,
+    "total": 417751,
+    "cogs": 126098,
+    "ad": 152760,
+    "other_sma": 73155,
+    "payroll": 69527,
+    "ga": 35244,
+    "other": 7340,
+    "ni": -46372
+   },
+   "brand_clicks": 1925,
+   "brand_impr": 11072,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2024-06",
+   "d2c": 200404,
+   "orders": 814,
+   "sessions": 99529,
+   "aov": 246.1965601965602,
+   "cr": 0.007043173346461836,
+   "seg": {
+    "P": {
+     "ses": 20848,
+     "conv": 130
+    },
+    "C": {
+     "ses": 7586,
+     "conv": 117
+    },
+    "H": {
+     "ses": 5276,
+     "conv": 86
+    },
+    "L": {
+     "ses": 30386,
+     "conv": 296
+    },
+    "B": {
+     "ses": 33024,
+     "conv": 20
+    }
+   },
+   "brand": 59653,
+   "line_in": 173498,
+   "line_ha": 22671,
+   "email": 39848,
+   "signups": 13699,
+   "sms": 4709,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": true,
+   "amazon": 110618,
+   "meta": 86383,
+   "google": 19792,
+   "amz_ads": 15682,
+   "ddo": 30441,
+   "tgt": {
+    "shop": 208041,
+    "amz": 110618,
+    "ddo": 30441,
+    "total": 349100,
+    "cogs": 133150,
+    "ad": 119391,
+    "other_sma": 52210,
+    "payroll": 65717,
+    "ga": 33506,
+    "other": 7513,
+    "ni": -62387
+   },
+   "brand_clicks": 1671,
+   "brand_impr": 9771,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2024-07",
+   "d2c": 252694,
+   "orders": 856,
+   "sessions": 86000,
+   "aov": 295.20327102803736,
+   "cr": 0.009139534883720931,
+   "seg": {
+    "P": {
+     "ses": 8553,
+     "conv": 160
+    },
+    "C": {
+     "ses": 5615,
+     "conv": 116
+    },
+    "H": {
+     "ses": 10921,
+     "conv": 210
+    },
+    "L": {
+     "ses": 26715,
+     "conv": 249
+    },
+    "B": {
+     "ses": 33670,
+     "conv": 10
+    }
+   },
+   "brand": 43083,
+   "line_in": 222196,
+   "line_ha": 25737,
+   "email": 54993,
+   "signups": 3860,
+   "sms": 20799,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 111978,
+   "meta": 81241,
+   "google": 21767,
+   "amz_ads": 18833,
+   "ddo": 56667,
+   "tgt": {
+    "shop": 261981,
+    "amz": 111978,
+    "ddo": 56667,
+    "total": 430627,
+    "cogs": 96596,
+    "ad": 130207,
+    "other_sma": 56442,
+    "payroll": 59508,
+    "ga": 31295,
+    "other": 7284,
+    "ni": 49294
+   },
+   "brand_clicks": 2717,
+   "brand_impr": 16668,
+   "brand_days": null,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2024-08",
+   "d2c": 197872,
+   "orders": 743,
+   "sessions": 86580,
+   "aov": 266.31493943472407,
+   "cr": 0.007796257796257797,
+   "seg": {
+    "P": {
+     "ses": 9660,
+     "conv": 128
+    },
+    "C": {
+     "ses": 6137,
+     "conv": 122
+    },
+    "H": {
+     "ses": 7651,
+     "conv": 141
+    },
+    "L": {
+     "ses": 25281,
+     "conv": 218
+    },
+    "B": {
+     "ses": 37305,
+     "conv": 10
+    }
+   },
+   "brand": 46034,
+   "line_in": 172973,
+   "line_ha": 20089,
+   "email": 47863,
+   "signups": 14478,
+   "sms": 11922,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": true,
+   "amazon": 94137,
+   "meta": 81569,
+   "google": 19498,
+   "amz_ads": 14021,
+   "ddo": 24097,
+   "tgt": {
+    "shop": 205083,
+    "amz": 94137,
+    "ddo": 24097,
+    "total": 323317,
+    "cogs": 84291,
+    "ad": 111993,
+    "other_sma": 36836,
+    "payroll": 59641,
+    "ga": 18422,
+    "other": 8131,
+    "ni": 4002
+   },
+   "brand_clicks": 1703,
+   "brand_impr": 9822,
+   "brand_days": null,
+   "amz_brand": 2971,
+   "partial": false
+  },
+  {
+   "month": "2024-09",
+   "d2c": 185575,
+   "orders": 655,
+   "sessions": 65840,
+   "aov": 283.3206106870229,
+   "cr": 0.008839611178614823,
+   "seg": {
+    "P": {
+     "ses": 5527,
+     "conv": 115
+    },
+    "C": {
+     "ses": 3197,
+     "conv": 84
+    },
+    "H": {
+     "ses": 8332,
+     "conv": 150
+    },
+    "L": {
+     "ses": 15696,
+     "conv": 171
+    },
+    "B": {
+     "ses": 32460,
+     "conv": 16
+    }
+   },
+   "brand": 28397,
+   "line_in": 154691,
+   "line_ha": 22069,
+   "email": 38203,
+   "signups": 9979,
+   "sms": 4677,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": false,
+   "amazon": 100770,
+   "meta": 73419,
+   "google": 15925,
+   "amz_ads": 13503,
+   "ddo": 52093,
+   "tgt": {
+    "shop": 192470,
+    "amz": 100770,
+    "ddo": 52093,
+    "total": 345333,
+    "cogs": 117915,
+    "ad": 108182,
+    "other_sma": 41519,
+    "payroll": 54401,
+    "ga": 30679,
+    "other": 8908,
+    "ni": -16271
+   },
+   "brand_clicks": 1791,
+   "brand_impr": 9069,
+   "brand_days": null,
+   "amz_brand": 2458,
+   "partial": false
+  },
+  {
+   "month": "2024-10",
+   "d2c": 216237,
+   "orders": 776,
+   "sessions": 88411,
+   "aov": 278.65592783505156,
+   "cr": 0.007894945199126806,
+   "seg": {
+    "P": {
+     "ses": 10413,
+     "conv": 139
+    },
+    "C": {
+     "ses": 3956,
+     "conv": 101
+    },
+    "H": {
+     "ses": 6145,
+     "conv": 130
+    },
+    "L": {
+     "ses": 34090,
+     "conv": 253
+    },
+    "B": {
+     "ses": 33241,
+     "conv": 17
+    }
+   },
+   "brand": 25726,
+   "line_in": 176911,
+   "line_ha": 28096,
+   "email": 55728,
+   "signups": 44393,
+   "sms": 2860,
+   "sms_signups": null,
+   "popup_impr": null,
+   "signup_import": true,
+   "amazon": 109617,
+   "meta": 81722,
+   "google": 22246,
+   "amz_ads": 20698,
+   "ddo": 45948,
+   "tgt": {
+    "shop": 223666,
+    "amz": 109617,
+    "ddo": 45948,
+    "total": 379230,
+    "cogs": 92528,
+    "ad": 121863,
+    "other_sma": 64899,
+    "payroll": 54374,
+    "ga": 31053,
+    "other": 9378,
+    "ni": 5135
+   },
+   "brand_clicks": 1735,
+   "brand_impr": 9283,
+   "brand_days": null,
+   "amz_brand": 2764,
+   "partial": false
+  },
+  {
+   "month": "2024-11",
+   "d2c": 594960,
+   "orders": 1858,
+   "sessions": 102744,
+   "aov": 320.2152852529602,
+   "cr": 0.01627345635754886,
+   "seg": {
+    "P": {
+     "ses": 11545,
+     "conv": 388
+    },
+    "C": {
+     "ses": 22535,
+     "conv": 292
+    },
+    "H": {
+     "ses": 11472,
+     "conv": 387
+    },
+    "L": {
+     "ses": 28350,
+     "conv": 444
+    },
+    "B": {
+     "ses": 27973,
+     "conv": 21
+    }
+   },
+   "brand": 41014,
+   "line_in": 484754,
+   "line_ha": 74467,
+   "email": 124722,
+   "signups": 3975,
+   "sms": 98794,
+   "sms_signups": null,
+   "popup_impr": 69860,
+   "signup_import": false,
+   "amazon": 219917,
+   "meta": 257481,
+   "google": 31217,
+   "amz_ads": 26954,
+   "ddo": 30847,
+   "tgt": {
+    "shop": 613932,
+    "amz": 219917,
+    "ddo": 30847,
+    "total": 864695,
+    "cogs": 235153,
+    "ad": 288639,
+    "other_sma": 57019,
+    "payroll": 55106,
+    "ga": 32367,
+    "other": 10316,
+    "ni": 186096
+   },
+   "brand_clicks": 2486,
+   "brand_impr": 12970,
+   "brand_days": null,
+   "amz_brand": 4136,
+   "partial": false
+  },
+  {
+   "month": "2024-12",
+   "d2c": 646378,
+   "orders": 2035,
+   "sessions": 111532,
+   "aov": 317.63046683046684,
+   "cr": 0.016927877201161998,
+   "seg": {
+    "P": {
+     "ses": 15899,
+     "conv": 483
+    },
+    "C": {
+     "ses": 12209,
+     "conv": 243
+    },
+    "H": {
+     "ses": 14337,
+     "conv": 454
+    },
+    "L": {
+     "ses": 42145,
+     "conv": 513
+    },
+    "B": {
+     "ses": 25981,
+     "conv": 21
+    }
+   },
+   "brand": 47705,
+   "line_in": 528838,
+   "line_ha": 76157,
+   "email": 130032,
+   "signups": 4493,
+   "sms": 172601,
+   "sms_signups": 1660,
+   "popup_impr": 90212,
+   "signup_import": false,
+   "amazon": 233308,
+   "meta": 227782,
+   "google": 44033,
+   "amz_ads": 33309,
+   "ddo": 60379,
+   "tgt": {
+    "shop": 666569,
+    "amz": 233308,
+    "ddo": 60379,
+    "total": 960256,
+    "cogs": 269907,
+    "ad": 319754,
+    "other_sma": 103886,
+    "payroll": 65222,
+    "ga": 51749,
+    "other": 10971,
+    "ni": 138768
+   },
+   "brand_clicks": 4310,
+   "brand_impr": 29136,
+   "brand_days": null,
+   "amz_brand": 6885,
+   "partial": false
+  },
+  {
+   "month": "2025-01",
+   "d2c": 511628,
+   "orders": 1423,
+   "sessions": 131845,
+   "aov": 359.5418130709768,
+   "cr": 0.009966248246046494,
+   "seg": {
+    "P": {
+     "ses": 14708,
+     "conv": 340
+    },
+    "C": {
+     "ses": 9282,
+     "conv": 101
+    },
+    "H": {
+     "ses": 35974,
+     "conv": 371
+    },
+    "L": {
+     "ses": 39069,
+     "conv": 365
+    },
+    "B": {
+     "ses": 32062,
+     "conv": 30
+    }
+   },
+   "brand": 77306,
+   "line_in": 404797,
+   "line_ha": 70617,
+   "email": 108270,
+   "signups": 3104,
+   "sms": 149226,
+   "sms_signups": 1287,
+   "popup_impr": 88340,
+   "signup_import": false,
+   "amazon": 240580,
+   "meta": 137456,
+   "google": 31797,
+   "amz_ads": 31344,
+   "ddo": 45735,
+   "tgt": {
+    "shop": 517604,
+    "amz": 240580,
+    "ddo": 45735,
+    "total": 803920,
+    "cogs": 149091,
+    "ad": 195131,
+    "other_sma": 71073,
+    "payroll": 177463,
+    "ga": 39482,
+    "other": 10497,
+    "ni": 161184
+   },
+   "brand_clicks": 15937,
+   "brand_impr": 90919,
+   "brand_days": null,
+   "amz_brand": 12769,
+   "partial": false
+  },
+  {
+   "month": "2025-02",
+   "d2c": 337834,
+   "orders": 1022,
+   "sessions": 66020,
+   "aov": 330.56164383561645,
+   "cr": 0.014450166616176915,
+   "seg": {
+    "P": {
+     "ses": 9945,
+     "conv": 231
+    },
+    "C": {
+     "ses": 4537,
+     "conv": 129
+    },
+    "H": {
+     "ses": 11917,
+     "conv": 252
+    },
+    "L": {
+     "ses": 18984,
+     "conv": 245
+    },
+    "B": {
+     "ses": 19974,
+     "conv": 13
+    }
+   },
+   "brand": 31355,
+   "line_in": 267716,
+   "line_ha": 47366,
+   "email": 84893,
+   "signups": 1755,
+   "sms": 86529,
+   "sms_signups": 704,
+   "popup_impr": 39314,
+   "signup_import": false,
+   "amazon": 158475,
+   "meta": 101290,
+   "google": 21505,
+   "amz_ads": 24267,
+   "ddo": 54216,
+   "tgt": {
+    "shop": 343261,
+    "amz": 158475,
+    "ddo": 54216,
+    "total": 555951,
+    "cogs": 121574,
+    "ad": 148638,
+    "other_sma": 95639,
+    "payroll": 54350,
+    "ga": 33540,
+    "other": 9834,
+    "ni": 92376
+   },
+   "brand_clicks": 3447,
+   "brand_impr": 20625,
+   "brand_days": null,
+   "amz_brand": 3683,
+   "partial": false
+  },
+  {
+   "month": "2025-03",
+   "d2c": 240037,
+   "orders": 753,
+   "sessions": 47587,
+   "aov": 318.7742363877822,
+   "cr": 0.014625843192468532,
+   "seg": {
+    "P": {
+     "ses": 8760,
+     "conv": 167
+    },
+    "C": {
+     "ses": 2995,
+     "conv": 64
+    },
+    "H": {
+     "ses": 10271,
+     "conv": 199
+    },
+    "L": {
+     "ses": 21879,
+     "conv": 198
+    },
+    "B": {
+     "ses": 3115,
+     "conv": 4
+    }
+   },
+   "brand": 24890,
+   "line_in": 186522,
+   "line_ha": 35513,
+   "email": 53090,
+   "signups": 1570,
+   "sms": 36123,
+   "sms_signups": 544,
+   "popup_impr": 33594,
+   "signup_import": false,
+   "amazon": 136241,
+   "meta": 65551,
+   "google": 18626,
+   "amz_ads": 28088,
+   "ddo": 161885,
+   "tgt": {
+    "shop": 243984,
+    "amz": 136241,
+    "ddo": 161885,
+    "total": 542110,
+    "cogs": 115004,
+    "ad": 109242,
+    "other_sma": 81270,
+    "payroll": 57674,
+    "ga": 29777,
+    "other": 10477,
+    "ni": 138667
+   },
+   "brand_clicks": 2290,
+   "brand_impr": 13855,
+   "brand_days": null,
+   "amz_brand": 2229,
+   "partial": false
+  },
+  {
+   "month": "2025-04",
+   "d2c": 216960,
+   "orders": 740,
+   "sessions": 45876,
+   "aov": 293.18918918918916,
+   "cr": 0.015127735635190513,
+   "seg": {
+    "P": {
+     "ses": 8490,
+     "conv": 202
+    },
+    "C": {
+     "ses": 5140,
+     "conv": 97
+    },
+    "H": {
+     "ses": 8275,
+     "conv": 174
+    },
+    "L": {
+     "ses": 18656,
+     "conv": 145
+    },
+    "B": {
+     "ses": 2077,
+     "conv": 1
+    }
+   },
+   "brand": 26457,
+   "line_in": 162293,
+   "line_ha": 38173,
+   "email": 50208,
+   "signups": 3806,
+   "sms": 44040,
+   "sms_signups": 253,
+   "popup_impr": 26663,
+   "signup_import": false,
+   "amazon": 102227,
+   "meta": 51788,
+   "google": 18213,
+   "amz_ads": 18049,
+   "ddo": 45974,
+   "tgt": {
+    "shop": 221005,
+    "amz": 102227,
+    "ddo": 45974,
+    "total": 369206,
+    "cogs": 109755,
+    "ad": 88257,
+    "other_sma": 84182,
+    "payroll": 52425,
+    "ga": 33995,
+    "other": 9724,
+    "ni": -9133
+   },
+   "brand_clicks": 1776,
+   "brand_impr": 11818,
+   "brand_days": null,
+   "amz_brand": 1961,
+   "partial": false
+  },
+  {
+   "month": "2025-05",
+   "d2c": 237407,
+   "orders": 813,
+   "sessions": 40919,
+   "aov": 292.0135301353014,
+   "cr": 0.018499963342212666,
+   "seg": {
+    "P": {
+     "ses": 8546,
+     "conv": 258
+    },
+    "C": {
+     "ses": 3224,
+     "conv": 99
+    },
+    "H": {
+     "ses": 7344,
+     "conv": 176
+    },
+    "L": {
+     "ses": 15709,
+     "conv": 150
+    },
+    "B": {
+     "ses": 1349,
+     "conv": 1
+    }
+   },
+   "brand": 26829,
+   "line_in": 185462,
+   "line_ha": 36536,
+   "email": 46123,
+   "signups": 4489,
+   "sms": 50466,
+   "sms_signups": 370,
+   "popup_impr": 32077,
+   "signup_import": false,
+   "amazon": 104720,
+   "meta": 67675,
+   "google": 23819,
+   "amz_ads": 31838,
+   "ddo": 39954,
+   "tgt": {
+    "shop": 241648,
+    "amz": 104720,
+    "ddo": 39954,
+    "total": 386322,
+    "cogs": 97568,
+    "ad": 123946,
+    "other_sma": 59629,
+    "payroll": 51920,
+    "ga": 31699,
+    "other": 9335,
+    "ni": 12225
+   },
+   "brand_clicks": 1870,
+   "brand_impr": 11786,
+   "brand_days": null,
+   "amz_brand": 1416,
+   "partial": false
+  },
+  {
+   "month": "2025-06",
+   "d2c": 223336,
+   "orders": 782,
+   "sessions": 39342,
+   "aov": 285.5959079283887,
+   "cr": 0.01781810787453612,
+   "seg": {
+    "P": {
+     "ses": 11413,
+     "conv": 270
+    },
+    "C": {
+     "ses": 4068,
+     "conv": 81
+    },
+    "H": {
+     "ses": 7725,
+     "conv": 158
+    },
+    "L": {
+     "ses": 13562,
+     "conv": 115
+    },
+    "B": {
+     "ses": 1013,
+     "conv": 0
+    }
+   },
+   "brand": 28101,
+   "line_in": 170856,
+   "line_ha": 37779,
+   "email": 44274,
+   "signups": 1770,
+   "sms": 41801,
+   "sms_signups": 444,
+   "popup_impr": 34233,
+   "signup_import": false,
+   "amazon": 115246,
+   "meta": 77305,
+   "google": 25986,
+   "amz_ads": 27288,
+   "ddo": 22212,
+   "tgt": {
+    "shop": 227524,
+    "amz": 115246,
+    "ddo": 22212,
+    "total": 364983,
+    "cogs": 83052,
+    "ad": 130592,
+    "other_sma": 88639,
+    "payroll": 51855,
+    "ga": 27414,
+    "other": 8394,
+    "ni": -24963
+   },
+   "brand_clicks": 1499,
+   "brand_impr": 11223,
+   "brand_days": null,
+   "amz_brand": 1053,
+   "partial": false
+  },
+  {
+   "month": "2025-07",
+   "d2c": 175812,
+   "orders": 699,
+   "sessions": 34221,
+   "aov": 251.51931330472104,
+   "cr": 0.015721340697232692,
+   "seg": {
+    "P": {
+     "ses": 10452,
+     "conv": 196
+    },
+    "C": {
+     "ses": 2823,
+     "conv": 61
+    },
+    "H": {
+     "ses": 10412,
+     "conv": 161
+    },
+    "L": {
+     "ses": 9281,
+     "conv": 61
+    },
+    "B": {
+     "ses": 654,
+     "conv": 0
+    }
+   },
+   "brand": 25066,
+   "line_in": 136593,
+   "line_ha": 29193,
+   "email": 27903,
+   "signups": 1104,
+   "sms": 36232,
+   "sms_signups": 301,
+   "popup_impr": 29084,
+   "signup_import": false,
+   "amazon": 164692,
+   "meta": 64583,
+   "google": 24044,
+   "amz_ads": 39030,
+   "ddo": 58143,
+   "tgt": {
+    "shop": 179004,
+    "amz": 164692,
+    "ddo": 58143,
+    "total": 401839,
+    "cogs": 96130,
+    "ad": 117407,
+    "other_sma": 96651,
+    "payroll": 53163,
+    "ga": 31126,
+    "other": 8498,
+    "ni": -1136
+   },
+   "brand_clicks": 1526,
+   "brand_impr": 10226,
+   "brand_days": 31,
+   "amz_brand": 893,
+   "partial": false
+  },
+  {
+   "month": "2025-08",
+   "d2c": 178862,
+   "orders": 660,
+   "sessions": 34465,
+   "aov": 271.0030303030303,
+   "cr": 0.0149717104308719,
+   "seg": {
+    "P": {
+     "ses": 9709,
+     "conv": 190
+    },
+    "C": {
+     "ses": 2382,
+     "conv": 39
+    },
+    "H": {
+     "ses": 10168,
+     "conv": 166
+    },
+    "L": {
+     "ses": 10868,
+     "conv": 74
+    },
+    "B": {
+     "ses": 817,
+     "conv": 2
+    }
+   },
+   "brand": 25664,
+   "line_in": 134103,
+   "line_ha": 33684,
+   "email": 31664,
+   "signups": 2838,
+   "sms": 25569,
+   "sms_signups": 265,
+   "popup_impr": 29753,
+   "signup_import": false,
+   "amazon": 111787,
+   "meta": 56565,
+   "google": 20155,
+   "amz_ads": 22042,
+   "ddo": 62526,
+   "tgt": {
+    "shop": 183109,
+    "amz": 111787,
+    "ddo": 62526,
+    "total": 357421,
+    "cogs": 78502,
+    "ad": 93885,
+    "other_sma": 73342,
+    "payroll": 46835,
+    "ga": 23414,
+    "other": 8295,
+    "ni": 33149
+   },
+   "brand_clicks": 1698,
+   "brand_impr": 9610,
+   "brand_days": 31,
+   "amz_brand": 409,
+   "partial": false
+  },
+  {
+   "month": "2025-09",
+   "d2c": 179602,
+   "orders": 573,
+   "sessions": 33658,
+   "aov": 313.44153577661433,
+   "cr": 0.01547923227761602,
+   "seg": {
+    "P": {
+     "ses": 9969,
+     "conv": 197
+    },
+    "C": {
+     "ses": 3358,
+     "conv": 54
+    },
+    "H": {
+     "ses": 9182,
+     "conv": 162
+    },
+    "L": {
+     "ses": 9878,
+     "conv": 50
+    },
+    "B": {
+     "ses": 651,
+     "conv": 0
+    }
+   },
+   "brand": 25889,
+   "line_in": 136926,
+   "line_ha": 31596,
+   "email": 45700,
+   "signups": 989,
+   "sms": 30064,
+   "sms_signups": 274,
+   "popup_impr": 28434,
+   "signup_import": false,
+   "amazon": 102544,
+   "meta": 49917,
+   "google": 24156,
+   "amz_ads": 22558,
+   "ddo": 38878,
+   "tgt": {
+    "shop": 183678,
+    "amz": 102544,
+    "ddo": 38878,
+    "total": 325099,
+    "cogs": 70945,
+    "ad": 102152,
+    "other_sma": 95831,
+    "payroll": 47166,
+    "ga": 26962,
+    "other": 6263,
+    "ni": -24218
+   },
+   "brand_clicks": 1158,
+   "brand_impr": 8979,
+   "brand_days": 30,
+   "amz_brand": 2076,
+   "partial": false
+  },
+  {
+   "month": "2025-10",
+   "d2c": 212812,
+   "orders": 782,
+   "sessions": 50147,
+   "aov": 272.1381074168798,
+   "cr": 0.013320836739984446,
+   "seg": {
+    "P": {
+     "ses": 16298,
+     "conv": 290
+    },
+    "C": {
+     "ses": 7161,
+     "conv": 74
+    },
+    "H": {
+     "ses": 10845,
+     "conv": 197
+    },
+    "L": {
+     "ses": 14330,
+     "conv": 54
+    },
+    "B": {
+     "ses": 875,
+     "conv": 0
+    }
+   },
+   "brand": 35473,
+   "line_in": 155525,
+   "line_ha": 45238,
+   "email": 47438,
+   "signups": 1630,
+   "sms": 34013,
+   "sms_signups": 335,
+   "popup_impr": 34975,
+   "signup_import": false,
+   "amazon": 129594,
+   "meta": 69789,
+   "google": 28689,
+   "amz_ads": 25304,
+   "ddo": 29009,
+   "tgt": {
+    "shop": 218447,
+    "amz": 129594,
+    "ddo": 29009,
+    "total": 377050,
+    "cogs": 86896,
+    "ad": 125429,
+    "other_sma": 78462,
+    "payroll": 46177,
+    "ga": 30494,
+    "other": 6035,
+    "ni": 3556
+   },
+   "brand_clicks": 1425,
+   "brand_impr": 11587,
+   "brand_days": 31,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2025-11",
+   "d2c": 471843,
+   "orders": 1446,
+   "sessions": 88977,
+   "aov": 326.3091286307054,
+   "cr": 0.01464423390314351,
+   "seg": {
+    "P": {
+     "ses": 39114,
+     "conv": 581
+    },
+    "C": {
+     "ses": 13203,
+     "conv": 110
+    },
+    "H": {
+     "ses": 13210,
+     "conv": 398
+    },
+    "L": {
+     "ses": 21296,
+     "conv": 114
+    },
+    "B": {
+     "ses": 743,
+     "conv": 2
+    }
+   },
+   "brand": 55556,
+   "line_in": 382437,
+   "line_ha": 66692,
+   "email": 83475,
+   "signups": 2136,
+   "sms": 54728,
+   "sms_signups": 609,
+   "popup_impr": 49198,
+   "signup_import": false,
+   "amazon": 154801,
+   "meta": 191070,
+   "google": 32541,
+   "amz_ads": 27745,
+   "ddo": 34888,
+   "tgt": {
+    "shop": 480360,
+    "amz": 154801,
+    "ddo": 34888,
+    "total": 670049,
+    "cogs": 149578,
+    "ad": 244208,
+    "other_sma": 68915,
+    "payroll": 46318,
+    "ga": 35523,
+    "other": 5955,
+    "ni": 119551
+   },
+   "brand_clicks": 1830,
+   "brand_impr": 12582,
+   "brand_days": 30,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2025-12",
+   "d2c": 336070,
+   "orders": 1148,
+   "sessions": 62243,
+   "aov": 292.7439024390244,
+   "cr": 0.01619459216297415,
+   "seg": {
+    "P": {
+     "ses": 16709,
+     "conv": 347
+    },
+    "C": {
+     "ses": 9419,
+     "conv": 100
+    },
+    "H": {
+     "ses": 12321,
+     "conv": 338
+    },
+    "L": {
+     "ses": 22352,
+     "conv": 132
+    },
+    "B": {
+     "ses": 650,
+     "conv": 1
+    }
+   },
+   "brand": 39623,
+   "line_in": 269787,
+   "line_ha": 47925,
+   "email": 49315,
+   "signups": 2198,
+   "sms": 44522,
+   "sms_signups": 408,
+   "popup_impr": 35523,
+   "signup_import": false,
+   "amazon": 177967,
+   "meta": 111908,
+   "google": 26286,
+   "amz_ads": 36095,
+   "ddo": 44424,
+   "tgt": {
+    "shop": 343122,
+    "amz": 177967,
+    "ddo": 44424,
+    "total": 565513,
+    "cogs": 127121,
+    "ad": 206422,
+    "other_sma": 90920,
+    "payroll": 46516,
+    "ga": 35303,
+    "other": 6156,
+    "ni": 53075
+   },
+   "brand_clicks": 2323,
+   "brand_impr": 14881,
+   "brand_days": 31,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2026-01",
+   "d2c": 173786,
+   "orders": 620,
+   "sessions": 32896,
+   "aov": 280.3,
+   "cr": 0.015442607003891051,
+   "seg": {
+    "P": {
+     "ses": 8122,
+     "conv": 182
+    },
+    "C": {
+     "ses": 2901,
+     "conv": 43
+    },
+    "H": {
+     "ses": 9792,
+     "conv": 175
+    },
+    "L": {
+     "ses": 10713,
+     "conv": 70
+    },
+    "B": {
+     "ses": 649,
+     "conv": 0
+    }
+   },
+   "brand": 21928,
+   "line_in": 125897,
+   "line_ha": 36549,
+   "email": 26895,
+   "signups": 1222,
+   "sms": 25805,
+   "sms_signups": 301,
+   "popup_impr": 30617,
+   "signup_import": false,
+   "amazon": 73961,
+   "meta": 51969,
+   "google": 20000,
+   "amz_ads": 22921,
+   "ddo": 41780,
+   "tgt": {
+    "shop": 178106,
+    "amz": 73961,
+    "ddo": 41780,
+    "total": 293846,
+    "cogs": 78066,
+    "ad": 74033,
+    "other_sma": 51783,
+    "payroll": 44021,
+    "ga": 33146,
+    "other": 5814,
+    "ni": 6984
+   },
+   "brand_clicks": 1893,
+   "brand_impr": 10657,
+   "brand_days": 31,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2026-02",
+   "d2c": 158287,
+   "orders": 552,
+   "sessions": 30025,
+   "aov": 286.7518115942029,
+   "cr": 0.01568692756036636,
+   "seg": {
+    "P": {
+     "ses": 7654,
+     "conv": 179
+    },
+    "C": {
+     "ses": 3495,
+     "conv": 48
+    },
+    "H": {
+     "ses": 9675,
+     "conv": 146
+    },
+    "L": {
+     "ses": 7963,
+     "conv": 54
+    },
+    "B": {
+     "ses": 628,
+     "conv": 0
+    }
+   },
+   "brand": 20285,
+   "line_in": 113943,
+   "line_ha": 33959,
+   "email": 39387,
+   "signups": 942,
+   "sms": 27860,
+   "sms_signups": 255,
+   "popup_impr": 24561,
+   "signup_import": false,
+   "amazon": 93328,
+   "meta": 45468,
+   "google": 17669,
+   "amz_ads": 14998,
+   "ddo": 34636,
+   "tgt": {
+    "shop": 162782,
+    "amz": 93328,
+    "ddo": 34636,
+    "total": 290746,
+    "cogs": 60829,
+    "ad": 71863,
+    "other_sma": 61027,
+    "payroll": 53252,
+    "ga": 31509,
+    "other": 5767,
+    "ni": 6499
+   },
+   "brand_clicks": 1583,
+   "brand_impr": 8261,
+   "brand_days": 28,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2026-03",
+   "d2c": 159311,
+   "orders": 632,
+   "sessions": 32858,
+   "aov": 252.0743670886076,
+   "cr": 0.01719520360338426,
+   "seg": {
+    "P": {
+     "ses": 11063,
+     "conv": 268
+    },
+    "C": {
+     "ses": 2530,
+     "conv": 46
+    },
+    "H": {
+     "ses": 11601,
+     "conv": 147
+    },
+    "L": {
+     "ses": 5957,
+     "conv": 56
+    },
+    "B": {
+     "ses": 498,
+     "conv": 1
+    }
+   },
+   "brand": 23327,
+   "line_in": 101238,
+   "line_ha": 47819,
+   "email": 35356,
+   "signups": 2073,
+   "sms": 27270,
+   "sms_signups": 386,
+   "popup_impr": 29009,
+   "signup_import": false,
+   "amazon": 143889,
+   "meta": 53773,
+   "google": 15475,
+   "amz_ads": 20127,
+   "ddo": 29588,
+   "tgt": {
+    "shop": 165275,
+    "amz": 143889,
+    "ddo": 29588,
+    "total": 338753,
+    "cogs": 67653,
+    "ad": 91377,
+    "other_sma": 70960,
+    "payroll": 45748,
+    "ga": 25463,
+    "other": 6156,
+    "ni": 31395
+   },
+   "brand_clicks": 1611,
+   "brand_impr": 8638,
+   "brand_days": 31,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2026-04",
+   "d2c": 151829,
+   "orders": 674,
+   "sessions": 31160,
+   "aov": 225.26557863501483,
+   "cr": 0.017586649550706032,
+   "seg": {
+    "P": {
+     "ses": 10242,
+     "conv": 278
+    },
+    "C": {
+     "ses": 2561,
+     "conv": 40
+    },
+    "H": {
+     "ses": 10989,
+     "conv": 146
+    },
+    "L": {
+     "ses": 5128,
+     "conv": 51
+    },
+    "B": {
+     "ses": 1388,
+     "conv": 0
+    }
+   },
+   "brand": 21498,
+   "line_in": 95391,
+   "line_ha": 46049,
+   "email": 32324,
+   "signups": 1650,
+   "sms": 18221,
+   "sms_signups": 324,
+   "popup_impr": 26564,
+   "signup_import": false,
+   "amazon": 151313,
+   "meta": 38378,
+   "google": 12607,
+   "amz_ads": 20141,
+   "ddo": 32593,
+   "tgt": {
+    "shop": 158267,
+    "amz": 151313,
+    "ddo": 32593,
+    "total": 342174,
+    "cogs": 69142,
+    "ad": 74891,
+    "other_sma": 98755,
+    "payroll": 45748,
+    "ga": 24978,
+    "other": 5966,
+    "ni": 22694
+   },
+   "brand_clicks": 1784,
+   "brand_impr": 10648,
+   "brand_days": 30,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2026-05",
+   "d2c": 202864,
+   "orders": 819,
+   "sessions": 34228,
+   "aov": 247.6971916971917,
+   "cr": 0.019107163725604767,
+   "seg": {
+    "P": {
+     "ses": 11211,
+     "conv": 294
+    },
+    "C": {
+     "ses": 3287,
+     "conv": 92
+    },
+    "H": {
+     "ses": 10175,
+     "conv": 190
+    },
+    "L": {
+     "ses": 4227,
+     "conv": 28
+    },
+    "B": {
+     "ses": 4352,
+     "conv": 6
+    }
+   },
+   "brand": 21955,
+   "line_in": 138827,
+   "line_ha": 52730,
+   "email": 48403,
+   "signups": 1357,
+   "sms": 27116,
+   "sms_signups": 256,
+   "popup_impr": 20028,
+   "signup_import": false,
+   "amazon": 139853,
+   "meta": 42472,
+   "google": 13870,
+   "amz_ads": 19723,
+   "ddo": 32030,
+   "tgt": {
+    "shop": 209508,
+    "amz": 139853,
+    "ddo": 32030,
+    "total": 381391,
+    "cogs": 80042,
+    "ad": 72945,
+    "other_sma": 71755,
+    "payroll": 45744,
+    "ga": 35787,
+    "other": 6006,
+    "ni": 69111
+   },
+   "brand_clicks": 1444,
+   "brand_impr": 8026,
+   "brand_days": 31,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2026-06",
+   "d2c": 140260,
+   "orders": 563,
+   "sessions": 32812,
+   "aov": 249.1296625222025,
+   "cr": 0.015085944166768256,
+   "seg": {
+    "P": {
+     "ses": 11417,
+     "conv": 262
+    },
+    "C": {
+     "ses": 2685,
+     "conv": 68
+    },
+    "H": {
+     "ses": 5381,
+     "conv": 94
+    },
+    "L": {
+     "ses": 4893,
+     "conv": 40
+    },
+    "B": {
+     "ses": 7113,
+     "conv": 3
+    }
+   },
+   "brand": 16858,
+   "line_in": 98109,
+   "line_ha": 33591,
+   "email": 30171,
+   "signups": 918,
+   "sms": 22942,
+   "sms_signups": 217,
+   "popup_impr": 17499,
+   "signup_import": false,
+   "amazon": 162734,
+   "meta": 31562,
+   "google": 15040,
+   "amz_ads": 23155,
+   "ddo": 23571,
+   "tgt": {
+    "shop": 145160,
+    "amz": 162734,
+    "ddo": 23571,
+    "total": 331465,
+    "cogs": 72272,
+    "ad": 72910,
+    "other_sma": 73961,
+    "payroll": 45718,
+    "ga": 34783,
+    "other": 5917,
+    "ni": 25903
+   },
+   "brand_clicks": 1379,
+   "brand_impr": 7463,
+   "brand_days": 30,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2026-07",
+   "d2c": 108885,
+   "orders": 457,
+   "sessions": 38971,
+   "aov": 238.26039387308535,
+   "cr": 0.009956121218341845,
+   "seg": {
+    "P": {
+     "ses": 11759,
+     "conv": 212
+    },
+    "C": {
+     "ses": 2745,
+     "conv": 28
+    },
+    "H": {
+     "ses": 4293,
+     "conv": 65
+    },
+    "L": {
+     "ses": 6236,
+     "conv": 53
+    },
+    "B": {
+     "ses": 13238,
+     "conv": 11
+    }
+   },
+   "brand": 16338,
+   "line_in": 69383,
+   "line_ha": 33572,
+   "email": 15323,
+   "signups": 1043,
+   "sms": 13274,
+   "sms_signups": 216,
+   "popup_impr": 21860,
+   "signup_import": false,
+   "amazon": 118167,
+   "meta": 26605,
+   "google": 16263,
+   "amz_ads": 17901,
+   "ddo": 53814,
+   "tgt": {
+    "shop": 113005,
+    "amz": 118167,
+    "ddo": 53814,
+    "total": 284987,
+    "cogs": 60069,
+    "ad": 59898,
+    "other_sma": 72225,
+    "payroll": 45796,
+    "ga": 32178,
+    "other": 5550,
+    "ni": 9271
+   },
+   "brand_clicks": 1208,
+   "brand_impr": 7081,
+   "brand_days": 31,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2026-08",
+   "d2c": 110447,
+   "orders": 480,
+   "sessions": 36623,
+   "aov": 230.09791666666666,
+   "cr": 0.010949403380389373,
+   "seg": {
+    "P": {
+     "ses": 11564,
+     "conv": 230
+    },
+    "C": {
+     "ses": 2572,
+     "conv": 38
+    },
+    "H": {
+     "ses": 4626,
+     "conv": 68
+    },
+    "L": {
+     "ses": 5647,
+     "conv": 27
+    },
+    "B": {
+     "ses": 11345,
+     "conv": 2
+    }
+   },
+   "brand": 17266,
+   "line_in": 71281,
+   "line_ha": 32124,
+   "email": 21263,
+   "signups": 833,
+   "sms": 15238,
+   "sms_signups": 166,
+   "popup_impr": 17097,
+   "signup_import": false,
+   "amazon": 125055,
+   "meta": 35352,
+   "google": 17118,
+   "amz_ads": 21491,
+   "ddo": 22454,
+   "tgt": {
+    "shop": 114378,
+    "amz": 125055,
+    "ddo": 22454,
+    "total": 261887,
+    "cogs": 52372,
+    "ad": 74727,
+    "other_sma": 54470,
+    "payroll": 47396,
+    "ga": 19025,
+    "other": 5252,
+    "ni": 8645
+   },
+   "brand_clicks": 933,
+   "brand_impr": 6966,
+   "brand_days": 31,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2026-09",
+   "d2c": 120138,
+   "orders": 495,
+   "sessions": 36968,
+   "aov": 242.7030303030303,
+   "cr": 0.011225925124431942,
+   "seg": {
+    "P": {
+     "ses": 12178,
+     "conv": 257
+    },
+    "C": {
+     "ses": 3133,
+     "conv": 32
+    },
+    "H": {
+     "ses": 4651,
+     "conv": 62
+    },
+    "L": {
+     "ses": 4180,
+     "conv": 31
+    },
+    "B": {
+     "ses": 11978,
+     "conv": 6
+    }
+   },
+   "brand": 16662,
+   "line_in": 82549,
+   "line_ha": 31817,
+   "email": 13496,
+   "signups": 824,
+   "sms": 7863,
+   "sms_signups": 147,
+   "popup_impr": 13089,
+   "signup_import": false,
+   "amazon": 104014,
+   "meta": 41706,
+   "google": 14899,
+   "amz_ads": 20417,
+   "ddo": 40178,
+   "tgt": {
+    "shop": 124393,
+    "amz": 104014,
+    "ddo": 40178,
+    "total": 268586,
+    "cogs": 67025,
+    "ad": 76665,
+    "other_sma": 63377,
+    "payroll": 38296,
+    "ga": 24680,
+    "other": 4811,
+    "ni": -6268
+   },
+   "brand_clicks": 1128,
+   "brand_impr": 7166,
+   "brand_days": 30,
+   "amz_brand": null,
+   "partial": false
+  },
+  {
+   "month": "2026-10",
+   "d2c": 59879,
+   "orders": 258,
+   "sessions": 22073,
+   "aov": 232.0891472868217,
+   "cr": 0.009785711049698727,
+   "seg": {
+    "P": {
+     "ses": 6326,
+     "conv": 105
+    },
+    "C": {
+     "ses": 1544,
+     "conv": 21
+    },
+    "H": {
+     "ses": 2237,
+     "conv": 54
+    },
+    "L": {
+     "ses": 3777,
+     "conv": 19
+    },
+    "B": {
+     "ses": 7584,
+     "conv": 2
+    }
+   },
+   "brand": 9845,
+   "line_in": 42479,
+   "line_ha": 15424,
+   "email": 11361,
+   "signups": 462,
+   "sms": 10059,
+   "sms_signups": 129,
+   "popup_impr": 10826,
+   "signup_import": false,
+   "amazon": null,
+   "meta": null,
+   "google": null,
+   "amz_ads": null,
+   "ddo": null,
+   "tgt": {
+    "shop": null,
+    "amz": null,
+    "ddo": null,
+    "total": null,
+    "cogs": null,
+    "ad": null,
+    "other_sma": null,
+    "payroll": null,
+    "ga": null,
+    "other": null,
+    "ni": null
+   },
+   "brand_clicks": 512,
+   "brand_impr": 3045,
+   "brand_days": 14,
+   "amz_brand": null,
+   "partial": true
+  }
+ ],
+ "fut": [
+  {
+   "month": "2026-10",
+   "seg": {
+    "P": {
+     "ses": 18052,
+     "base": 15834.337101352176,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 4312,
+     "base": 3782.2113312989,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 6904,
+     "base": 6055.746610646547,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 8070,
+     "base": 7078.769126210501,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 1232,
+     "base": 1080.733701771798,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9914858459297793,
+   "s_ord": 0.9420325625022912,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 221.07244948341864,
+   "orders": 580.2073639253106,
+   "d2c": 128267.86315128572,
+   "ha_share": 0.3590289000178876,
+   "cov": 0.9414238344420437,
+   "signups": 841.2493238246078,
+   "email": 29375.00184369258,
+   "sms": 11906.001095148833,
+   "sms_signups": 283.432242633063,
+   "amazon": 126021.09562462132,
+   "meta": 45333.56455652592,
+   "google": 14714.452741734754,
+   "amz_ads": 23633.859066432233,
+   "ddo": 34516,
+   "brand_clicks": 1013.8553858400035,
+   "fixed": 136661,
+   "band": 0.20390641119668884,
+   "nowcast": true
+  },
+  {
+   "month": "2026-11",
+   "seg": {
+    "P": {
+     "ses": 29197,
+     "base": 15712.950899278412,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 6974,
+     "base": 3753.216857705969,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 11166,
+     "base": 6009.323190639613,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 13053,
+     "base": 7024.503204366869,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 1993,
+     "base": 1072.448785347984,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9838851045487567,
+   "s_ord": 2.073790003811814,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 247.74883123531046,
+   "orders": 1313.4824491440154,
+   "d2c": 325413.74162352295,
+   "ha_share": 0.2721687128865365,
+   "cov": 0.9414238344420437,
+   "signups": 1167.407496546637,
+   "email": 56894.177136965656,
+   "sms": 15759.105073933177,
+   "sms_signups": 502.09710589062183,
+   "amazon": 164831.61522477237,
+   "meta": 92453.35269906605,
+   "google": 24425.990262150248,
+   "amz_ads": 23672.082663010468,
+   "ddo": 34516,
+   "brand_clicks": 1320.6723793168842,
+   "fixed": 159761,
+   "band": 0.20390641119668884
+  },
+  {
+   "month": "2026-12",
+   "seg": {
+    "P": {
+     "ses": 24857,
+     "base": 15604.499139653331,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 5937,
+     "base": 3727.3119226570457,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 9506,
+     "base": 5967.846470044082,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 11112,
+     "base": 6976.019648484275,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 1697,
+     "base": 1065.0466774546724,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9770942686617738,
+   "s_ord": 1.8050614997970822,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 246.4691796986269,
+   "orders": 1136.3752946532989,
+   "d2c": 280081.486702984,
+   "ha_share": 0.2759060094630549,
+   "cov": 0.9414238344420437,
+   "signups": 1172.0889768140503,
+   "email": 41939.74821643482,
+   "sms": 14486.950932814141,
+   "sms_signups": 361.9438539165939,
+   "amazon": 180249.07949622523,
+   "meta": 77336.87459890517,
+   "google": 22230.67306769963,
+   "amz_ads": 30159.9951222756,
+   "ddo": 34516,
+   "brand_clicks": 1788.161551857961,
+   "fixed": 157761,
+   "band": 0.20390641119668884
+  },
+  {
+   "month": "2027-01",
+   "seg": {
+    "P": {
+     "ses": 13540,
+     "base": 15507.532705863081,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 3234,
+     "base": 3704.1503881835997,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 5178,
+     "base": 5930.762242961305,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 6053,
+     "base": 6932.670628351659,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 924,
+     "base": 1058.4284722044636,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9710226001089356,
+   "s_ord": 0.9156457761870237,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 222.24427443613015,
+   "orders": 576.4798090752988,
+   "d2c": 128119.33689501863,
+   "ha_share": 0.3547754864549334,
+   "cov": 0.9414238344420437,
+   "signups": 706.9235314495436,
+   "email": 20910.158866021193,
+   "sms": 10783.07193246596,
+   "sms_signups": 284.60786370538136,
+   "amazon": 74378.02050254653,
+   "meta": 36285.39275229178,
+   "google": 15508.263575717247,
+   "amz_ads": 20387.70935318437,
+   "ddo": 34516,
+   "brand_clicks": 1370.0506903568935,
+   "fixed": 134764,
+   "band": 0.267777353105072
+  },
+  {
+   "month": "2027-02",
+   "seg": {
+    "P": {
+     "ses": 11946,
+     "base": 15420.778202504,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 2854,
+     "base": 3683.428089324754,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 4569,
+     "base": 5897.583507008398,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 5341,
+     "base": 6893.886870243746,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 815,
+     "base": 1052.5072571286123,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9655903637228698,
+   "s_ord": 0.7743295459228928,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 222.38197082239492,
+   "orders": 485.9419117384411,
+   "d2c": 108064.72003759681,
+   "ha_share": 0.3542786282555337,
+   "cov": 0.9414238344420437,
+   "signups": 498.3237588433803,
+   "email": 26539.9178640922,
+   "sms": 9854.350011761484,
+   "sms_signups": 207.96153806855708,
+   "amazon": 88649.65963346047,
+   "meta": 29588.095289451394,
+   "google": 13980.153207860703,
+   "amz_ads": 13920.18726454254,
+   "ddo": 34516,
+   "brand_clicks": 1161.118621068343,
+   "fixed": 151555,
+   "band": 0.2791471714354763
+  },
+  {
+   "month": "2027-03",
+   "seg": {
+    "P": {
+     "ses": 13013,
+     "base": 15343.114188156456,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 3108,
+     "base": 3664.8771570552653,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 4977,
+     "base": 5867.881373686114,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 5817,
+     "base": 6859.167031739486,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 888,
+     "base": 1047.2064910035115,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9607273391156003,
+   "s_ord": 0.8051808567133676,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 199.94022520060508,
+   "orders": 502.50577887871106,
+   "d2c": 100471.11859361496,
+   "ha_share": 0.44428991251064537,
+   "cov": 0.9414238344420437,
+   "signups": 646.4827042236554,
+   "email": 21875.90197426864,
+   "sms": 9797.638700120857,
+   "sms_signups": 248.6169754154515,
+   "amazon": 127720.44368587194,
+   "meta": 30209.761319177614,
+   "google": 13995.14049005292,
+   "amz_ads": 18916.155634856896,
+   "ddo": 34516,
+   "brand_clicks": 1183.0106308968373,
+   "fixed": 148327,
+   "band": 0.2791471714354763
+  },
+  {
+   "month": "2027-04",
+   "seg": {
+    "P": {
+     "ses": 12874,
+     "base": 15273.551057047796,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 3075,
+     "base": 3648.2612127921275,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 4923,
+     "base": 5841.27737424232,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 5755,
+     "base": 6828.068707782971,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 879,
+     "base": 1042.4586307231161,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9563715609449496,
+   "s_ord": 0.7484473807746933,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 199.83874067022467,
+   "orders": 465.5259772679485,
+   "d2c": 93030.12504650246,
+   "ha_share": 0.44474287272727653,
+   "cov": 0.9414238344420437,
+   "signups": 763.7534301154477,
+   "email": 19756.374267645806,
+   "sms": 9337.589103946286,
+   "sms_signups": 89.54913966725749,
+   "amazon": 89696.97475629253,
+   "meta": 27395.85535517386,
+   "google": 13274.781375428342,
+   "amz_ads": 13907.048079519202,
+   "ddo": 34516,
+   "brand_clicks": 908.0571078200828,
+   "fixed": 175447,
+   "band": 0.3823624189654091
+  },
+  {
+   "month": "2027-05",
+   "seg": {
+    "P": {
+     "ses": 14245,
+     "base": 15211.213936321117,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 3403,
+     "base": 3633.371283212893,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 5448,
+     "base": 5817.436918835707,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 6368,
+     "base": 6800.200784876417,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 972,
+     "base": 1038.2039639941258,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9524682480066871,
+   "s_ord": 0.8774419137156886,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 211.48711749055727,
+   "orders": 542.3092664130822,
+   "d2c": 114691.42354212144,
+   "ha_share": 0.3955907946586161,
+   "cov": 0.9414238344420437,
+   "signups": 1455.7886168625234,
+   "email": 20700.52366753094,
+   "sms": 9775.279612508073,
+   "sms_signups": 149.0374814352286,
+   "amazon": 88532.4598605498,
+   "meta": 31954.611457833587,
+   "google": 14154.829956791371,
+   "amz_ads": 21014.650338673902,
+   "ddo": 34516,
+   "brand_clicks": 963.4159614323762,
+   "fixed": 159292,
+   "band": 0.3823624189654091
+  },
+  {
+   "month": "2027-06",
+   "seg": {
+    "P": {
+     "ses": 13615,
+     "base": 15155.32808750065,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 3252,
+     "base": 3620.022313229806,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 5207,
+     "base": 5796.063713414385,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 6086,
+     "base": 6775.216914778778,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 929,
+     "base": 1034.3896129489376,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9489688891299246,
+   "s_ord": 0.8322923739213816,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 205.16259992819127,
+   "orders": 512.9151622780479,
+   "d2c": 105231.00823555444,
+   "ha_share": 0.42158552792378207,
+   "cov": 0.9414238344420437,
+   "signups": 606.1249885827342,
+   "email": 17540.601615345247,
+   "sms": 9425.517853057894,
+   "sms_signups": 207.8229906834484,
+   "amazon": 104829.9252826854,
+   "meta": 29724.203242205425,
+   "google": 13604.661677702135,
+   "amz_ads": 18202.46774610073,
+   "ddo": 34516,
+   "brand_clicks": 805.7278051344379,
+   "fixed": 160379,
+   "band": 0.3823624189654091
+  },
+  {
+   "month": "2027-07",
+   "seg": {
+    "P": {
+     "ses": 11982,
+     "base": 15105.206397148626,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 2862,
+     "base": 3608.05017799106,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 4583,
+     "base": 5776.8949755931335,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 5357,
+     "base": 6752.809922181211,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 818,
+     "base": 1030.968680351224,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9458304598897221,
+   "s_ord": 0.7992048970617325,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 217.43965188156378,
+   "orders": 491.20872162082077,
+   "d2c": 106808.25343041924,
+   "ha_share": 0.3725063556060868,
+   "cov": 0.9414238344420437,
+   "signups": 542.2204448073213,
+   "email": 15860.897008956525,
+   "sms": 9146.708389514557,
+   "sms_signups": 168.37099873855703,
+   "amazon": 143332.06549134798,
+   "meta": 28060.20985595478,
+   "google": 13173.439492225663,
+   "amz_ads": 24605.736189864932,
+   "ddo": 34516,
+   "brand_clicks": 954.4709552247006,
+   "fixed": 155749,
+   "band": 0.45
+  },
+  {
+   "month": "2027-08",
+   "seg": {
+    "P": {
+     "ses": 11483,
+     "base": 15060.2386183382,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 2743,
+     "base": 3597.309113084364,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 4392,
+     "base": 5759.697320119682,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 5133,
+     "base": 6732.7069950880195,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 784,
+     "base": 1027.899515299149,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9430147489491214,
+   "s_ord": 0.7596664590087688,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 209.0629459627234,
+   "orders": 465.89912374470043,
+   "d2c": 97402.24333151849,
+   "ha_share": 0.4053686236360845,
+   "cov": 0.9414238344420437,
+   "signups": 791.3877909860537,
+   "email": 16605.353382609977,
+   "sms": 8852.770791552754,
+   "sms_signups": 169.39433744467902,
+   "amazon": 106648.17027720173,
+   "meta": 26237.523357305017,
+   "google": 12706.833585414335,
+   "amz_ads": 15211.644535460715,
+   "ddo": 34516,
+   "brand_clicks": 965.9340509458247,
+   "fixed": 126143,
+   "band": 0.45
+  },
+  {
+   "month": "2027-09",
+   "seg": {
+    "P": {
+     "ses": 10207,
+     "base": 15019.882085766605,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 2438,
+     "base": 3587.6694967362196,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 3904,
+     "base": 5744.263207925809,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 4563,
+     "base": 6714.665533991153,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 697,
+     "base": 1025.1450795082721,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9404877766749159,
+   "s_ord": 0.6669067305832634,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 209.01366779582284,
+   "orders": 408.82205432133674,
+   "d2c": 85449.39704952571,
+   "ha_share": 0.40556973789659345,
+   "cov": 0.9414238344420437,
+   "signups": 721.6371031475592,
+   "email": 18507.00643912527,
+   "sms": 8312.944451646516,
+   "sms_signups": 185.55366308578917,
+   "amazon": 101594.0791987281,
+   "meta": 22549.81127054632,
+   "google": 11794.577233852156,
+   "amz_ads": 15427.590120596331,
+   "ddo": 34516,
+   "brand_clicks": 746.5330360284935,
+   "fixed": 131164,
+   "band": 0.45
+  },
+  {
+   "month": "2027-10",
+   "seg": {
+    "P": {
+     "ses": 17082,
+     "base": 14983.653676433543,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 4080,
+     "base": 3579.015929528614,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 6533,
+     "base": 5730.407871537331,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 7636,
+     "base": 6698.469557876896,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 1166,
+     "base": 1022.6723986074417,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9382192917459691,
+   "s_ord": 0.9420325625022912,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 198.0062864740658,
+   "orders": 573.0999482725304,
+   "d2c": 113477.39253592293,
+   "ha_share": 0.4530016269016481,
+   "cov": 0.9414238344420437,
+   "signups": 666.7367211003757,
+   "email": 23763.21189736037,
+   "sms": 9436.165839049216,
+   "sms_signups": 226.9768550723278,
+   "amazon": 123297.72113623214,
+   "meta": 32372.347719224526,
+   "google": 13881.826879949773,
+   "amz_ads": 19006.746191460534,
+   "ddo": 34516,
+   "brand_clicks": 876.4790713938387,
+   "fixed": 136661,
+   "band": 0.45
+  },
+  {
+   "month": "2027-11",
+   "seg": {
+    "P": {
+     "ses": 27782,
+     "base": 14951.12282737998,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 6636,
+     "base": 3571.2455666065907,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 10625,
+     "base": 5717.966644750467,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 12420,
+     "base": 6683.926582793329,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 1896,
+     "base": 1020.452085581743,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9361823339506262,
+   "s_ord": 2.073790003811814,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 227.70999253587468,
+   "orders": 1250.1531575365386,
+   "d2c": 284672.36617134535,
+   "ha_share": 0.33551467265005364,
+   "cov": 0.9414238344420437,
+   "signups": 946.9982139368025,
+   "email": 47011.30801167387,
+   "sms": 12783.748950048766,
+   "sms_signups": 411.11829836341633,
+   "amazon": 165194.8065498439,
+   "meta": 74997.94213886753,
+   "google": 20389.03066416167,
+   "amz_ads": 22166.789753506273,
+   "ddo": 34516,
+   "brand_clicks": 1158.4680993021675,
+   "fixed": 159761,
+   "band": 0.45
+  },
+  {
+   "month": "2027-12",
+   "seg": {
+    "P": {
+     "ses": 23770,
+     "base": 14921.9054540109,
+     "cr": 0.02019948485337445
+    },
+    "C": {
+     "ses": 5678,
+     "base": 3564.266665000543,
+     "cr": 0.012910292322057027
+    },
+    "H": {
+     "ses": 9091,
+     "base": 5706.792636731104,
+     "cr": 0.018836173634935244
+    },
+    "L": {
+     "ses": 10626,
+     "base": 6670.86490302548,
+     "cr": 0.006287525902835585
+    },
+    "B": {
+     "ses": 12187,
+     "base": 12187.0,
+     "cr": 0.0005986119684980452
+    },
+    "O": {
+     "ses": 1622,
+     "base": 1018.4579256825882,
+     "cr": 0.050881520051155565
+    }
+   },
+   "growth": 0.9343528533752622,
+   "s_ord": 1.8050614997970822,
+   "o_level": 640.1713729766128,
+   "k": 1.0,
+   "aov": 228.42040462241178,
+   "orders": 1086.9855078412666,
+   "d2c": 248289.66951979985,
+   "ha_share": 0.3330789186152286,
+   "cov": 0.9414238344420437,
+   "signups": 970.9002108955873,
+   "email": 35322.129768487146,
+   "sms": 12000.269599101184,
+   "sms_signups": 302.3447184665345,
+   "amazon": 180606.4862104347,
+   "meta": 64062.02032731416,
+   "google": 18894.81183344037,
+   "amz_ads": 28428.305052291653,
+   "ddo": 34516,
+   "brand_clicks": 1589.2303061900595,
+   "fixed": 157761,
+   "band": 0.45
+  }
+ ],
+ "s_ord": {
+  "1": 0.9156457761870237,
+  "2": 0.7743295459228928,
+  "3": 0.8051808567133676,
+  "4": 0.7484473807746933,
+  "5": 0.8774419137156886,
+  "6": 0.8322923739213816,
+  "7": 0.7992048970617325,
+  "8": 0.7596664590087688,
+  "9": 0.6669067305832634,
+  "10": 0.9420325625022912,
+  "11": 2.073790003811814,
+  "12": 1.8050614997970822
+ },
+ "goals": {
+  "2025-01": {
+   "shop": 526655.0,
+   "amz": 236141.0,
+   "ddo": 45735.0,
+   "ni": 271458.0
+  },
+  "2025-02": {
+   "shop": 468957.0,
+   "amz": 107534.0,
+   "ddo": 50000.0,
+   "ni": 106944.0
+  },
+  "2025-03": {
+   "shop": 282576.0,
+   "amz": 123434.0,
+   "ddo": 40000.0,
+   "ni": 98519.0
+  },
+  "2025-04": {
+   "shop": 262195.0,
+   "amz": 113454.0,
+   "ddo": 35000.0,
+   "ni": 7192.0
+  },
+  "2025-05": {
+   "shop": 283000.0,
+   "amz": 122514.0,
+   "ddo": 60000.0,
+   "ni": 37263.0
+  },
+  "2025-06": {
+   "shop": 323694.0,
+   "amz": 117600.0,
+   "ddo": 35000.0,
+   "ni": 38834.0
+  },
+  "2025-07": {
+   "shop": 307221.0,
+   "amz": 151920.0,
+   "ddo": 55000.0,
+   "ni": 46031.0
+  },
+  "2025-08": {
+   "shop": 298335.0,
+   "amz": 115710.0,
+   "ddo": 35000.0,
+   "ni": 10346.0
+  },
+  "2025-09": {
+   "shop": 201575.0,
+   "amz": 110866.0,
+   "ddo": 50000.0,
+   "ni": 7087.0
+  },
+  "2025-10": {
+   "shop": 372445.0,
+   "amz": 150013.0,
+   "ddo": 35000.0,
+   "ni": 43509.0
+  },
+  "2025-11": {
+   "shop": 810871.0,
+   "amz": 263340.0,
+   "ddo": 90000.0,
+   "ni": 273880.0
+  },
+  "2025-12": {
+   "shop": 635042.0,
+   "amz": 285600.0,
+   "ddo": 55000.0,
+   "ni": 209558.0
+  },
+  "2026-01": {
+   "shop": 185000.0,
+   "amz": 85000.0,
+   "ddo": 35000.0,
+   "ni": 344.0
+  },
+  "2026-02": {
+   "shop": 175000.0,
+   "amz": 85000.0,
+   "ddo": 35000.0,
+   "ni": 344.0
+  },
+  "2026-03": {
+   "shop": 175000.0,
+   "amz": 85000.0,
+   "ddo": 35000.0,
+   "ni": 344.0
+  },
+  "2026-04": {
+   "shop": 175000.0,
+   "amz": 85000.0,
+   "ddo": 35000.0,
+   "ni": 344.0
+  },
+  "2026-05": {
+   "shop": 175000.0,
+   "amz": 85000.0,
+   "ddo": 35000.0,
+   "ni": 344.0
+  },
+  "2026-06": {
+   "shop": 175000.0,
+   "amz": 85000.0,
+   "ddo": 35000.0,
+   "ni": 344.0
+  },
+  "2026-07": {
+   "shop": 180000.0,
+   "amz": 150000.0,
+   "ddo": 35000.0,
+   "ni": 16794.0
+  },
+  "2026-08": {
+   "shop": 175000.0,
+   "amz": 115000.0,
+   "ddo": 35000.0,
+   "ni": 6944.0
+  },
+  "2026-09": {
+   "shop": 175000.0,
+   "amz": 115000.0,
+   "ddo": 35000.0,
+   "ni": 6944.0
+  },
+  "2026-10": {
+   "shop": 200000.0,
+   "amz": 180000.0,
+   "ddo": 35000.0,
+   "ni": 31994.0
+  },
+  "2026-11": {
+   "shop": 400000.0,
+   "amz": 200000.0,
+   "ddo": 35000.0,
+   "ni": 122394.0
+  },
+  "2026-12": {
+   "shop": 325000.0,
+   "amz": 200000.0,
+   "ddo": 35000.0,
+   "ni": 90144.0
+  }
+ },
+ "pnl": {
+  "cogs_pct": 0.22037369336338325,
+  "ad_ratio": 1.0039023737492212,
+  "ddo_level": 34516,
+  "ddo_2026": [
+   41780,
+   34636,
+   29588,
+   32593,
+   32030,
+   23571,
+   53814,
+   22454,
+   40178
+  ]
+ },
+ "brand": {
+  "e_shop": 0.3517894190136314,
+  "e_amz": 0.6,
+  "slope": -0.02505070453152117,
+  "rogan": {
+   "clicks": {
+    "actual": 19384,
+    "baseline": 3841.0803324099725,
+    "excess": 15542.919667590028
+   },
+   "shop": {
+    "actual": 860865,
+    "baseline": 483414.79141672666,
+    "excess": 377450.20858327334
+   },
+   "amz": {
+    "actual": 399055,
+    "baseline": 227722.2927282091,
+    "excess": 171332.7072717909
+   },
+   "orders": {
+    "actual": 2445,
+    "baseline": 1836.5009925323757,
+    "excess": 608.4990074676243
+   },
+   "per_click": 35.307582332769954
+  },
+  "n_pairs": 19
+ },
+ "nowcast": {
+  "through": "2026-10-15",
+  "days": 15,
+  "share_left": 0.5161290322580645,
+  "mtd": {
+   "month": "2026-10",
+   "through": "2026-10-15",
+   "days": 15,
+   "shop": 60883,
+   "amazon": 62539,
+   "meta": 24252,
+   "google": 5957,
+   "amz_ads": 13081
+  },
+  "model_full": {
+   "d2c": 133798.13061378614,
+   "amazon": 122996.56027270379,
+   "meta": 40845.53132826896,
+   "google": 16967.564687111088,
+   "amz_ads": 20446.164441212448
+  }
+ },
+ "fixed": {
+  "2026-01": 134764,
+  "2026-02": 151555,
+  "2026-03": 148327,
+  "2026-04": 175447,
+  "2026-05": 159292,
+  "2026-06": 160379,
+  "2026-07": 155749,
+  "2026-08": 126143,
+  "2026-09": 131164,
+  "2026-10": 136661,
+  "2026-11": 159761,
+  "2026-12": 157761
+ },
+ "sheet_shop": {
+  "2026-01": 178114,
+  "2026-02": 162782,
+  "2026-03": 165254,
+  "2026-04": 158267,
+  "2026-05": 209508,
+  "2026-06": 145160,
+  "2026-07": 113005,
+  "2026-08": 114378,
+  "2026-09": 124292
+ },
+ "params": {
+  "phi": 0.9,
+  "k": 1.0,
+  "e_meta": 0.6908358907215426,
+  "e_email": 0.7109725434231325,
+  "e_sms": 0.8,
+  "email_incr": 0.6,
+  "amz_slope": 0.000420750697523106,
+  "meta_slope": -0.04,
+  "amz_beta": 1.0,
+  "meta_beta": 1.0763072114435963,
+  "cr_season": {
+   "1": 0.9156457761870237,
+   "2": 0.7743295459228928,
+   "3": 0.8051808567133676,
+   "4": 0.7484473807746933,
+   "5": 0.8774419137156886,
+   "6": 0.8322923739213816,
+   "7": 0.7992048970617325,
+   "8": 0.7596664590087688,
+   "9": 0.6669067305832634,
+   "10": 0.9420325625022912,
+   "11": 2.073790003811814,
+   "12": 1.8050614997970822
+  },
+  "aov_season": null
+ },
+ "backtest": {
+  "origins": [
+   {
+    "origin": "2025-06",
+    "rows": [
+     {
+      "month": "2025-07",
+      "actual": 175812,
+      "forecast": 243598,
+      "err": 0.3855567890353633
+     },
+     {
+      "month": "2025-08",
+      "actual": 178862,
+      "forecast": 196832,
+      "err": 0.10046868583812296
+     },
+     {
+      "month": "2025-09",
+      "actual": 179602,
+      "forecast": 170535,
+      "err": -0.05048448919555537
+     },
+     {
+      "month": "2025-10",
+      "actual": 212812,
+      "forecast": 248573,
+      "err": 0.16803803603607426
+     },
+     {
+      "month": "2025-11",
+      "actual": 471843,
+      "forecast": 695349,
+      "err": 0.47368659235507926
+     },
+     {
+      "month": "2025-12",
+      "actual": 336070,
+      "forecast": 589647,
+      "err": 0.7545347981057102
+     },
+     {
+      "month": "2026-01",
+      "actual": 173786,
+      "forecast": 253837,
+      "err": 0.46062720134370916
+     },
+     {
+      "month": "2026-02",
+      "actual": 158287,
+      "forecast": 212433,
+      "err": 0.34207676088255123
+     },
+     {
+      "month": "2026-03",
+      "actual": 159311,
+      "forecast": 162134,
+      "err": 0.017718099576191415
+     },
+     {
+      "month": "2026-04",
+      "actual": 151829,
+      "forecast": 193407,
+      "err": 0.2738473224145701
+     },
+     {
+      "month": "2026-05",
+      "actual": 202864,
+      "forecast": 239739,
+      "err": 0.18176997031442577
+     },
+     {
+      "month": "2026-06",
+      "actual": 140260,
+      "forecast": 201409,
+      "err": 0.43597185056122467
+     }
+    ],
+    "mape": 0.3037317163048815,
+    "bias": 0.2953176347722889
+   },
+   {
+    "origin": "2025-09",
+    "rows": [
+     {
+      "month": "2025-10",
+      "actual": 212812,
+      "forecast": 224789,
+      "err": 0.05628114549456176
+     },
+     {
+      "month": "2025-11",
+      "actual": 471843,
+      "forecast": 637096,
+      "err": 0.3502294700076205
+     },
+     {
+      "month": "2025-12",
+      "actual": 336070,
+      "forecast": 546495,
+      "err": 0.6261333035796386
+     },
+     {
+      "month": "2026-01",
+      "actual": 173786,
+      "forecast": 237655,
+      "err": 0.36751667017406975
+     },
+     {
+      "month": "2026-02",
+      "actual": 158287,
+      "forecast": 200718,
+      "err": 0.2680637170883964
+     },
+     {
+      "month": "2026-03",
+      "actual": 159311,
+      "forecast": 194265,
+      "err": 0.21941039834880516
+     },
+     {
+      "month": "2026-04",
+      "actual": 151829,
+      "forecast": 185669,
+      "err": 0.22288207756895795
+     },
+     {
+      "month": "2026-05",
+      "actual": 202864,
+      "forecast": 231747,
+      "err": 0.14237443865138744
+     },
+     {
+      "month": "2026-06",
+      "actual": 140260,
+      "forecast": 195870,
+      "err": 0.39647512633606996
+     },
+     {
+      "month": "2026-07",
+      "actual": 108885,
+      "forecast": 220174,
+      "err": 1.0220765979982311
+     },
+     {
+      "month": "2026-08",
+      "actual": 110447,
+      "forecast": 180189,
+      "err": 0.6314550196302575
+     },
+     {
+      "month": "2026-09",
+      "actual": 120138,
+      "forecast": 157911,
+      "err": 0.3144129203791943
+     }
+    ],
+    "mape": 0.3847759071047659,
+    "bias": 0.3847759071047659
+   },
+   {
+    "origin": "2025-12",
+    "rows": [
+     {
+      "month": "2026-01",
+      "actual": 173786,
+      "forecast": 209222,
+      "err": 0.20390641119668884
+     },
+     {
+      "month": "2026-02",
+      "actual": 158287,
+      "forecast": 151165,
+      "err": -0.044997139037756484
+     },
+     {
+      "month": "2026-03",
+      "actual": 159311,
+      "forecast": 143766,
+      "err": -0.09757782925571457
+     },
+     {
+      "month": "2026-04",
+      "actual": 151829,
+      "forecast": 146199,
+      "err": -0.03707952552833427
+     },
+     {
+      "month": "2026-05",
+      "actual": 202864,
+      "forecast": 173165,
+      "err": -0.14639831288535188
+     },
+     {
+      "month": "2026-06",
+      "actual": 140260,
+      "forecast": 162041,
+      "err": 0.15529363766858206
+     },
+     {
+      "month": "2026-07",
+      "actual": 108885,
+      "forecast": 150519,
+      "err": 0.3823624189654091
+     },
+     {
+      "month": "2026-08",
+      "actual": 110447,
+      "forecast": 133333,
+      "err": 0.20721178711037047
+     },
+     {
+      "month": "2026-09",
+      "actual": 120138,
+      "forecast": 112630,
+      "err": -0.06249674338110234
+     }
+    ],
+    "mape": 0.14859153389214555,
+    "bias": 0.062247189428087886
+   },
+   {
+    "origin": "2026-03",
+    "rows": [
+     {
+      "month": "2026-04",
+      "actual": 151829,
+      "forecast": 145174,
+      "err": -0.043835035615750084
+     },
+     {
+      "month": "2026-05",
+      "actual": 202864,
+      "forecast": 173353,
+      "err": -0.1454740438197364
+     },
+     {
+      "month": "2026-06",
+      "actual": 140260,
+      "forecast": 158590,
+      "err": 0.1306836486505234
+     },
+     {
+      "month": "2026-07",
+      "actual": 108885,
+      "forecast": 155890,
+      "err": 0.43169616841905234
+     },
+     {
+      "month": "2026-08",
+      "actual": 110447,
+      "forecast": 142502,
+      "err": 0.2902306257825562
+     },
+     {
+      "month": "2026-09",
+      "actual": 120138,
+      "forecast": 123603,
+      "err": 0.028837726092769245
+     }
+    ],
+    "mape": 0.17845954139673129,
+    "bias": 0.11535651491823579
+   },
+   {
+    "origin": "2026-06",
+    "rows": [
+     {
+      "month": "2026-07",
+      "actual": 108885,
+      "forecast": 162402,
+      "err": 0.49149920584364204
+     },
+     {
+      "month": "2026-08",
+      "actual": 110447,
+      "forecast": 145607,
+      "err": 0.31834381372199894
+     },
+     {
+      "month": "2026-09",
+      "actual": 120138,
+      "forecast": 125412,
+      "err": 0.04389568262774968
+     }
+    ],
+    "mape": 0.2845795673977969,
+    "bias": 0.2845795673977969
+   }
+  ],
+  "mape": 0.2743788389647347,
+  "bias": 0.22845536272423506,
+  "h_ape": [
+   0.20390641119668884,
+   0.1454740438197364,
+   0.09757782925571457,
+   0.267777353105072,
+   0.2791471714354763,
+   0.1873520180086936,
+   0.3823624189654091,
+   0.20721178711037047,
+   0.06249674338110234,
+   0.6479619602064006,
+   0.40661249497234164,
+   0.3751923854702095
+  ],
+  "snaive_mape": 0.6051225456074308
+ },
+ "flags": {
+  "rogan": [
+   "2025-01",
+   "2025-02"
+  ],
+  "blog_deindex": [
+   "2025-03",
+   "2025-04",
+   "2025-05",
+   "2025-06",
+   "2025-07",
+   "2025-08",
+   "2025-09",
+   "2025-10",
+   "2025-11",
+   "2025-12",
+   "2026-01",
+   "2026-02",
+   "2026-03",
+   "2026-04"
+  ],
+  "signup_imports": [
+   "2023-09",
+   "2024-05",
+   "2024-06",
+   "2024-08",
+   "2024-10"
+  ]
+ }
+}
