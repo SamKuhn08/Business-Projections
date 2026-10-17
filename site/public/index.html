@@ -532,7 +532,7 @@ function NY_LABEL(){ return String(+new Date().getFullYear() + 1); }
 function initAsk(){
   $('#ai_chips').innerHTML = CHIPS.map(c => `<span class="chip">${c}</span>`).join('');
   $('#ai_chips').onclick = e => { if (e.target.classList.contains('chip')) { $('#ai_q').value = e.target.textContent; ask(); } };
-  $('#ai_go').onclick = ask;
+  $('#ai_go').onclick = () => ask(false);
   $('#ai_q').addEventListener('keydown', e => { if (e.key === 'Enter') ask(); });
 }
 function aiContext(){
@@ -567,6 +567,7 @@ Model notes: Shopify revenue = orders x AOV. Orders follow a quality-weighted tr
 }
 let asking = false;
 async function ask(followup){
+  followup = followup === true;
   const q = $('#ai_q').value.trim(); if (!q || (asking && !followup)) return;
   asking = true; $('#ai_go').disabled = true;
   const out = $('#ai_ans'); out.className = 'answer on'; if (!followup) out.textContent = 'Thinking…';

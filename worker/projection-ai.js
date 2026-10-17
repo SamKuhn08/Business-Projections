@@ -39,51 +39,87 @@ You can also change what the dashboard shows:
 - "range": ["YYYY-MM","YYYY-MM"] to select the months the question is about (inclusive), else null.
 - "compare": one of "off","prev","ly","plan" to set the comparison, else null.
 - "levers": only when the user asks a what-if (e.g. "what if Meta spend rises 20%"), an object of lever percentages to set, keys from ${LEVERS.join(', ')}, values between -20 and 20 (blog: -100 to 100). Otherwise null.
+  Lever meanings: meta / google = ad spend change, brand = branded search volume, cr = Shopify conversion rate, aov = Shopify average order value, email / sms = email or SMS revenue, blog = organic blog traffic, amazon = Amazon revenue, ddo = D/D/O revenue.
+  ${followup ? '' : 'For ANY what-if you MUST return "levers" and must NOT estimate the impact yourself: the dashboard model computes it. Example: {"text":"Applying Meta +20% and recalculating.","range":["2027-01","2027-12"],"compare":null,"levers":{"meta":20}}. If the scenario lies outside the lever limits, use the nearest limit and say so.'}
 ${followup ? 'The levers you asked for have now been applied and the data below already reflects them. Answer the question with the new numbers and set "levers" to null.' : 'If you set "levers", the dashboard will apply them and ask you again with the recomputed numbers, so keep "text" to one short line in that case.'}
 Respond with STRICT JSON only, no code fences, exactly: {"text":"...","range":null,"compare":null,"levers":null}`;
 
-    const user = `${String(context).slice(0, 150000)}\n\nQuestion: ${String(question).slice(0, 2000)}`;
+    const ctx = String(context).slice(0, 150000);
+    const q = String(question).slice(0, 2000);
+    const user = `${ctx}\n\nQuestion: ${q}`;
 
     try {
-      let out, used, lastErr;
-      for (const m of MODELS) {
-        try {
-          out = await env.AI.run(m, { messages: [{ role: 'system', content: sys }, { role: 'user', content: user }], max_tokens: 2500, temperature: 0.1 });
-          used = m;
-          if (textOf(out)) break;
-        } catch (e) { lastErr = e; }
-      }
-      if (!out) throw lastErr || new Error('no model answered');
-      let raw = textOf(out);
-      let p;
-      if (raw && typeof raw === 'object') p = raw;
-      else {
-        raw = String(raw).trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
-        try { p = JSON.parse(raw); }
-        catch { const m = raw.match(/\{[\s\S]*\}/); try { p = m ? JSON.parse(m[0]) : { text: raw }; } catch { p = { text: raw }; } }
-      }
-      const ym = v => typeof v === 'string' && /^\d{4}-\d{2}$/.test(v);
-      const clean = {
-        text: typeof p.text === 'string' ? p.text : String(p.text ?? raw ?? ''),
-        range: Array.isArray(p.range) && p.range.length === 2 && p.range.every(ym) ? (p.range[0] <= p.range[1] ? p.range : [p.range[1], p.range[0]]) : null,
-        compare: ['off', 'prev', 'ly', 'plan'].includes(p.compare) ? p.compare : null,
-        levers: null,
-      };
-      if (!followup && p.levers && typeof p.levers === 'object') {
-        const l = {};
-        for (const k of LEVERS) {
-          const v = Number(p.levers[k]);
-          if (Number.isFinite(v) && v !== 0) l[k] = Math.max(k === 'blog' ? -100 : -20, Math.min(k === 'blog' ? 100 : 20, Math.round(v / 5) * 5));
+      let pp = {};
+      // Step 1 (first call only): a small planning call that only decides range / compare / levers.
+      // What-ifs return here so the dashboard recomputes and calls back with followup=true.
+      if (!followup) {
+        const head = ctx.split('\n').slice(0, 6).join('\n');
+        const plan = `Decide how an Iron Neck revenue dashboard should react to a question. Do NOT answer it.
+Dashboard context (first lines): ${head}
+Months run Jan 2023 to Dec 2027. Levers (percent changes to the projection): ${LEVERS.join(', ')}. meta / google = ad spend, brand = branded search volume, cr = Shopify conversion rate, aov = Shopify average order value, email / sms = email or SMS revenue, blog = organic blog traffic, amazon = Amazon revenue, ddo = D/D/O revenue. Limits -20..20 (blog -100..100).
+Return STRICT JSON only: {"whatif":true|false,"levers":{...}|null,"range":["YYYY-MM","YYYY-MM"]|null,"compare":"off"|"prev"|"ly"|"plan"|null}
+- whatif is true when the question asks what would happen if something changed (spend, conversion, AOV, traffic, channel revenue). Then levers holds the matching lever percentages.
+- range: the months the question is about, if it names a period (a year = Jan to Dec of that year, a quarter = its 3 months). Else null.
+- compare: "ly" for vs last year, "plan" for vs plan/goal/target, "prev" for vs previous period. Else null.
+Question: ${q}`;
+        pp = parse(await run(env, [{ role: 'user', content: plan }], 600).catch(() => ''));
+        const pl = levers(pp.levers);
+        if (pp.whatif && pl) {
+          const nice = Object.entries(pl).map(([k, v]) => `${k} ${v > 0 ? '+' : ''}${v}%`).join(', ');
+          return j({ text: `Applying ${nice} and recalculating.`, range: rng(pp.range), compare: cmp(pp.compare), levers: pl, model: 'planner' }, 200, cors);
         }
-        if (Object.keys(l).length) clean.levers = l;
       }
-      clean.model = used;
+
+      // Step 2: the answer.
+      const r = await run(env, [{ role: 'system', content: sys }, { role: 'user', content: user }], 2500, true);
+      const p = parse(r.text);
+      const clean = {
+        text: typeof p.text === 'string' ? p.text : String(p.text ?? r.text ?? ''),
+        range: rng(pp.range) || rng(p.range),
+        compare: cmp(pp.compare) || cmp(p.compare),
+        levers: followup ? null : levers(p.levers),
+        model: r.model,
+      };
+      clean.text = clean.text.replace(/\$-/g, '-$');
       return j(clean, 200, cors);
     } catch (e) {
       return j({ error: 'AI error: ' + (e && e.message ? e.message : e) }, 500, cors);
     }
   },
 };
+
+async function run(env, messages, max_tokens, withModel) {
+  let lastErr;
+  for (const m of MODELS) {
+    try {
+      const out = await env.AI.run(m, { messages, max_tokens, temperature: 0.1 });
+      const t = textOf(out);
+      if (t) return withModel ? { text: t, model: m } : t;
+    } catch (e) { lastErr = e; }
+  }
+  throw lastErr || new Error('no model answered');
+}
+
+function parse(raw) {
+  if (raw && typeof raw === 'object') return raw;
+  const s = String(raw || '').trim().replace(/^```(?:json)?\s*/i, '').replace(/```\s*$/, '').trim();
+  try { return JSON.parse(s); } catch {}
+  const m = s.match(/\{[\s\S]*\}/);
+  try { return m ? JSON.parse(m[0]) : { text: s }; } catch { return { text: s }; }
+}
+
+const ym = v => typeof v === 'string' && /^\d{4}-\d{2}$/.test(v);
+function rng(r) { return Array.isArray(r) && r.length === 2 && r.every(ym) ? (r[0] <= r[1] ? r : [r[1], r[0]]) : null; }
+function cmp(c) { return ['off', 'prev', 'ly', 'plan'].includes(c) ? c : null; }
+function levers(o) {
+  if (!o || typeof o !== 'object') return null;
+  const l = {};
+  for (const k of LEVERS) {
+    const v = Number(o[k]);
+    if (Number.isFinite(v) && v !== 0) l[k] = Math.max(k === 'blog' ? -100 : -20, Math.min(k === 'blog' ? 100 : 20, Math.round(v / 5) * 5));
+  }
+  return Object.keys(l).length ? l : null;
+}
 
 // Workers AI shapes: string, {response}, chat completions {choices}, or Responses API {output:[{type:'message',content:[{type:'output_text',text}]}]}
 function textOf(out) {
