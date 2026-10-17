@@ -4,7 +4,7 @@
     projections, the selected range and comparison, lever settings, model notes),
     so the model only ever answers from what the page is showing.              */
 
-const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast';
+const MODELS = ['@cf/openai/gpt-oss-120b', '@cf/meta/llama-3.3-70b-instruct-fp8-fast'];   // first that answers wins
 const ALLOWED = [/^https:\/\/ironneck-revenue-projection\.netlify\.app$/, /^https:\/\/[a-z0-9-]+--ironneck-revenue-projection\.netlify\.app$/, /^http:\/\/localhost(:\d+)?$/];
 const LEVERS = ['meta', 'google', 'brand', 'cr', 'aov', 'email', 'sms', 'blog', 'amazon', 'ddo'];
 
@@ -29,7 +29,8 @@ export default {
     const sys = `You are the revenue analyst for Iron Neck, a neck-training equipment brand. You answer questions about its revenue projection dashboard.
 You receive the dashboard's own data: one row per month (actuals from the finance books, then the model's projection through Dec 2027), the date range the user has selected and what it is compared with, the scenario lever settings, and notes on how the model works.
 Rules:
-- Use ONLY the numbers provided. Quote them ($, %, months). Never invent figures. Add up monthly rows yourself when a period is asked about, and say which months you summed.
+- Use ONLY the numbers provided. Quote them ($, %, months). Never invent figures.
+- For any year, quarter or the selected range, use the PRECOMPUTED TOTALS section; do not add monthly rows yourself unless the period is not listed there.
 - "proj" rows are projections, "partial" is the month in progress (actuals to date plus projection), "actual" rows are booked.
 - Be concise: 2 to 6 short sentences, plain text, no markdown. Lead with the answer.
 - Explain drivers using the model notes when asked why (trend, seasonality, product mix, brand search, channels).
@@ -44,12 +45,16 @@ Respond with STRICT JSON only, no code fences, exactly: {"text":"...","range":nu
     const user = `${String(context).slice(0, 150000)}\n\nQuestion: ${String(question).slice(0, 2000)}`;
 
     try {
-      const out = await env.AI.run(MODEL, {
-        messages: [{ role: 'system', content: sys }, { role: 'user', content: user }],
-        max_tokens: 900,
-        temperature: 0.1,
-      });
-      let raw = typeof out === 'string' ? out : (out.response ?? out.choices?.[0]?.message?.content ?? out.result ?? '');
+      let out, used, lastErr;
+      for (const m of MODELS) {
+        try {
+          out = await env.AI.run(m, { messages: [{ role: 'system', content: sys }, { role: 'user', content: user }], max_tokens: 2500, temperature: 0.1 });
+          used = m;
+          if (textOf(out)) break;
+        } catch (e) { lastErr = e; }
+      }
+      if (!out) throw lastErr || new Error('no model answered');
+      let raw = textOf(out);
       let p;
       if (raw && typeof raw === 'object') p = raw;
       else {
@@ -72,12 +77,26 @@ Respond with STRICT JSON only, no code fences, exactly: {"text":"...","range":nu
         }
         if (Object.keys(l).length) clean.levers = l;
       }
+      clean.model = used;
       return j(clean, 200, cors);
     } catch (e) {
       return j({ error: 'AI error: ' + (e && e.message ? e.message : e) }, 500, cors);
     }
   },
 };
+
+// Workers AI shapes: string, {response}, chat completions {choices}, or Responses API {output:[{type:'message',content:[{type:'output_text',text}]}]}
+function textOf(out) {
+  if (!out) return '';
+  if (typeof out === 'string') return out;
+  if (out.response != null) return out.response;
+  const c = out.choices?.[0]?.message?.content; if (c) return c;
+  if (Array.isArray(out.output)) {
+    const t = out.output.filter(o => o.type === 'message').flatMap(o => o.content || []).filter(c => c.type === 'output_text' || c.text).map(c => c.text).join('');
+    if (t) return t;
+  }
+  return out.output_text || out.result || '';
+}
 
 function j(o, status, h) {
   return new Response(JSON.stringify(o), { status, headers: { ...h, 'Content-Type': 'application/json' } });
