@@ -1,9 +1,9 @@
 # Iron Neck Revenue Projection: daily refresh
 
 Live dashboard: https://ironneck-revenue-projection.netlify.app (Netlify site id `be4fcd15-2584-493e-bfba-c84821ac650d`)
-Code and data live in this claude.ai Project under `claude/revenue-projection/`:
+Source of truth: GitHub repo `SamKuhn08/Business-Projections` (branch `main`): `model/` (model.py, data.py, refresh.py, targets_parse.py, store.json), `site/` (netlify.toml, public/index.html, public/data.json, public/chart.umd.js) and this file.
 `model.py`, `data.py`, `refresh.py`, `targets_parse.py`, `store.json`, `index.html`, `chart.umd.js`, `netlify.toml`, and this file.
-GitHub repo `SamKuhn08/Business-Projections` exists but git pushes from Claude sessions are refused until the Claude GitHub App is installed on it; until then the Project stays the source of truth.
+The claude.ai Project copy under `claude/revenue-projection/` is a backup only; do not read code or data from it.
 
 Layout
 - `model/store.json`  every month of inputs (Shopify, Klaviyo, finance sheet, Seller Board). The only data file.
@@ -14,9 +14,8 @@ Layout
 
 Let TODAY = today's date (America/Chicago). Let START = the first day of the month two months before TODAY's month (e.g. TODAY 2026-11-05 -> START 2026-09-01).
 
-1. Rebuild the working folder from the Project (Projects tool, project_read each file under `claude/revenue-projection/`; large files come back as a local path, copy them):
-   `work/model/{model.py,data.py,refresh.py,targets_parse.py,store.json}`, `work/site/public/{index.html,chart.umd.js}`, `work/site/netlify.toml`, and an empty `work/raw/`. Work in `work/model/`.
-   Override START if needed: START = the EARLIER of (first day of `store.json` `meta.partial_month`) and (first day of the month two months before TODAY). This guarantees every month since the last saved store gets re-pulled.
+1. Get the repo: add_repo `SamKuhn08/Business-Projections` (access push), then `git clone --depth 1 https://github.com/SamKuhn08/business-projections work` and `mkdir -p work/raw`. Work in `work/model/`.
+   START = the EARLIER of (first day of `store.json` `meta.partial_month`) and (first day of the month two months before TODAY). This guarantees every month since the last saved store gets re-pulled.
 
 2. Shopify (run-analytics-query). Save each result's `rows` array to the named file as `{"rows": [...]}` exactly as returned:
    - `raw/totals.json`   `FROM sales SHOW orders, gross_sales, discounts, net_sales, total_sales, average_order_value TIMESERIES month SINCE START UNTIL today`
@@ -46,11 +45,11 @@ Let TODAY = today's date (America/Chicago). Let START = the first day of the mon
    `"amazon": round((Sales + ProductRefunds) * store.meta.amazon_ratio)`, `"amz_ads": round(-Advertising)`, plus `"sb_sales"`, `"sb_refunds"`, `"sb_ads"` (raw, positive). When the sheet later fills the month, its value overwrites this.
 
 5. Run `python3 refresh.py ../raw TODAY`. It must print `OK: no validation problems`. If it prints PROBLEMS, fix the raw files (usually a missed month or a wrong column) and rerun. If still failing, stop: do not deploy, and report the problems.
-   `site/public/chart.umd.js` comes from the Project; if it is missing, `npm i chart.js@4.4.1` in a scratch folder and copy `node_modules/chart.js/dist/chart.umd.js`.
+   `site/public/chart.umd.js` is in the repo; if it is missing, `npm i chart.js@4.4.1` in a scratch folder and copy `node_modules/chart.js/dist/chart.umd.js`.
 
 6. Deploy `site/` to Netlify: call the Netlify deploy-site tool with siteId `be4fcd15-2584-493e-bfba-c84821ac650d`, then run the `npx -y @netlify/mcp@latest --site-id ... --proxy-path ...` command it returns from inside `site/`. Confirm `https://ironneck-revenue-projection.netlify.app/data.json` shows `generated` = TODAY (WebFetch).
 
-7. Save the store back to the Project ONLY when a month has completed since the saved store (i.e. TODAY's month differs from the saved `meta.partial_month`): project_write `claude/revenue-projection/store.json` with local_path `work/model/store.json`. On other days do not write to the Project (each write busts the Project cache).
+7. Commit and push from `work/`: `git add model/store.json site/public/data.json` (plus any code you had to fix), commit as `Daily refresh TODAY`, `git push origin HEAD:main`. If the push is rejected as non-fast-forward, `git pull --rebase origin main` and push again. Do not write to the claude.ai Project.
 
 8. Report in two lines: projected current-year ecommerce total vs plan, and anything that moved more than 5% vs yesterday's `data.json` (compare the first three projected months' `d2c` and `amazon`; fetch yesterday's values from the live data.json BEFORE deploying).
 
@@ -69,7 +68,7 @@ Let TODAY = today's date (America/Chicago). Let START = the first day of the mon
 - Model: `project_amazon` in model.py. Own seasonal index with recency weight^3 (Amazon Nov/Oct ratio fell 2.6x → 2.0x → 1.25x over 2023 to 2025), level = last 3 de-seasonalised months, slope = trailing-12-month YoY, damped. Rolling backtest MAPE 28.9% (Theil-Sen alternative 33%).
 
 ## SMS (Attentive) and Meta history
-- Attentive has no connector. SMS fields in the store (`sms_rev`, `sms_signups`, `popup_impr`, plus `sms_camp_rev`, `sms_flow_rev`, `popup_email_signups`) come from Attentive exports Sam uploads (campaigns, journeys, sign-up units). When new exports arrive, aggregate them by month (campaign revenue + journey revenue = `sms_rev`; sign-up units SMS Subscribes = `sms_signups`, Impressions = `popup_impr`) and write them into store.json, then save the store to the Project. The daily refresh never overwrites these fields.
+- Attentive has no connector. SMS fields in the store (`sms_rev`, `sms_signups`, `popup_impr`, plus `sms_camp_rev`, `sms_flow_rev`, `popup_email_signups`) come from Attentive exports Sam uploads (campaigns, journeys, sign-up units). When new exports arrive, aggregate them by month (campaign revenue + journey revenue = `sms_rev`; sign-up units SMS Subscribes = `sms_signups`, Impressions = `popup_impr`) and write them into store.json, then commit and push the store to the repo. The daily refresh never overwrites these fields.
 - Meta spend history (Oct 2023 to Dec 2025) came from the Meta Ads connector, account "Kit Ad Account" (1850888784987005). The finance sheet is still the source for months it covers.
 
 ## Adding new history (ad spend, Search Console)
