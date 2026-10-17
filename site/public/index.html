@@ -5,102 +5,156 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Iron Neck Revenue Projection</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton+SC&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="chart.umd.js"></script>
 <style>
+/* Aurora glass: shared look with the email and Meta ads dashboards */
 :root{
-  --bg:#f4f5f7; --surface:#fcfcfb; --surface-2:#eef0f3; --ink:#14171c; --ink-2:#4a5260; --ink-3:#7b8494;
-  --line:#dde1e7; --grid:#e8ebef;
-  --in:#006BD6; --ha:#CA0808; --amz:#0E8A63; --ddo:#7A4FD6; --neutral:#8a93a3;
-  --pos:#0E7A4F; --neg:#B42318; --accent:#006BD6;
-}
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#111214; --surface:#1a1a19; --surface-2:#232427; --ink:#eef0f3; --ink-2:#b4bac5; --ink-3:#848b98;
-    --line:#2e3034; --grid:#26282c;
-    --in:#3D8CE6; --ha:#E5453A; --amz:#1FA37A; --ddo:#9B7BEA; --neutral:#7c8494; --pos:#3cc489; --neg:#ff6b5e; --accent:#3D8CE6;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#111214; --surface:#1a1a19; --surface-2:#232427; --ink:#eef0f3; --ink-2:#b4bac5; --ink-3:#848b98;
-  --line:#2e3034; --grid:#26282c;
-  --in:#3D8CE6; --ha:#E5453A; --amz:#1FA37A; --ddo:#9B7BEA; --neutral:#7c8494; --pos:#3cc489; --neg:#ff6b5e; --accent:#3D8CE6;
+  --ink:#16233a; --ink-2:#42506b; --ink-3:#6c7893; --ink-4:#9aa4bb;
+  --line:rgba(22,35,58,.10); --grid:rgba(22,35,58,.07);
+  --glass:rgba(255,255,255,.62); --gbr:rgba(255,255,255,.85);
+  --shadow:0 1px 1px rgba(16,32,64,.05),0 12px 30px -16px rgba(16,42,92,.34);
+  --inset:inset 0 1px 0 rgba(255,255,255,.92);
+  --blue:#006BD6; --blue-2:#0058b0; --accent:#006BD6;
+  --in:#006BD6; --ha:#7C5CE8; --amz:#0E8A6E; --ddo:#B8860B; --neutral:#8a94ab;
+  --pos:#0d8a5f; --neg:#c0392f; --up-wash:rgba(13,138,95,.13); --dn-wash:rgba(192,57,47,.12);
+  --surface:#ffffff; --r:16px;
+  --ease-out:cubic-bezier(.23,1,.32,1);
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
-.wrap{max-width:1320px;margin:0 auto;padding:28px 24px 64px}
-header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
-h1{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:0}
-.sub{color:var(--ink-3);font-size:13px;margin-top:4px}
-.tabs{display:flex;gap:4px;background:var(--surface-2);padding:4px;border-radius:10px}
-.tabs button{border:0;background:transparent;color:var(--ink-2);font:500 13px Inter;padding:7px 14px;border-radius:7px;cursor:pointer}
-.tabs button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
-.kpi .lbl{color:var(--ink-3);font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
-.kpi .val{font-size:24px;white-space:nowrap;font-weight:700;letter-spacing:-.02em;margin-top:4px;font-variant-numeric:tabular-nums}
-.kpi .note{font-size:12.5px;color:var(--ink-2);margin-top:2px}
+body{margin:0;color:var(--ink);font:14px/1.5 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;
+  background:
+   radial-gradient(58% 48% at 12% 0%,rgba(0,107,214,.30) 0%,transparent 62%),
+   radial-gradient(46% 44% at 92% 6%,rgba(126,92,232,.24) 0%,transparent 66%),
+   radial-gradient(64% 56% at 66% 100%,rgba(0,183,214,.20) 0%,transparent 60%),
+   linear-gradient(160deg,#eef3fb 0%,#f7f9fd 52%,#eaf0f9 100%);
+  background-attachment:fixed}
+button,input,select{font-family:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.glass,.card,.kpi,.focus{background:var(--glass);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);
+  border:1px solid var(--gbr);box-shadow:var(--shadow),var(--inset)}
+
+header{position:sticky;top:0;z-index:30;background:var(--glass);backdrop-filter:blur(22px) saturate(180%);-webkit-backdrop-filter:blur(22px) saturate(180%);
+  border-bottom:1px solid var(--gbr);padding:12px 22px;box-shadow:0 8px 24px -18px rgba(16,42,92,.35)}
+.htop{max-width:1500px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;justify-content:space-between}
+.hleft{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;min-width:0}
+h1{font-family:"Anton SC",Inter,sans-serif;font-weight:400;font-size:20px;letter-spacing:.5px;margin:0;text-transform:uppercase;color:var(--ink)}
+.sub{color:var(--ink-3);font-size:12.5px;font-weight:500}
+.wrap{max-width:1500px;margin:0 auto;padding:16px 22px 70px}
+
+.seg{display:inline-flex;border:1px solid rgba(255,255,255,.9);border-radius:999px;background:rgba(255,255,255,.55);padding:3px;gap:2px;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.seg button{font-size:12px;font-weight:600;padding:5px 13px;border:0;border-radius:999px;background:transparent;color:var(--ink-3);cursor:pointer;
+  white-space:nowrap;transition:color .16s,background .16s,box-shadow .16s,transform 140ms var(--ease-out)}
+.seg button:hover{color:var(--ink)}
+.seg button:active{transform:scale(.97)}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(16,42,92,.14)}
+.tlabel{font-size:10px;color:var(--ink-3);text-transform:uppercase;letter-spacing:.6px;font-weight:700}
+
+/* KPI tiles (ads dashboard style) */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-bottom:14px}
+.kpi{border-radius:var(--r);padding:15px 17px 14px;transition:box-shadow .19s ease;animation:cardin 340ms var(--ease-out) both}
+.kpi:hover{box-shadow:0 1px 1px rgba(16,32,64,.05),0 18px 40px -18px rgba(16,42,92,.44),var(--inset)}
+.kpi .lbl{font-size:10px;text-transform:uppercase;letter-spacing:.085em;color:var(--ink-4);font-weight:700;margin-bottom:6px}
+.kpi .val{font-size:26px;font-weight:700;letter-spacing:-.035em;line-height:1.08;white-space:nowrap;color:var(--ink);font-variant-numeric:tabular-nums}
+.kpi .note{font-size:11.5px;color:var(--ink-3);margin-top:6px;line-height:1.45}
+.dp{display:inline-flex;align-items:center;font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dp.up,.pos.dp{color:var(--pos);background:var(--up-wash)} .dp.dn,.neg.dp{color:var(--neg);background:var(--dn-wash)} .dp.flat{color:var(--ink-3);background:rgba(20,30,55,.07)}
 .pos{color:var(--pos)} .neg{color:var(--neg)}
-.grid2{display:grid;grid-template-columns:320px 1fr;gap:16px;align-items:start}
-.grid2>.card:first-child{grid-row:span 3}
-@media(max-width:980px){.grid2>.card{grid-column:auto!important}}
-@media(max-width:980px){.grid2{grid-template-columns:1fr}}
-h2{font-size:15px;font-weight:600;margin:0 0 2px}
-.cap{font-size:12.5px;color:var(--ink-3);margin:0 0 14px}
-.lever{margin-bottom:14px}
-.lever .top{display:flex;justify-content:space-between;font-size:13px;font-weight:500}
-.lever .top span:last-child{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--ink-2)}
-.lever small{display:block;color:var(--ink-3);font-size:11.5px;line-height:1.35;margin-top:1px}
-input[type=range]{width:100%;accent-color:var(--accent);margin:6px 0 0}
-.btn{border:1px solid var(--line);background:var(--surface-2);color:var(--ink);font:500 12.5px Inter;padding:6px 12px;border-radius:8px;cursor:pointer}
+@keyframes cardin{from{opacity:0;transform:translateY(8px) scale(.985)}}
+
+/* focus month */
+.focus{border-radius:18px;padding:14px 18px 16px;margin-bottom:14px}
+.fbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.fnav{display:inline-flex;align-items:center;gap:4px}
+.fnav button.arrow{width:30px;height:30px;border-radius:999px;border:1px solid var(--gbr);background:rgba(255,255,255,.7);color:var(--ink-2);
+  font-size:15px;line-height:1;cursor:pointer;transition:background .16s,transform 140ms var(--ease-out)}
+.fnav button.arrow:hover{background:#fff;color:var(--ink)} .fnav button.arrow:active{transform:scale(.94)}
+.fnav button.arrow:disabled{opacity:.35;cursor:default}
+select.msel{font-size:14px;font-weight:700;color:var(--ink);padding:6px 30px 6px 12px;border:1px solid var(--gbr);border-radius:999px;background:rgba(255,255,255,.75)
+  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2342506b' fill='none' stroke-width='1.6'/%3E%3C/svg%3E") no-repeat right 12px center;
+  -webkit-appearance:none;appearance:none;cursor:pointer}
+.status{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:3px 10px;border-radius:99px}
+.status.actual{color:var(--ink-2);background:rgba(20,30,55,.08)} .status.proj{color:var(--blue);background:rgba(0,107,214,.11)} .status.now{color:#8a6508;background:rgba(184,134,11,.15)}
+.fhint{font-size:11.5px;color:var(--ink-3);margin-left:auto}
+.ftiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.ft{background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8);border-radius:13px;padding:10px 12px 11px}
+.ft .k{font-size:9.5px;text-transform:uppercase;letter-spacing:.085em;color:var(--ink-4);font-weight:700;display:flex;align-items:center;gap:6px}
+.ft .k i{width:8px;height:8px;border-radius:2.5px;display:inline-block}
+.ft .v{font-size:19px;font-weight:700;letter-spacing:-.03em;margin-top:3px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ft .s{font-size:11px;color:var(--ink-3);margin-top:5px;display:flex;flex-direction:column;gap:4px}
+.ft .s>div{display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ft.big{background:rgba(255,255,255,.78)}
+.ft.big .v{font-size:23px}
+
+.grid2{display:grid;grid-template-columns:320px 1fr;gap:14px;align-items:start}
+.grid2>.card:first-child{grid-row:span 3;position:sticky;top:76px}
+@media(max-width:980px){.grid2{grid-template-columns:1fr}.grid2>.card{grid-column:auto!important;position:static!important}}
+.card{border-radius:var(--r);padding:16px 18px}
+h2{font-size:13px;font-weight:700;margin:0 0 2px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink)}
+.cap{font-size:12px;color:var(--ink-3);margin:0 0 12px}
+.lever{margin-bottom:13px}
+.lever .top{display:flex;justify-content:space-between;font-size:12.5px;font-weight:600;color:var(--ink)}
+.lever .top span:last-child{font-size:11.5px;font-weight:700;color:var(--blue);font-variant-numeric:tabular-nums}
+.lever small{display:block;color:var(--ink-3);font-size:11px;line-height:1.35;margin-top:1px}
+input[type=range]{width:100%;accent-color:var(--blue);margin:6px 0 0}
+.btn{border:1px solid var(--gbr);background:rgba(255,255,255,.6);color:var(--ink-2);font-size:12px;font-weight:600;padding:6px 13px;border-radius:999px;cursor:pointer;transition:background .16s,color .16s}
+.btn:hover{background:#fff;color:var(--ink)}
 .scen{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px;padding-top:12px;border-top:1px solid var(--line)}
-.scen div{font-size:12px;color:var(--ink-3)} .scen b{display:block;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums}
+.scen div{font-size:10px;color:var(--ink-4);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.scen b{display:block;font-size:15px;color:var(--ink);font-variant-numeric:tabular-nums;text-transform:none;letter-spacing:-.02em;margin-top:2px}
 .chartbox{position:relative;height:360px}
 .small .chartbox{height:210px}
-.drivers{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:16px;margin-top:16px}
+.drivers{display:grid;grid-template-columns:repeat(auto-fit,minmax(380px,1fr));gap:14px;margin-top:2px}
 @media(max-width:520px){.drivers{grid-template-columns:1fr}}
-.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-2);margin:0 0 10px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2);margin:0 0 10px}
 .legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .legend i.dash{height:0;border-top:2px dashed var(--ink-2);border-radius:0;width:14px;vertical-align:3px}
 .legend i.band{background:var(--neutral);opacity:.3}
-table{width:100%;border-collapse:collapse;font-size:12.5px;font-variant-numeric:tabular-nums}
-th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:12.5px;font-variant-numeric:tabular-nums}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
 th:first-child,td:first-child{text-align:left}
-th{color:var(--ink-3);font-weight:500;font-size:11.5px;text-transform:uppercase;letter-spacing:.03em;position:sticky;top:0;background:var(--surface)}
-tr.fc td{color:var(--ink-2)} tr.yr td{font-weight:600;background:var(--surface-2)}
-.tablewrap{overflow:auto;max-height:560px}
+th{color:var(--ink-4);font-weight:700;font-size:9.5px;text-transform:uppercase;letter-spacing:.075em;position:sticky;top:0;background:rgba(255,255,255,.88);backdrop-filter:blur(10px)}
+tbody tr{cursor:pointer} tbody tr:hover td{background:rgba(255,255,255,.55)}
+tr.fc td{color:var(--ink-2)} tr.yr td{font-weight:700;background:rgba(255,255,255,.6)}
+tr.sel td{background:rgba(0,107,214,.08)}
+.tablewrap{overflow:auto;max-height:600px;border-radius:12px}
 .notes{columns:2 380px;column-gap:28px;font-size:13px;color:var(--ink-2)}
 .notes p{margin:0 0 10px;break-inside:avoid}
 .notes b{color:var(--ink)}
-.pill{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;background:var(--surface-2);color:var(--ink-2);margin-left:6px;vertical-align:2px}
+.pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(0,107,214,.11);color:var(--blue);margin-left:6px;vertical-align:1px}
 .view{display:none}.view.on{display:block}
-.gap{height:16px}
-.seg{display:inline-flex;gap:2px;background:var(--surface-2);padding:3px;border-radius:8px}
-.seg button{border:0;background:transparent;color:var(--ink-2);font:500 12px Inter;padding:4px 10px;border-radius:6px;cursor:pointer}
-.seg button.on{background:var(--surface);color:var(--ink)}
+.gap{height:14px}
 .row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .row>div:first-child{flex:1;min-width:0}
-@media(max-width:620px){.row{flex-wrap:wrap}}
+@media(max-width:620px){.row{flex-wrap:wrap}.htop{gap:10px}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header>
-  <div>
-    <h1>Iron Neck Revenue Projection</h1>
-    <div class="sub" id="stamp">Loading…</div>
-  </div>
-  <div class="tabs" id="tabs">
+<header><div class="htop">
+  <div class="hleft"><h1>Iron Neck · Revenue Projection</h1><span class="sub" id="stamp">Loading…</span></div>
+  <div class="seg" id="tabs">
     <button class="on" data-v="overview">Projection</button>
     <button data-v="drivers">Drivers</button>
     <button data-v="table">Monthly table</button>
     <button data-v="method">Method &amp; accuracy</button>
   </div>
-</header>
+</div></header>
+<div class="wrap">
 
 <div class="kpis" id="kpis"></div>
 
 <section class="view on" id="v-overview">
+  <div class="focus" id="focus">
+    <div class="fbar">
+      <span class="tlabel">Focus month</span>
+      <div class="fnav"><button class="arrow" id="fprev" aria-label="Previous month">&#8249;</button><select class="msel" id="fsel" aria-label="Month"></select><button class="arrow" id="fnext" aria-label="Next month">&#8250;</button></div>
+      <span class="status" id="fstat"></span>
+      <span class="fhint">Click any bar, point or table row to jump to that month</span>
+    </div>
+    <div class="ftiles" id="ftiles"></div>
+  </div>
   <div class="grid2">
     <div class="card">
       <div class="row"><h2>Scenario levers</h2><button class="btn" id="reset">Reset</button></div>
@@ -193,7 +247,7 @@ const LEVERS = [
   {k:'ddo',   name:'D/D/O', min:-20, max:20, help:'Direct, distributor and other sales. Base is the 2026 average only.'},
 ];
 const L = Object.fromEntries(LEVERS.map(l => [l.k, 0]));
-let D, charts = {}, range = '2025';
+let D, charts = {}, range = '2025', focusM = null, MONTHS_ALL = [];
 
 function calc(r){
   const P = D.params, sh = D.shares;
@@ -236,11 +290,12 @@ function goalFor(ym){
 const goalYear = (y, k='total') => Object.entries(D.goals).filter(([m])=>m.startsWith(y)).reduce((a,[m])=>a+(goalFor(m)[k]||0),0);
 
 // ---------- build
+Chart.defaults.font.family = 'Inter, system-ui, sans-serif'; Chart.defaults.color = '#6c7893';
 fetch('data.json?v=' + Date.now()).then(r=>r.json()).then(d=>{ D = d; init(); });
 
 function init(){
   const nc = D.nowcast;
-  $('#stamp').textContent = `Model run ${D.generated} · refreshes daily · ${lab(D.partial_month)} = actuals through ${nc ? nc.through.slice(5).replace('-','/') : 'today'} plus projection for the rest of the month`;
+  $('#stamp').textContent = `Updated ${D.generated} · ${lab(D.partial_month)} includes actuals through ${nc ? nc.through.slice(5).replace('-','/') : 'today'}`;
   const box = $('#levers');
   LEVERS.forEach(l=>{
     const el = document.createElement('div'); el.className='lever';
@@ -254,6 +309,18 @@ function init(){
   $('#tabs').onclick = e=>{ const v=e.target.dataset.v; if(!v) return; document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on', b===e.target)); document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on', s.id==='v-'+v)); if(v==='drivers') drawDrivers(); if(v==='method') drawMethod(); };
   $('#range').onclick = e=>{ const r=e.target.dataset.r; if(!r) return; range=r; document.querySelectorAll('#range button').forEach(b=>b.classList.toggle('on', b===e.target)); render(); };
   $('#csv').onclick = downloadCSV;
+  focusM = D.partial_month;
+  MONTHS_ALL = [...D.hist.filter(h=>!h.partial).map(h=>h.month), ...D.fut.map(r=>r.month)];
+  const MNL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  $('#fsel').innerHTML = MONTHS_ALL.slice().reverse().map(m=>`<option value="${m}">${MNL[+m.slice(5)-1]} ${m.slice(0,4)}</option>`).join('');
+  $('#fsel').onchange = e => setFocus(e.target.value);
+  $('#fprev').onclick = () => { const i = MONTHS_ALL.indexOf(focusM); if (i > 0) setFocus(MONTHS_ALL[i-1]); };
+  $('#fnext').onclick = () => { const i = MONTHS_ALL.indexOf(focusM); if (i < MONTHS_ALL.length-1) setFocus(MONTHS_ALL[i+1]); };
+  document.addEventListener('keydown', e => { if (!$('#v-overview').classList.contains('on') || /INPUT|SELECT/.test(document.activeElement.tagName)) return;
+    if (e.key === 'ArrowLeft') $('#fprev').click(); if (e.key === 'ArrowRight') $('#fnext').click(); });
+  $('#tbl').addEventListener('click', e => { const tr = e.target.closest('tr[data-m]'); if (!tr) return; setFocus(tr.dataset.m);
+    document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on', b.dataset.v==='overview'));
+    document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on', s.id==='v-overview')); window.scrollTo({top:0, behavior:'smooth'}); });
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{ render(); if($('#v-drivers').classList.contains('on')) drawDrivers(); });
   render();
 }
@@ -278,7 +345,7 @@ function render(){
   const restF = F.filter(r=>r.month.startsWith(PY));
   const q4 = restF.reduce((a,r)=>a+r.total,0);
   const q4g = restF.reduce((a,r)=>a+(goalFor(r.month)?goalFor(r.month).total:0),0);
-  const vs = (a,b) => `<span class="${a>=b?'pos':'neg'}">${pct(a/b-1)}</span>`;
+  const vs = (a,b) => `<span class="dp ${a>=b?'up':'dn'}">${pct(a/b-1)}</span>`;
   const k = [
     [PY+' total revenue (projected)', fmtKd(t26), g26 ? `${vs(t26,g26)} vs ${fmtKd(g26)} plan` : ''],
     [`Rest of ${PY} (${lab(restF[0].month)} to Dec)`, fmtKd(q4), `${vs(q4,q4g)} vs ${fmtKd(q4g)} plan`],
@@ -298,6 +365,7 @@ function render(){
   drawTot(H, F, B);
   drawNi(H, F);
   drawTable(H, F);
+  renderFocus(H, F);
 }
 
 function baseOpts(extra={}){
@@ -339,7 +407,9 @@ function drawRev(H, F, B){
   opts.plugins.tooltip.filter = c => c.raw != null;
   opts.scales.y.stacked = true;
   if (charts.rev) charts.rev.destroy();
-  charts.rev = new Chart($('#cRev'), {data:{labels:rows.map(r=>lab(r.month)), datasets:sets}, options:opts, plugins:[todayLine]});
+  opts.onClick = pickMonth(rows); opts.onHover = (e, els) => { e.native.target.style.cursor = els.length ? 'pointer' : 'default'; };
+  charts.rev = new Chart($('#cRev'), {data:{labels:rows.map(r=>lab(r.month)), datasets:sets}, options:opts, plugins:[todayLine, focusBand]});
+  charts.rev.$months = rows.map(r=>r.month);
 }
 
 function drawTot(H, F, B){
@@ -350,7 +420,7 @@ function drawTot(H, F, B){
   // connect projection to last actual
   const proj = rows.map((r,i)=> r.actual ? (i===fi-1 ? r.total : null) : r.total);
   const opts = baseOpts();
-  opts.plugins.today = {index: fi};
+  opts.plugins.today = {index: fi}; opts.onClick = pickMonth(rows);
   opts.plugins.tooltip.callbacks = {title: it => lab(rows[it[0].dataIndex].month), label: c => c.raw==null?null:`${c.dataset.label}: ${fmt$(c.raw)}`};
   opts.plugins.tooltip.filter = c => c.raw != null && c.dataset.label !== '';
   if (charts.tot) charts.tot.destroy();
@@ -360,14 +430,57 @@ function drawTot(H, F, B){
     {label:'Actual', data:rows.map(r=>r.actual?r.total:null), borderColor:css('--ink'), borderWidth:2, pointRadius:0, spanGaps:false},
     {label:'Projection', data:proj, borderColor:css('--accent'), borderWidth:2, pointRadius:0},
     {label:'Goal', data:rows.map(r=>{const g=goalFor(r.month);return g?g.total:null;}), showLine:false, pointRadius:4, pointBackgroundColor:css('--ink-3'), pointBorderColor:css('--surface'), pointBorderWidth:2},
-  ]}, options:opts, plugins:[todayLine]});
+  ]}, options:opts, plugins:[todayLine, focusBand]});
+  charts.tot.$months = rows.map(r=>r.month);
+}
+
+function setFocus(m){
+  if (!m || !MONTHS_ALL.includes(m)) return;
+  focusM = m;
+  const {H, F} = series();
+  renderFocus(H, F);
+  Object.values(charts).forEach(c => c && c.$months && c.draw());
+  document.querySelectorAll('#tbl tr[data-m]').forEach(tr => tr.classList.toggle('sel', tr.dataset.m === m));
+}
+const focusBand = {id:'focusBand', beforeDatasetsDraw(c){ const ms = c.$months; if (!ms) return; const i = ms.indexOf(focusM); if (i < 0) return;
+  const x = c.scales.x, w = ms.length > 1 ? Math.abs(x.getPixelForValue(1) - x.getPixelForValue(0)) : 40, ctx = c.ctx;
+  ctx.save(); ctx.fillStyle = 'rgba(0,107,214,.09)'; ctx.fillRect(x.getPixelForValue(i) - w/2, c.chartArea.top, w, c.chartArea.bottom - c.chartArea.top);
+  ctx.strokeStyle = 'rgba(0,107,214,.35)'; ctx.lineWidth = 1; ctx.strokeRect(x.getPixelForValue(i) - w/2 + .5, c.chartArea.top + .5, w - 1, c.chartArea.bottom - c.chartArea.top - 1); ctx.restore(); }};
+const pickMonth = (rows) => (evt, els, chart) => { const pts = chart.getElementsAtEventForMode(evt, 'index', {intersect:false}, false); if (pts.length) setFocus(rows[pts[0].index].month); };
+
+function renderFocus(H, F){
+  const all = [...H, ...F], i = all.findIndex(r=>r.month===focusM);
+  if (i < 0) return;
+  const r = all[i], ly = all.find(x=>x.month === (+focusM.slice(0,4)-1) + focusM.slice(4)), g = goalFor(focusM);
+  $('#fsel').value = focusM;
+  $('#fprev').disabled = MONTHS_ALL.indexOf(focusM) <= 0; $('#fnext').disabled = MONTHS_ALL.indexOf(focusM) >= MONTHS_ALL.length-1;
+  const st = $('#fstat');
+  if (r.actual) { st.className = 'status actual'; st.textContent = 'Actual'; }
+  else if (r.nowcast) { st.className = 'status now'; st.textContent = `In progress · actuals through ${D.nowcast.through.slice(5).replace('-','/')}`; }
+  else { st.className = 'status proj'; st.textContent = 'Projected'; }
+  const dp = (a, b, lab) => (a == null || !b) ? '' : `<span class="dp ${a/b-1 > .005 ? 'up' : a/b-1 < -.005 ? 'dn' : 'flat'}">${pct(a/b-1)}</span> ${lab}`;
+  const diff = (a, b, lab) => (a == null || b == null) ? '' : `<span class="dp ${a-b >= 0 ? 'up' : 'dn'}">${a-b >= 0 ? '+' : '-'}${fmtKd(Math.abs(a-b)).replace('-','')}</span> ${lab}`;
+  const T = (k, v, lines=[], dot='', big=false) => { lines = [].concat(lines).filter(Boolean);
+    return `<div class="ft${big?' big':''}"><div class="k">${dot?`<i style="background:var(${dot})"></i>`:''}${k}</div><div class="v">${v}</div>${lines.length?`<div class="s">${lines.map(l=>`<div>${l}</div>`).join('')}</div>`:''}</div>`; };
+  const range = r.actual ? '' : `Likely ${fmtKd(r.total*(1-r.band))} to ${fmtKd(r.total*(1+r.band*0.6))}`;
+  const ads = (r.meta||0) + (r.google||0) + (r.amzAds||0);
+  const cr = r.sessions ? r.orders / r.sessions : null;
+  $('#ftiles').innerHTML = [
+    T('Total revenue', fmt$(r.total), [g && dp(r.total, g.total, `vs ${fmtKd(g.total)} plan`), ly && dp(r.total, ly.total, `vs ${fmtKd(ly.total)} last year`), range], '', true),
+    T('Net income', `<span class="${r.ni==null?'':r.ni>=0?'pos':'neg'}">${fmt$(r.ni)}</span>`, [g && g.ni != null && diff(r.ni, g.ni, `vs ${fmtKd(g.ni)} plan`), ly && ly.ni != null && `Last year ${fmtKd(ly.ni)}`], '', true),
+    T('Shopify', fmt$(r.d2c), [ly && dp(r.d2c, ly.d2c, 'vs last year'), `Iron Neck ${fmtKd(r.inl)}`, `Harness ${fmtKd(r.ha)}`], '--in'),
+    T('Amazon', fmt$(r.amazon), [g && dp(r.amazon, g.amz, 'vs plan'), ly && dp(r.amazon, ly.amazon, 'vs last year')], '--amz'),
+    T('D/D/O', fmt$(r.ddo), [g && g.ddo && dp(r.ddo, g.ddo, 'vs plan'), ly && ly.ddo != null && dp(r.ddo, ly.ddo, 'vs last year')], '--ddo'),
+    T('Shopify orders', Math.round(r.orders).toLocaleString(), [`AOV ${fmt$(r.aov)}` + (cr ? ` · CR ${(cr*100).toFixed(2)}%` : ''), ly && dp(r.orders, ly.orders, 'vs last year')]),
+    T('Ad spend', fmt$(ads), [`Meta ${fmtKd(r.meta||0)} · Google ${fmtKd(r.google||0)}`, `Amazon ads ${fmtKd(r.amzAds||0)}`]),
+  ].join('');
 }
 
 function drawNi(H, F){
   const rows = [...H.filter(r=>r.month>='2024-01'), ...F];
   const fi = rows.findIndex(r=>!r.actual);
   const c = (v, r) => r.actual ? css(v) : alpha(css(v), .45);
-  const opts = baseOpts(); opts.plugins.today = {index: fi};
+  const opts = baseOpts(); opts.plugins.today = {index: fi}; opts.onClick = pickMonth(rows);
   opts.scales.y.beginAtZero = true;
   opts.plugins.tooltip.callbacks = {title: it => lab(rows[it[0].dataIndex].month) + (rows[it[0].dataIndex].actual ? ' · actual' : ' · projected'), label: t => t.raw==null?null:`${t.dataset.label}: ${fmt$(t.raw)}`};
   opts.plugins.tooltip.filter = t => t.raw != null;
@@ -375,7 +488,8 @@ function drawNi(H, F){
   charts.ni = new Chart($('#cNi'), {data:{labels:rows.map(r=>lab(r.month)), datasets:[
     {type:'bar', label:'Net income', data:rows.map(r=>r.ni), backgroundColor:rows.map(r=>c(r.ni>=0?'--pos':'--neg', r)), borderRadius:3, barPercentage:.8, categoryPercentage:.9},
     {type:'line', label:'Plan', data:rows.map(r=>{const g=goalFor(r.month); return g&&g.ni!=null?g.ni:null;}), showLine:false, pointRadius:4, pointBackgroundColor:css('--ink-3'), pointBorderColor:css('--surface'), pointBorderWidth:2},
-  ]}, options:opts, plugins:[todayLine]});
+  ]}, options:opts, plugins:[todayLine, focusBand]});
+  charts.ni.$months = rows.map(r=>r.month);
 }
 
 function drawTable(H, F){
@@ -385,7 +499,7 @@ function drawTable(H, F){
   let html = '<thead><tr>' + head.map(h=>`<th>${h}</th>`).join('') + '</tr></thead><tbody>';
   const line = (r, cls='')=>{ const g = goalFor(r.month); const gt = r.plan != null ? r.plan : (g ? g.total : null); const gn = r.planNi != null ? r.planNi : (g ? g.ni : null);
     const vs = gt && r.total ? r.total/gt - 1 : null;
-    return `<tr class="${cls}"><td>${r.label || lab(r.month)}${r.actual?'':' <span class="pill">proj</span>'}</td><td>${r.sessions?Math.round(r.sessions).toLocaleString():'–'}</td><td>${Math.round(r.orders).toLocaleString()}</td><td>${fmt$(r.aov)}</td>
+    return `<tr class="${cls}${r.month===focusM?' sel':''}"${/^\d{4}-\d{2}$/.test(r.month)?` data-m="${r.month}"`:''}><td>${r.label || lab(r.month)}${r.actual?'':' <span class="pill">proj</span>'}</td><td>${r.sessions?Math.round(r.sessions).toLocaleString():'–'}</td><td>${Math.round(r.orders).toLocaleString()}</td><td>${fmt$(r.aov)}</td>
       <td>${fmt$(r.inl)}</td><td>${fmt$(r.ha)}</td><td>${fmt$(r.d2c)}</td><td>${fmt$(r.amazon)}</td><td>${fmt$(r.ddo)}</td><td>${fmt$(r.total)}</td><td>${gt?fmt$(gt):'–'}</td>
       <td class="${vs==null?'':vs>=0?'pos':'neg'}">${vs==null?'–':pct(vs)}</td><td>${fmt$(r.meta)}</td><td>${fmt$(r.google)}</td><td>${fmt$(r.amzAds)}</td><td class="${r.ni==null?'':r.ni>=0?'pos':'neg'}">${fmt$(r.ni)}</td><td>${gn==null?'–':fmt$(gn)}</td></tr>`; };
   const PY = D.partial_month.slice(0,4);
