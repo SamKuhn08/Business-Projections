@@ -98,6 +98,13 @@ def main(raw, today):
     br = load(raw, 'brand.json')             # {"YYYY-MM": {"gsc_brand_clicks","gsc_brand_impr","gsc_days"}} (manual GSC export)
     if br:
         for m, v in br.items(): rec(m).update(v)
+    sd = load(raw, 'shop_daily.json')        # [day, orders, net_sales] from 'FROM sales SHOW orders, net_sales TIMESERIES day'
+    if sd:
+        dp = os.path.join(HERE, 'shop_daily.json')
+        daily = json.load(open(dp))
+        for r in sd:
+            if r[0] < today: daily[r[0]] = [int(r[1]), float(r[2])]     # closed days only
+        json.dump(dict(sorted(daily.items())), open(dp, 'w'))
     mtd = load(raw, 'mtd.json')              # {"month","through","days","shop","amazon","meta","google","amz_ads"} closed days of the month in progress
     if mtd: store['meta']['mtd'] = mtd
 
@@ -126,6 +133,19 @@ def main(raw, today):
     print(run.stdout[-3000:])
     if run.returncode:
         print(run.stderr); problems.append('model run failed')
+    # ---- track record: out-of-sample backtest of the whole stack, shown on the Method & accuracy tab
+    bt = subprocess.run([sys.executable, 'backtest.py'], cwd=HERE, capture_output=True, text=True)
+    print(bt.stdout[-2500:])
+    if bt.returncode:
+        print(bt.stderr); problems.append('backtest failed')
+    else:
+        B = json.load(open(os.path.join(HERE, 'backtest_out.json')))
+        keep = lambda d: {k: round(d[k]) for k in ('shop', 'amz', 'ddo', 'total', 'ni') if k in d}
+        slim = lambda r: dict(origin=r['origin'], month=r['month'], ahead=r['ahead'], forecast=keep(r['forecast']),
+                              actual=keep(r['actual']), naive=keep(r['naive']), promos=r['forecast'].get('promos', []))
+        D = json.load(open(out))
+        D['track'] = dict(q3=[slim(r) for r in B['q3']], broad=[slim(r) for r in B['broad']], summary=B['summary'])
+        json.dump(D, open(out, 'w'), default=float)
     print('touched months:', sorted(touched))
     print('PROBLEMS:' if problems else 'OK: no validation problems', *problems, sep='\n  ')
     sys.exit(1 if problems else 0)

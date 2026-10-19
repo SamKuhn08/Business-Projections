@@ -9,14 +9,17 @@ blog deindex Mar 2025 - Apr 2026 on blog, Klaviyo bulk imports on signups).
 Amazon sales and Amazon ads: own seasonal index from full Sellerboard history x damped trend.
 Meta, Google, SMS: D2C order seasonality ** beta x damped trend (sparse history).
 """
-import json, math, datetime, statistics as st
+import json, math, datetime, datetime as dt_, statistics as st
 from data import *
 from data import _M
+import events as EV
+_ORDERS, _NET = ORDERS, NET
 _all_months = lambda: _M.keys()
 
 PHI = 0.90          # monthly trend damping
 LAMBDA = 1.0        # seasonal shrinkage exponent (1 = full index, 0 = flat); calibrated by rolling backtest
 O_LEVEL_N = 3
+ORD_REC_POW = 1     # recency weight power for the order seasonal index (tuned by rolling backtest)
 MAX_SLOPE = 0.04    # cap on monthly log trend
 SEGS = ['P', 'C', 'H', 'L', 'B', 'O']
 BRAND_SEGS = {'H'}
@@ -42,7 +45,10 @@ def interp(xs, mask):
     return out
 
 
-def seasonal_index(xs, months, mask, rec_pow=1):
+HOLIDAY_REC_POW = 6      # Nov/Dec weight the latest years hardest: the BFCM peak shrinks every year (Nov 4.1x Sep-Oct in 2023, 2.6x 2024, 2.1x 2025)
+
+
+def seasonal_index(xs, months, mask, rec_pow=1, holiday_pow=None):
     """Ratio to centred 12-month moving average; median per calendar month; normalised to mean 1."""
     x = interp(xs, mask)
     n = len(x)
@@ -50,7 +56,8 @@ def seasonal_index(xs, months, mask, rec_pow=1):
     for t in range(6, n - 6):
         cma = (0.5 * x[t - 6] + sum(x[t - 5:t + 6]) + 0.5 * x[t + 6]) / 12
         if not mask[t]:
-            w = (int(months[t][:4]) - 2022) ** rec_pow   # recency weight: 2023=1 ... 2026=4 (rec_pow 1)
+            p = holiday_pow if (holiday_pow is not None and mon(months[t]) in (11, 12)) else rec_pow
+            w = (int(months[t][:4]) - 2022) ** p   # recency weight: 2023=1 ... 2026=4 (rec_pow 1)
             ratios[mon(months[t])].append((min(3.5, max(0.3, xs[t] / cma)), w))
     s = {m: (math.exp(sum(w * math.log(v) for v, w in r) / sum(w for _, w in r)) if r else 1.0)
          for m, r in ratios.items()}
@@ -87,9 +94,15 @@ def project(xs, months, mask, horizon_months, level_n=3, trend_n=12, seas=None, 
     return out, s, slope
 
 
-def fit(cut):
-    """Fit on months[:cut] and forecast the next len(horizon) months. Returns dict of series."""
+def fit(cut, events=True):
+    """Fit on months[:cut] and forecast the next len(horizon) months. Returns dict of series.
+    events=True: movable promos (promos.json) are measured from daily orders and taken out of the order and
+    revenue history before fitting, then added back on their dates in the horizon (see events.py)."""
     months = MONTHS[:cut]
+    upto = MONTHS[cut] + '-01' if cut < len(MONTHS) else None
+    adj = EV.history_adjustment(upto) if events else {}
+    ORDERS = [_ORDERS[i] - (adj.get(MONTHS[i], [0, 0])[0] if i < cut else 0) for i in range(len(MONTHS))]
+    NET = [_NET[i] - (adj.get(MONTHS[i], [0, 0])[1] if i < cut else 0) for i in range(len(MONTHS))]
     last = months[-1]
     y, m = int(last[:4]), int(last[5:7])
     horizon = []
@@ -115,7 +128,7 @@ def fit(cut):
     #   traffic_growth = sum_seg(base_ses_seg(h) x CR_seg) / sum_seg(base_ses_seg(0) x CR_seg)
     nb_ses = [SESSIONS[i] - LP['B'][i][0] for i in range(cut)]
     s_ses = seasonal_index(nb_ses, months, rog)
-    s_ord = seasonal_index(ORDERS[:cut], months, rog)
+    s_ord = seasonal_index(ORDERS[:cut], months, rog, rec_pow=ORD_REC_POW, holiday_pow=HOLIDAY_REC_POW)
     # Quality-weighted traffic index Q = sum_seg sessions x CR_seg (CR over last 12 months).
     # Trend is read off Q, not off individual segments, so traffic shifting between page types
     # (e.g. homepage -> product pages after a nav change) is not mistaken for growth, and a
@@ -140,7 +153,8 @@ def fit(cut):
         seg_f[sgm] = [seg_base[sgm][h] * seas[mon(horizon[h])] for h in range(len(horizon))]
     # blog contributes its own (tiny) orders on top of the non-blog index
     blog_orders = [seg_f['B'][h] * seg_cr['B'] for h in range(len(horizon))]
-    o_level = st.mean((ORDERS[i] - LP['B'][i][1]) / s_ord[mon(months[i])] for i in range(cut - O_LEVEL_N, cut))
+    lvl_ix = [i for i in range(cut - 1, -1, -1) if months[i] not in ROGAN][:O_LEVEL_N]     # Rogan months never set the level
+    o_level = st.mean((ORDERS[i] - LP['B'][i][1]) / s_ord[mon(months[i])] for i in lvl_ix)
     k = 1.0
     s_cr = s_ord
     # AOV from product mix: 1/AOV = (1-h)/a_IN + h/a_HA, h = Harness+accessory revenue share.
@@ -166,9 +180,26 @@ def fit(cut):
     aov_s = None
     orders_f = [o_level * growth[h] * s_ord[mon(horizon[h])] + blog_orders[h] for h in range(len(horizon))]
     d2c_f = [orders_f[h] * aov_f[h] for h in range(len(horizon))]
+    # ---- promos back on their dates: lift (in baseline days) x the month's baseline orders / revenue per day
+    import calendar
+    promo_o, promo_r, promo_ev = [0.0] * len(horizon), [0.0] * len(horizon), [[] for _ in horizon]
+    if events:
+        lifts = EV.type_lifts(upto)
+        for typ, share, e in EV.future_events(horizon[0] + '-01'):
+            lo_, lr_ = EV.event_lift(e, lifts)
+            for mon_, sh in share.items():
+                if mon_ not in horizon: continue
+                h = horizon.index(mon_)
+                nd = calendar.monthrange(int(mon_[:4]), int(mon_[5:]))[1]
+                promo_o[h] += lo_ * sh * orders_f[h] / nd
+                promo_r[h] += lr_ * sh * d2c_f[h] / nd
+                promo_ev[h].append(typ)
+    d2c_base = list(d2c_f); orders_base = list(orders_f)
+    orders_f = [orders_f[h] + promo_o[h] for h in range(len(horizon))]
+    d2c_f = [d2c_f[h] + promo_r[h] for h in range(len(horizon))]
 
     # ---- product line split (share of Harness/accessories within IN+HA), coverage of NET
-    cov = sum((LINE_IN[i] + LINE_HA[i]) / NET[i] for i in range(cut - 6, cut)) / 6
+    cov = sum((LINE_IN[i] + LINE_HA[i]) / _NET[i] for i in range(cut - 6, cut)) / 6
 
     # ---- email / signups
     sig_clean = list(SIGNUPS[:cut])
@@ -187,7 +218,7 @@ def fit(cut):
     else:
         ss_f = [None] * len(horizon)
 
-    return dict(a_in=a_in, a_ha=a_ha, aov_resid=resid, q_slope=q_slope, Q=Q, horizon=horizon, seg_base=seg_base, growth=growth, o_level=o_level, s_ord=s_ord, s_ses=s_ses, seg_f=seg_f, seg_cr=seg_cr, k=k, aov_f=aov_f, orders_f=orders_f,
+    return dict(d2c_base=d2c_base, orders_base=orders_base, promo_o=promo_o, promo_r=promo_r, promo_ev=promo_ev, adj=adj, a_in=a_in, a_ha=a_ha, aov_resid=resid, q_slope=q_slope, Q=Q, horizon=horizon, seg_base=seg_base, growth=growth, o_level=o_level, s_ord=s_ord, s_ses=s_ses, seg_f=seg_f, seg_cr=seg_cr, k=k, aov_f=aov_f, orders_f=orders_f,
                 d2c_f=d2c_f, ha_f=ha_f, cov=cov, sig_f=sig_f, em_f=em_f, sms_f=sms_f, ss_f=ss_f, s_cr=s_cr, aov_s=aov_s,
                 sig_mask=sig_mask)
 
@@ -222,9 +253,9 @@ def project_sparse(series, horizon, s_base, cut=None):
     return out, seas, slope, beta
 
 
+AMZ_HOLIDAY_POW = 6    # Amazon's Nov/Dec peak shrinks every year too: weight the latest years hardest
 AMZ_REC_POW = 3     # Amazon's Q4 peak has shrunk every year (Nov/Oct 2.6x 2023, 2.0x 2024, 1.25x 2025): weight recent years harder
-AMZ_LEVEL_N = 3     # backtest slightly prefers 6 (25.7% vs 28.9% MAPE), but Q3 2026 ran -10% YoY and
-                    # Oct 1-15 2026 is -14% YoY in Sellerboard, so the shorter window tracks the current run rate
+AMZ_LEVEL_N = 6     # with Prime taken out as dated events, 21-origin backtest: 6 months 25.8% vs 3 months 29.5% MAPE (2026-10-19)
 
 
 def project_amazon(series, cut, horizon, start=0, level_n=None):
@@ -236,7 +267,7 @@ def project_amazon(series, cut, horizon, start=0, level_n=None):
     ms = MONTHS[start:cut]
     ser = series[start:cut]
     mask = [m in ROGAN or not ser[i] for i, m in enumerate(ms)]
-    s = seasonal_index(ser, ms, mask, rec_pow=AMZ_REC_POW)
+    s = seasonal_index(ser, ms, mask, rec_pow=AMZ_REC_POW, holiday_pow=AMZ_HOLIDAY_POW)
     n = len(ms)
     pairs = [(ser[i], ser[i - 12]) for i in range(max(12, n - 12), n)
              if ser[i] and ser[i - 12] and ms[i] not in ROGAN and ms[i - 12] not in ROGAN]
@@ -251,6 +282,38 @@ def project_amazon(series, cut, horizon, start=0, level_n=None):
     return out, s, slope
 
 
+def project_amazon_events(cut, horizon, events=True):
+    """Amazon with Prime as dated events: Prime lift (Seller Board, scaled to the books basis) is taken out of
+    history, the series is projected with project_amazon, and Prime is added back in the month it falls in
+    (promos.json 'amazon' dates) at the recency-weighted lift for its type x that month's baseline per day."""
+    import calendar
+    if not events:
+        f, s, sl = project_amazon(AMAZON, cut, horizon)
+        return f, s, sl, [0.0] * len(horizon)
+    upto = MONTHS[cut] + '-01' if cut < len(MONTHS) else None
+    adj = EV.amazon_history_adjustment(upto)
+    ser = list(AMAZON)
+    for m, x in adj.items():
+        if m in MONTHS:
+            i = MONTHS.index(m)
+            if i < cut and ser[i]:
+                sb = month_field(m, 'sb_sales') or ser[i]
+                ser[i] = ser[i] - x * ser[i] / sb          # Seller Board gross -> books basis
+    # ensemble of a short (3 month) and a long (12 month) level: the short one reacts to turns (spring 2026 ran
+    # +40% YoY, September +1%), the long one is steadier; 21-origin backtest 24.9% MAPE vs 29.0% (3) and 25.2% (6)
+    f3, s, sl = project_amazon(ser, cut, horizon, level_n=3)
+    f12, _, _ = project_amazon(ser, cut, horizon, level_n=12)
+    f = [math.sqrt(x * y) for x, y in zip(f3, f12)]
+    lifts = EV.amazon_lifts(upto)
+    add = [0.0] * len(horizon)
+    for typ, mon_ in EV.amazon_future(horizon[0] + '-01'):
+        if mon_ in horizon and typ in lifts:
+            h = horizon.index(mon_)
+            nd = calendar.monthrange(int(mon_[:4]), int(mon_[5:]))[1]
+            add[h] += lifts[typ] * f[h] / nd
+    return [f[h] + add[h] for h in range(len(horizon))], s, sl, add
+
+
 # ---------------------------------------------------------------- elasticities
 def elasticity(xs, ys):
     lx = [math.log(v) for v in xs]; ly = [math.log(v) for v in ys]
@@ -260,13 +323,42 @@ def elasticity(xs, ys):
     return cov / var
 
 
+BIAS_N = 54          # Shopify bias correction: mean log error of the last 54 realised 1-3 month forecasts
+_FITS = {}
+
+
+def _fit_cached(cut):
+    if cut not in _FITS: _FITS[cut] = fit(cut)
+    return _FITS[cut]
+
+
+def shop_bias(cut):
+    """Multiplier that removes the Shopify model's recent average error, using only forecasts whose months had
+    closed before `cut` (21-origin backtest: bias +9% -> -1%, MAPE 24.0% -> 23.1%)."""
+    errs = []
+    for o in range(max(13, cut - 26), cut):
+        g = _fit_cached(o)
+        for h, ym in enumerate(g['horizon'][:3]):
+            i = MONTHS.index(ym)
+            if i < cut and ym not in ROGAN: errs.append((ym, math.log(g['d2c_f'][h] / NET[i])))
+    errs = [e for _, e in sorted(errs)][-BIAS_N:]
+    return math.exp(-st.mean(errs)) if errs else 1.0
+
+
+def apply_bias(g, corr):
+    for k in ('d2c_f', 'orders_f', 'd2c_base', 'orders_base', 'promo_o', 'promo_r'):
+        g[k] = [v * corr for v in g[k]]
+    g['bias_corr'] = corr
+    return g
+
+
 def main():
     # ---------- rolling-origin backtest: refit at 5 origins, forecast up to 12 months ahead
     origins = []
     by_h = {h: [] for h in range(12)}
     snaive_err = []
     for cut in (CUT - 15, CUT - 12, CUT - 9, CUT - 6, CUT - 3):
-        g = fit(cut)
+        g = apply_bias(dict(fit(cut)), shop_bias(cut))
         rows = []
         for h, ym in enumerate(g['horizon'][:12]):
             i = MONTHS.index(ym)
@@ -280,11 +372,11 @@ def main():
     bt_rows = origins[1]['rows']
     h_ape = [st.median(by_h[h]) for h in range(12)]
     # ---------- production fit through Sep 2026 (Oct is partial)
-    f = fit(CUT)
+    f = apply_bias(dict(fit(CUT)), shop_bias(CUT))
     H = f['horizon']
     so = f['s_ord']
     # Amazon has full history (Sellerboard, Jan 2023 on): its own seasonal index, Rogan months masked
-    amz_f, amz_s, amz_slope = project_amazon(AMAZON, CUT, H)
+    amz_f, amz_s, amz_slope, amz_promo = project_amazon_events(CUT, H)
     amz_beta = 1.0
     meta_f, meta_s, meta_slope, meta_beta = project_sparse(META, H, so)
     gg_f, _, gg_slope, gg_beta = project_sparse(GOOGLE, H, so)
@@ -348,21 +440,19 @@ def main():
         run = max(run, h_ape[min(h, 11)])          # monotone: uncertainty never shrinks with horizon
         band.append(min(0.45, max(0.08, run)))
 
-    def fixed_for(ym):
-        v = month_field(ym, 'fixed')
-        if v: return v
-        prev = f"{int(ym[:4]) - 1}{ym[4:]}"
-        v = month_field(prev, 'fixed')
-        if v: return v
-        known = [month_field(m, 'fixed') for m in MONTHS[:CUT] if month_field(m, 'fixed')]
-        return st.mean(known[-6:])
-    fixed = [fixed_for(ym) for ym in H]
+    # fixed costs (other SMA, payroll, G&A, other): our own projection from history, the mean of the last 3 closed
+    # months on the Targets basis. The finance sheet's forward rows are O&F's plan, so they are not used.
+    tgt_fixed = [TGT['total'][i] - TGT['cogs'][i] - TGT['ad'][i] - TGT['ni'][i] for i in range(CUT)
+                 if None not in (TGT['total'][i], TGT['cogs'][i], TGT['ad'][i], TGT['ni'][i])]
+    fixed_level = st.mean(tgt_fixed[-3:])
+    fixed = [fixed_level] * len(H)
     fut = []
     for h, ym in enumerate(H):
         row = dict(month=ym,
                    seg={s: dict(ses=round(f['seg_f'][s][h]), base=f['seg_base'][s][h], cr=f['seg_cr'][s]) for s in SEGS}, growth=f['growth'][h], s_ord=f['s_ord'][mon(ym)], o_level=f['o_level'],
                    k=f['k'], aov=f['aov_f'][h], orders=f['orders_f'][h], d2c=f['d2c_f'][h],
                    ha_share=f['ha_f'][h], cov=f['cov'], signups=f['sig_f'][h], email=f['em_f'][h], sms=f['sms_f'][h], sms_signups=f['ss_f'][h],
+                   d2c_base=f['d2c_base'][h], promo_d2c=f['promo_r'][h], promo_orders=f['promo_o'][h], promos=f['promo_ev'][h], amz_promo=amz_promo[h],
                    amazon=amz_f[h], meta=meta_f[h], google=gg_f[h], amz_ads=aa_f[h], ddo=ddo_f[h],
                    brand_clicks=brand_f[h], fixed=fixed[h], band=band[h])
         fut.append(row)
@@ -375,11 +465,16 @@ def main():
         left = 1 - MTD['days'] / calendar.monthrange(y, m)[1]
         r0 = fut[0]
         model_full = {k: r0[k] for k in ('d2c', 'amazon', 'meta', 'google', 'amz_ads')}
-        d2c_now = MTD['shop'] / fin_ratio + r0['d2c'] * left          # model D2C is on the Shopify-net basis
+        # promos already run this month are in the actuals: only the baseline is scaled by the share left
+        # (plus any promo still to come after the closed days)
+        later = EV.future_events((dt_.date.fromisoformat(MTD['through']) + dt_.timedelta(1)).isoformat())
+        promo_left = sum(sh for t, shr, e in later for mm, sh in shr.items() if mm == PARTIAL)
+        d2c_now = MTD['shop'] / fin_ratio + r0['d2c_base'] * left + (r0['promo_d2c'] * promo_left if r0['promo_d2c'] else 0)
         kk = d2c_now / r0['d2c']
         r0['orders'] *= kk; r0['d2c'] = d2c_now
         for k in ('amazon', 'meta', 'google', 'amz_ads'):
-            if MTD.get(k) is not None: r0[k] = MTD[k] + r0[k] * left
+            base_k = r0[k] - (r0['amz_promo'] if k == 'amazon' else 0)
+            if MTD.get(k) is not None: r0[k] = MTD[k] + base_k * left
         r0['nowcast'] = True
         nowcast = dict(through=MTD['through'], days=MTD['days'], share_left=left, mtd=MTD, model_full=model_full)
 
@@ -416,6 +511,10 @@ def main():
                     amz_slope=amz_slope, meta_slope=meta_slope, amz_beta=amz_beta, meta_beta=meta_beta, cr_season=f['s_cr'],
                     aov_season=f['aov_s']),
         backtest=dict(origins=origins, mape=mape, bias=bt_total_err, h_ape=h_ape, snaive_mape=st.mean(snaive_err)),
+        promos=dict(lifts=EV.type_lifts(), amz_lifts=EV.amazon_lifts(), amazon_events=EV.AMZ_EV,
+                    measured=[{k: v for k, v in (EV.measure(e) or {}).items() if k != 'by_month'} for e in EV.P if e['type'] not in EV.SEASONAL and EV.measure(e)],
+                    calendar=[e for e in EV.P if e['end'] >= MONTHS[0] + '-01']),
+        bias_corr=f['bias_corr'], fixed_level=fixed_level,
         flags=dict(rogan=sorted(ROGAN), blog_deindex=BLOG_DEINDEX,
                    signup_imports=[MONTHS[i] for i in range(CUT) if f['sig_mask'][i]]),
     )

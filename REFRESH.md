@@ -23,6 +23,7 @@ Let TODAY = today's date (America/Chicago). Let START = the first day of the mon
    - `raw/landing.json`  `FROM sessions SHOW sessions, sessions_that_completed_checkout GROUP BY landing_page_type TIMESERIES month SINCE START UNTIL today`
    - `raw/referrer.json` `FROM sessions SHOW sessions, sessions_that_completed_checkout GROUP BY referrer_source TIMESERIES month SINCE START UNTIL today`
    - `raw/product.json`  `FROM sales SHOW net_sales, quantity_ordered GROUP BY product_type TIMESERIES month SINCE START UNTIL today`
+   - `raw/shop_daily.json` `FROM sales SHOW orders, net_sales TIMESERIES day SINCE -40d UNTIL today` (daily orders feed the promo-lift measurement; refresh.py keeps closed days only)
 
 3. Klaviyo (query_metric_aggregates, interval month, timezone America/Chicago, range START to tomorrow 00:00):
    - email revenue: metric `RydRc9` (Shopify Placed Order), measurements `sum_value`, by `$attributed_channel`; take the `$email_channel` series.
@@ -49,9 +50,9 @@ Let TODAY = today's date (America/Chicago). Let START = the first day of the mon
 
 6. Deploy `site/` to Netlify: call the Netlify deploy-site tool with siteId `be4fcd15-2584-493e-bfba-c84821ac650d`, then run the `npx -y @netlify/mcp@latest --site-id ... --proxy-path ...` command it returns from inside `site/`. Confirm `https://ironneck-revenue-projection.netlify.app/data.json` shows `generated` = TODAY (WebFetch).
 
-7. Commit and push from `work/`: `git add model/store.json site/public/data.json` (plus any code you had to fix), commit as `Daily refresh TODAY`, `git push origin HEAD:main`. If the push is rejected as non-fast-forward, `git pull --rebase origin main` and push again. Do not write to the claude.ai Project.
+7. Commit and push from `work/`: `git add model/store.json model/shop_daily.json site/public/data.json` (plus any code you had to fix), commit as `Daily refresh TODAY`, `git push origin HEAD:main`. If the push is rejected as non-fast-forward, `git pull --rebase origin main` and push again. Do not write to the claude.ai Project.
 
-8. Report in two lines: projected current-year ecommerce total vs plan, and anything that moved more than 5% vs yesterday's `data.json` (compare the first three projected months' `d2c` and `amazon`; fetch yesterday's values from the live data.json BEFORE deploying).
+8. Report in two lines: projected current-year total revenue vs the same period last year (not vs plan), and anything that moved more than 5% vs yesterday's `data.json` (compare the first three projected months' `d2c` and `amazon`; fetch yesterday's values from the live data.json BEFORE deploying).
 
 ## Total business, brand search, D/D/O (added 2026-10-16)
 - History for all channels and net income = O&F Targets tab (`tgt_*`), Jan 2023 to the last closed month. Plan = Targets "Est." columns (`goal_shop`, `goal_amz`, `goal_ddo`, `goal_ni`); this replaced the Iron Neck Master goals.
@@ -73,3 +74,10 @@ Let TODAY = today's date (America/Chicago). Let START = the first day of the mon
 
 ## Adding new history (ad spend, Search Console)
 Put monthly values into `store.json` under each month (`meta`, `google`). Google spend 2023 to 2025 is still missing. New fields for brand search are not wired into the model yet: add them to the store as `gsc_brand_clicks` / `amz_brand_searches` and update `model.py` when Sam sends them.
+
+## Promos, Prime and the track record (added 2026-10-19)
+- `model/promos.json` is the promo calendar (from Sam's 2024 to 2026 Promotions & Sales docs; 2023 inferred from order spikes; 2027 assumed = 2026 on the same holidays, Prime Day in June). When Sam shares a new year's promo doc, add its sales here (type, start, end, `pro` = $ off the 3.0 Pro, `amazon` = Prime dates). Nov-Dec sales stay in seasonality; every other sale is a movable event.
+- Shopify lift per sale is measured automatically from `model/shop_daily.json` (events.py). Amazon only responds to Prime events: after each Prime Day / October Prime has run plus 5 weeks, measure it with Seller Board `dashboard_period` using 4 periods (28 days before, the Prime days, the 7 days after, days 8-35 after) and append to `model/amazon_events.json` as `{type, start, end, base_day, event_day, extra, lift_days}` where base_day = (before + days 8-35) sales / 56, extra = (Prime + 7 days after) - base_day x (Prime days + 7), lift_days = extra / base_day.
+- Shopify carries a bias correction (model.shop_bias): the mean log error of its own last 54 realised 1-3 month forecasts.
+- Fixed costs are projected from the last 3 closed months on the Targets tab. Nothing in the forecast reads the O&F plan or the finance sheet's forward rows (Sam, 2026-10-19: the model forecasts from history only; plan is a comparison option on the page).
+- refresh.py runs `backtest.py` after the model and writes the track record into data.json (`track`), shown on the Method & accuracy tab: every month start since Jan 2025 refit on data known then, scored against Targets actuals and a same-month-last-year benchmark.

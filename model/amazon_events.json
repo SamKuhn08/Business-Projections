@@ -1,0 +1,101 @@
+[
+ {
+  "type": "prime_summer",
+  "start": "2023-07-11",
+  "end": "2023-07-12",
+  "base_day": 4121,
+  "event_day": 22233,
+  "extra": 31408,
+  "lift_days": 7.62
+ },
+ {
+  "type": "prime_oct",
+  "start": "2023-10-10",
+  "end": "2023-10-11",
+  "base_day": 5023,
+  "event_day": 21789,
+  "extra": 34493,
+  "lift_days": 6.87
+ },
+ {
+  "type": "presidents",
+  "start": "2024-02-05",
+  "end": "2024-02-19",
+  "base_day": 4485,
+  "event_day": 4103,
+  "extra": -3303,
+  "lift_days": -0.74
+ },
+ {
+  "type": "spring",
+  "start": "2024-03-19",
+  "end": "2024-03-24",
+  "base_day": 4327,
+  "event_day": 4512,
+  "extra": -119,
+  "lift_days": -0.03
+ },
+ {
+  "type": "spring",
+  "start": "2024-04-29",
+  "end": "2024-05-05",
+  "base_day": 4303,
+  "event_day": 4232,
+  "extra": -12749,
+  "lift_days": -2.96
+ },
+ {
+  "type": "prime_summer",
+  "start": "2024-07-16",
+  "end": "2024-07-17",
+  "base_day": 3090,
+  "event_day": 20810,
+  "extra": 39260,
+  "lift_days": 12.71
+ },
+ {
+  "type": "prime_oct",
+  "start": "2024-10-08",
+  "end": "2024-10-09",
+  "base_day": 4080,
+  "event_day": 12894,
+  "extra": 13291,
+  "lift_days": 3.26
+ },
+ {
+  "type": "prime_summer",
+  "start": "2025-07-08",
+  "end": "2025-07-11",
+  "base_day": 3916,
+  "event_day": 20739,
+  "extra": 63914,
+  "lift_days": 16.32
+ },
+ {
+  "type": "prime_oct",
+  "start": "2025-10-07",
+  "end": "2025-10-08",
+  "base_day": 4186,
+  "event_day": 18160,
+  "extra": 19361,
+  "lift_days": 4.63
+ },
+ {
+  "type": "prime_summer",
+  "start": "2026-06-23",
+  "end": "2026-06-26",
+  "base_day": 4447,
+  "event_day": 14266,
+  "extra": 32317,
+  "lift_days": 7.27
+ },
+ {
+  "type": "prime_oct",
+  "start": "2026-10-06",
+  "end": "2026-10-08",
+  "base_day": 3470,
+  "event_day": 8218,
+  "extra": 11998,
+  "lift_days": 3.46
+ }
+]

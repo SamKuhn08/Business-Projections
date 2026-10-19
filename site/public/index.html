@@ -129,6 +129,13 @@ tr.sel td{background:rgba(0,107,214,.08)}
 .notes{columns:2 380px;column-gap:28px;font-size:13px;color:var(--ink-2)}
 .notes p{margin:0 0 10px;break-inside:avoid}
 .notes b{color:var(--ink)}
+.pill.promo{background:rgba(184,134,11,.14);color:#8a6408}
+.bt2{grid-template-columns:1fr 1fr;margin-top:14px;gap:18px}
+@media(max-width:980px){.bt2{grid-template-columns:1fr}}
+h3{font-size:11px;font-weight:700;margin:0 0 6px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3)}
+table.mini{font-size:12px}
+table.mini th,table.mini td{padding:6px 8px}
+table.mini td.sub{color:var(--ink-3);font-size:11px}
 .pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(0,107,214,.11);color:var(--blue);margin-left:6px;vertical-align:1px}
 .view{display:none}.view.on{display:block}
 .gap{height:14px}
@@ -194,8 +201,8 @@ tr.sel td{background:rgba(0,107,214,.08)}
       <div class="chartbox"><canvas id="cRev"></canvas></div>
     </div>
   <div class="card" style="grid-column:2">
-    <h2>Total revenue vs plan, with uncertainty</h2>
-    <p class="cap">Band = backtested error at each horizon. It is wider on the downside because past misses were over-forecasts.</p>
+    <h2>Total revenue, with uncertainty</h2>
+    <p class="cap">Band = typical backtested miss at each horizon, after the bias correction (see Method &amp; accuracy).</p>
     <div class="legend">
       <span><i style="background:var(--ink)"></i>Actual</span>
       <span><i style="background:var(--accent)"></i>Projection (with levers)</span>
@@ -231,9 +238,27 @@ tr.sel td{background:rgba(0,107,214,.08)}
 
 <section class="view" id="v-method">
   <div class="card">
-    <h2>Backtest: what the model would have said</h2>
+    <h2>Track record: forecasts made before the month, vs what booked</h2>
     <p class="cap" id="btcap"></p>
-    <div class="chartbox" style="height:300px"><canvas id="cBt"></canvas></div>
+    <div class="legend">
+      <span><i style="background:var(--ink)"></i>Actual total revenue</span>
+      <span><i style="background:var(--accent)"></i>Model, forecast at the start of the month</span>
+      <span><i style="background:var(--neutral)"></i>Same month last year x recent growth (no-skill benchmark)</span>
+    </div>
+    <div class="chartbox" style="height:280px"><canvas id="cBt"></canvas></div>
+    <div class="grid2 bt2">
+      <div><h3>Average miss by horizon (Jan 2025 to now)</h3><div class="tablewrap"><table class="mini" id="btSum"></table></div></div>
+      <div><h3>Q3 2026, forecast from each month start</h3><div class="tablewrap"><table class="mini" id="btQ3"></table></div></div>
+    </div>
+  </div>
+  <div class="gap"></div>
+  <div class="card">
+    <h2>Promo calendar</h2>
+    <p class="cap" id="promocap"></p>
+    <div class="grid2 bt2">
+      <div><h3>Sales in the projection</h3><div class="tablewrap"><table class="mini" id="promoNext"></table></div></div>
+      <div><h3>What past sales added (measured)</h3><div class="tablewrap"><table class="mini" id="promoPast"></table></div></div>
+    </div>
   </div>
   <div class="gap"></div>
   <div class="card notes" id="notes"></div>
@@ -264,7 +289,7 @@ const LEVERS = [
 ];
 const L = Object.fromEntries(LEVERS.map(l => [l.k, 0]));
 let D, charts = {}, range = '2025', MONTHS_ALL = [], PM, PY, NY;
-const RG = {preset:'y0', from:null, to:null}, CP = {mode:'plan', from:null, to:null};
+const RG = {preset:'y0', from:null, to:null}, CP = {mode:'ly', from:null, to:null};
 const AIURL = 'https://ironneck-projection-ai.sam-09a.workers.dev';
 
 function calc(r){
@@ -286,7 +311,7 @@ function calc(r){
   const biz = d2c + amazon + ddo;
   const ni = biz * (1 - D.pnl.cogs_pct) - (meta + google + amzAds) * D.pnl.ad_ratio - r.fixed;
   return {month:r.month, d2c, inl, ha, amazon, ddo, ecom:d2c+amazon, total:biz, orders, aov, meta, google, amzAds,
-          ni, sessions: Object.values(r.seg).reduce((a,s)=>a+s.ses,0), band:r.band, fixed:r.fixed, nowcast:r.nowcast};
+          ni, sessions: Object.values(r.seg).reduce((a,s)=>a+s.ses,0), band:r.band, fixed:r.fixed, nowcast:r.nowcast, promos:r.promos||[]};
 }
 function baseCalc(r){ const save = {...L}; Object.keys(L).forEach(k=>L[k]=0); const o = calc(r); Object.assign(L, save); return o; }
 
@@ -424,7 +449,7 @@ function drawRev(H, F, B){
 function drawTot(H, F, B){
   const rows = [...H.filter(r=>r.month>='2024-01'), ...F];
   const fi = rows.findIndex(r=>!r.actual);
-  const hi = rows.map(r=> r.actual ? null : r.total * (1 + r.band*0.6));
+  const hi = rows.map(r=> r.actual ? null : r.total * (1 + r.band));
   const lo = rows.map(r=> r.actual ? null : r.total * (1 - r.band));
   // connect projection to last actual
   const proj = rows.map((r,i)=> r.actual ? (i===fi-1 ? r.total : null) : r.total);
@@ -481,7 +506,7 @@ function agg(rows){
   rows.forEach(r => { ['total','d2c','inl','ha','amazon','ddo','orders','sessions','meta','google','amzAds'].forEach(k => o[k] += r[k] || 0);
     if (r.ni != null) { o.ni += r.ni; o.niN++; }
     o.aovw += (r.aov || 0) * (r.orders || 0);
-    if (!r.actual) { o.proj++; o.lo += r.total * (1 - r.band); o.hi += r.total * (1 + r.band * 0.6); } else { o.lo += r.total || 0; o.hi += r.total || 0; } });
+    if (!r.actual) { o.proj++; o.lo += r.total * (1 - r.band); o.hi += r.total * (1 + r.band); } else { o.lo += r.total || 0; o.hi += r.total || 0; } });
   o.aov = o.orders ? o.aovw / o.orders : null; o.cr = o.sessions ? o.orders / o.sessions : null; o.ads = o.meta + o.google + o.amzAds;
   if (o.niN < o.n) o.ni = null;
   return o;
@@ -539,7 +564,7 @@ function aiContext(){
   const {H, F} = series(), r0 = v => v == null ? '' : Math.round(v);
   const rows = [...H.filter(r => r.month >= '2024-01'), ...F].map(r => { const g = goalFor(r.month);
     return [r.month, r.actual ? 'actual' : r.nowcast ? 'partial' : 'proj', r0(r.total), g ? r0(g.total) : '', r0(r.d2c), r0(r.inl), r0(r.ha), r0(r.amazon), r0(r.ddo), r0(r.ni), g && g.ni != null ? r0(g.ni) : '',
-      r0(r.orders), r0(r.aov), r0(r.sessions), r0(r.meta), r0(r.google), r0(r.amzAds), r.actual ? '' : `${r0(r.total*(1-r.band))}-${r0(r.total*(1+r.band*.6))}`].join('|'); });
+      r0(r.orders), r0(r.aov), r0(r.sessions), r0(r.meta), r0(r.google), r0(r.amzAds), r.actual ? '' : `${r0(r.total*(1-r.band))}-${r0(r.total*(1+r.band))}`].join('|'); });
   const hb = Object.fromEntries(D.hist.map(h => [h.month, h.brand_clicks]));
   const S = window.__rangeSummary || {}, P = D.params, B = D.brand, lv = Object.entries(L).filter(([,v]) => v).map(([k,v]) => `${k} ${v>0?'+':''}${v}%`).join(', ') || 'none';
   const sm = o => o ? Object.entries(o).filter(([k]) => ['total','d2c','amazon','ddo','ni','orders','ads','aov'].includes(k)).map(([k,v]) => `${k} ${v==null?'n/a':Math.round(v)}`).join(', ') : 'n/a';
@@ -563,7 +588,9 @@ ${rows.join('\n')}
 
 Google brand search clicks ("iron neck") by month: ${Object.entries(hb).filter(([,v]) => v).map(([m,v]) => m+' '+v).join(', ')}; projected next 12: ${D.fut.slice(0,12).map(r => r.month+' '+Math.round(r.brand_clicks)).join(', ')}.
 
-Model notes: Shopify revenue = orders x AOV. Orders follow a quality-weighted traffic index (blog traffic converts ~0.06% vs ~2% for product pages and is held flat), seasonality from order history, damped trend (${P.phi}/month). AOV follows product mix: about $${Math.round(D.a_in)} per Iron Neck order vs $${Math.round(D.a_ha)} per Harness order; Harness share has grown fast in 2026, which lifts conversion but lowers AOV. Shopify conversion fell from July 2026. Amazon uses its own seasonality weighted to recent years (its Q4 peak has shrunk each year), trend = trailing 12-month YoY ${(P.amz_slope*1200).toFixed(1)}%/yr. D/D/O is flat at the 2026 average ($${Math.round(D.pnl.ddo_level)}/month) because earlier years included Amazon resellers that are gone. Net income = revenue x (1 - ${(D.pnl.cogs_pct*100).toFixed(1)}% COGS) - ad spend - fixed costs (finance sheet). Brand search is falling about ${Math.abs(Math.round(B.slope*1200))}%/yr; elasticity of Shopify orders to brand clicks ${B.e_shop.toFixed(2)}, Amazon ${B.e_amz.toFixed(2)}. Joe Rogan mention Jan-Feb 2025 added about ${Math.round(B.rogan.clicks.excess)} Google brand clicks, $${Math.round(B.rogan.shop.excess)} Shopify and $${Math.round(B.rogan.amz.excess)} Amazon revenue (about $${Math.round(B.rogan.per_click)} per extra click); it is excluded from all trends and never assumed to repeat. Meta elasticity ${P.e_meta.toFixed(2)} on the social share of orders (${Math.round(D.shares.social*100)}%). Backtest: average 12-month miss ${Math.round(D.backtest.mape*100)}%, past misses leaned high.`;
+Model notes: Shopify revenue = orders x AOV. Orders follow a quality-weighted traffic index (blog traffic converts ~0.06% vs ~2% for product pages and is held flat), seasonality from order history, damped trend (${P.phi}/month). AOV follows product mix: about $${Math.round(D.a_in)} per Iron Neck order vs $${Math.round(D.a_ha)} per Harness order; Harness share has grown fast in 2026, which lifts conversion but lowers AOV. From June 2026 non-blog Shopify sessions fell about 14% (homepage traffic roughly halved) and product-page conversion dropped from 2.6% in May to 1.8% in July; July 2026 also had no sale while July 2025 had Prime Day. Total sessions rose only because of blog traffic, which barely converts. Amazon uses its own seasonality weighted to recent years (its Q4 peak has shrunk each year), Prime events handled as dated events, trend = trailing 12-month YoY ${(P.amz_slope*1200).toFixed(1)}%/yr. D/D/O is flat at the 2026 average ($${Math.round(D.pnl.ddo_level)}/month) because earlier years included Amazon resellers that are gone. Net income = revenue x (1 - ${(D.pnl.cogs_pct*100).toFixed(1)}% COGS) - ad spend - fixed costs (average of the last 3 closed months). Shopify includes a bias correction from its own past misses (x${D.bias_corr.toFixed(2)}). Promotions are modeled as dated events from the promo calendar (lift measured per sale and scaled by the $ off the 3.0 Pro); Amazon only responds to Prime events. Brand search is falling about ${Math.abs(Math.round(B.slope*1200))}%/yr; elasticity of Shopify orders to brand clicks ${B.e_shop.toFixed(2)}, Amazon ${B.e_amz.toFixed(2)}. Joe Rogan mention Jan-Feb 2025 added about ${Math.round(B.rogan.clicks.excess)} Google brand clicks, $${Math.round(B.rogan.shop.excess)} Shopify and $${Math.round(B.rogan.amz.excess)} Amazon revenue (about $${Math.round(B.rogan.per_click)} per extra click); it is excluded from all trends and never assumed to repeat. Meta elasticity ${P.e_meta.toFixed(2)} on the social share of orders (${Math.round(D.shares.social*100)}%). Track record (refit at every month start since Jan 2025, scored against actuals): next-month total revenue miss ${D.track?Math.round(D.track.summary.total_1.model_mape*100):'n/a'}% (benchmark ${D.track?Math.round(D.track.summary.total_1.naive_mape*100):'n/a'}%).
+
+Promo calendar in the projection: ${D.fut.filter(r=>(r.promos||[]).length||r.amz_promo>0).map(r=>`${r.month} ${[...new Set(r.promos)].join('+')} (shopify +${Math.round(r.promo_d2c*D.fin_ratio)}, amazon +${Math.round(r.amz_promo)})`).join('; ')}.`;
 }
 let asking = false;
 async function ask(followup){
@@ -614,11 +641,11 @@ function drawNi(H, F){
 function drawTable(H, F){
   const rows = [...H.filter(r=>r.month>=D.partial_month.slice(0,4)+'-01'), ...F];
   const head = ['Month','Sessions','Orders','AOV','Shopify: Iron Neck','Shopify: Harness','Shopify total','Amazon','D/D/O','Total','Plan','vs plan','Meta','Google','Amazon ads','Net income','NI plan'];
-  $('#tblcap').textContent = `Includes the current lever settings. Closed months are the O&F Targets tab. Projected net income uses ${Math.round(D.pnl.cogs_pct*1000)/10}% COGS (last 12 months), ad spend scaled to Targets (${D.pnl.ad_ratio.toFixed(2)}x) and the finance sheet's fixed costs.`;
+  $('#tblcap').textContent = `Includes the current lever settings. Closed months are the O&F Targets tab. Projected net income uses ${Math.round(D.pnl.cogs_pct*1000)/10}% COGS (last 12 months), ad spend scaled to Targets (${D.pnl.ad_ratio.toFixed(2)}x) and fixed costs projected from the last 3 closed months. Months tagged "sale" include a promo from the calendar (hover for which).`;
   let html = '<thead><tr>' + head.map(h=>`<th>${h}</th>`).join('') + '</tr></thead><tbody>';
   const line = (r, cls='')=>{ const g = goalFor(r.month); const gt = r.plan != null ? r.plan : (g ? g.total : null); const gn = r.planNi != null ? r.planNi : (g ? g.ni : null);
     const vs = gt && r.total ? r.total/gt - 1 : null;
-    return `<tr class="${cls}${r.month>=RG.from&&r.month<=RG.to?' sel':''}"${/^\d{4}-\d{2}$/.test(r.month)?` data-m="${r.month}"`:''}><td>${r.label || lab(r.month)}${r.actual?'':' <span class="pill">proj</span>'}</td><td>${r.sessions?Math.round(r.sessions).toLocaleString():'–'}</td><td>${Math.round(r.orders).toLocaleString()}</td><td>${fmt$(r.aov)}</td>
+    return `<tr class="${cls}${r.month>=RG.from&&r.month<=RG.to?' sel':''}"${/^\d{4}-\d{2}$/.test(r.month)?` data-m="${r.month}"`:''}><td>${r.label || lab(r.month)}${r.actual?'':' <span class="pill">proj</span>'}${(r.promos||[]).length?` <span class="pill promo" title="${r.promos.map(p=>PROMO_NAME[p]||p).join(', ')}">sale</span>`:''}</td><td>${r.sessions?Math.round(r.sessions).toLocaleString():'–'}</td><td>${Math.round(r.orders).toLocaleString()}</td><td>${fmt$(r.aov)}</td>
       <td>${fmt$(r.inl)}</td><td>${fmt$(r.ha)}</td><td>${fmt$(r.d2c)}</td><td>${fmt$(r.amazon)}</td><td>${fmt$(r.ddo)}</td><td>${fmt$(r.total)}</td><td>${gt?fmt$(gt):'–'}</td>
       <td class="${vs==null?'':vs>=0?'pos':'neg'}">${vs==null?'–':pct(vs)}</td><td>${fmt$(r.meta)}</td><td>${fmt$(r.google)}</td><td>${fmt$(r.amzAds)}</td><td class="${r.ni==null?'':r.ni>=0?'pos':'neg'}">${fmt$(r.ni)}</td><td>${gn==null?'–':fmt$(gn)}</td></tr>`; };
   const PY = D.partial_month.slice(0,4);
@@ -702,17 +729,51 @@ function drawDrivers(){
 }
 
 // ---------- method
+const PROMO_NAME = {presidents:"Presidents' Day", spring:'Spring / flash sale', memorial:'Memorial Day', fathers:"Father's Day", july4:'July 4th', prime_summer:'Prime Day', labor:'Labor Day', prime_oct:'October Prime', bfcm:'Veterans / BFCM', holiday:'Holiday sale'};
 function drawMethod(){
-  const B = D.backtest;
-  $('#btcap').innerHTML = `The model was refit at five past dates using only the data available then, and asked to forecast the next 12 months of Shopify revenue. Average miss: <b>${Math.round(B.mape*100)}%</b> (a same-month-last-year guess misses by ${Math.round(B.snaive_mape*100)}%). Misses have leaned high (average ${pct(B.bias)}): the model did not foresee the 2025 decline or the July 2026 conversion drop.`;
-  const months = D.hist.filter(h=>h.month>='2025-01' && !h.partial).map(h=>h.month);
-  const ds = [{label:'Actual Shopify net sales', data:months.map(m=>D.hist.find(h=>h.month===m).d2c), borderColor:css('--ink'), borderWidth:2.5, pointRadius:0}];
-  const shades = ['--neutral','--ha','--amz','--in','--ink-2'];
-  B.origins.forEach((o,i)=> ds.push({label:'From '+lab(o.origin)+` (${Math.round(o.mape*100)}% off)`, data:months.map(m=>{const r=o.rows.find(x=>x.month===m); return r?r.forecast:null;}), borderColor:alpha(css(shades[i]),.85), borderDash:[4,3], borderWidth:1.5, pointRadius:0}));
-  const o = baseOpts(); o.plugins.legend = {display:true, position:'bottom', labels:{color:css('--ink-2'), boxWidth:14, boxHeight:2, font:{size:11}}};
-  o.plugins.tooltip.filter = t=>t.raw!=null; o.plugins.tooltip.callbacks = {label:t=>`${t.dataset.label}: ${fmt$(t.raw)}`};
-  if (charts.bt) charts.bt.destroy();
-  charts.bt = new Chart($('#cBt'), {type:'line', data:{labels:months.map(lab), datasets:ds}, options:o});
+  const T = D.track;
+  const nm = {shop:'Shopify', amz:'Amazon', total:'Total revenue'};
+  if (T) {
+    const S = T.summary, t1 = S.total_1;
+    $('#btcap').innerHTML = `At every month start since Jan 2025 the model was refit using only what was known that day (promo lifts only from sales that had already ended), then compared with the O&amp;F Targets actuals. It does not look at the plan. Forecasting the coming month, total revenue missed by <b>${Math.round(t1.model_mape*100)}%</b> on average with almost no lean (${pct(t1.model_bias)}); the no-skill benchmark missed by ${Math.round(t1.naive_mape*100)}% and ran ${pct(t1.naive_bias)} high. Jan to Feb 2025 (Rogan) is left out of the scoring.`;
+    // chart: 1-month-ahead forecasts vs actual
+    const one = T.broad.filter(r => r.ahead === 1);
+    const ms = one.map(r => r.month);
+    const ds = [
+      {label:'Actual', data:one.map(r=>r.actual.total), borderColor:css('--ink'), borderWidth:2.5, pointRadius:0},
+      {label:'Model (start of month)', data:one.map(r=>r.forecast.total), borderColor:css('--accent'), borderWidth:2, pointRadius:2.5, pointBackgroundColor:css('--accent')},
+      {label:'No-skill benchmark', data:one.map(r=>r.naive.total), borderColor:alpha(css('--neutral'),.9), borderDash:[4,3], borderWidth:1.5, pointRadius:0}];
+    const o = baseOpts(); o.plugins.tooltip.filter = t=>t.raw!=null;
+    o.plugins.tooltip.callbacks = {label:t=>{ const a = one[t.dataIndex].actual.total; return `${t.dataset.label}: ${fmt$(t.raw)}${t.datasetIndex ? ` (${pct(t.raw/a-1)})` : ''}`; }};
+    o.scales.y.ticks.callback = v => fmtKd(v);
+    if (charts.bt) charts.bt.destroy();
+    charts.bt = new Chart($('#cBt'), {type:'line', data:{labels:ms.map(lab), datasets:ds}, options:o});
+    let h = '<thead><tr><th></th><th>Months ahead</th><th>Model miss</th><th>Lean</th><th>Benchmark miss</th></tr></thead><tbody>';
+    ['total','shop','amz'].forEach(f => [1,2,3].forEach(a => { const v = S[`${f}_${a}`]; if (!v) return;
+      h += `<tr><td>${a===1?nm[f]:''}</td><td>${a}</td><td><b>${Math.round(v.model_mape*100)}%</b></td><td>${pct(v.model_bias)}</td><td>${Math.round(v.naive_mape*100)}%</td></tr>`; }));
+    $('#btSum').innerHTML = h + '</tbody>';
+    let q = '<thead><tr><th>Month</th><th>Forecast from</th><th>Total forecast</th><th>Actual</th><th>Miss</th><th>Shopify</th><th>Amazon</th><th>Net income fc / actual</th></tr></thead><tbody>';
+    T.q3.forEach(r => { const m = r.forecast.total/r.actual.total-1;
+      q += `<tr><td>${lab(r.month)}</td><td>1 ${MN[+r.origin.slice(5)-1]}</td><td>${fmtKd(r.forecast.total)}</td><td>${fmtKd(r.actual.total)}</td><td class="${Math.abs(m)<=.1?'pos':'neg'}">${pct(m)}</td>
+        <td class="sub">${pct(r.forecast.shop/r.actual.shop-1)}</td><td class="sub">${pct(r.forecast.amz/r.actual.amz-1)}</td><td class="sub">${fmtKd(r.forecast.ni)} / ${fmtKd(r.actual.ni)}</td></tr>`; });
+    $('#btQ3').innerHTML = q + '</tbody>';
+  }
+  // promo calendar
+  const PR = D.promos;
+  if (PR) {
+    const lf = PR.lifts, al = PR.amz_lifts;
+    $('#promocap').innerHTML = `From your 2024 to 2026 Promotions &amp; Sales docs (2023 windows inferred from order spikes). Each sale's lift is measured from daily orders against the promo-free days around it, including the dip in the week after, then taken out of history so the model learns underlying demand. Sales are added back on their dates: Shopify at about ${(lf._pooled[1]).toFixed(1)} days of normal revenue per $100 off the 3.0 Pro (varies by sale), Amazon only for Prime events (Prime Day about ${al.prime_summer.toFixed(0)} extra days of normal sales, October Prime about ${al.prime_oct.toFixed(0)}). Black Friday to Christmas runs every year and stays in the seasonal pattern. 2027 repeats the 2026 calendar on the same holidays, Prime Day assumed in June again: edit <code>model/promos.json</code> when the 2027 calendar is set.`;
+    let n = '<thead><tr><th>Month</th><th>Sales</th><th>Shopify added</th><th>Amazon added</th></tr></thead><tbody>';
+    D.fut.filter(r => !r.nowcast && ((r.promos||[]).length || r.amz_promo > 0)).forEach(r => {
+      n += `<tr><td>${lab(r.month)}</td><td style="text-align:left">${[...new Set(r.promos)].map(p=>PROMO_NAME[p]||p).join(', ')}</td><td>${r.promo_d2c>1?fmtKd(r.promo_d2c*D.fin_ratio):'–'}</td><td>${r.amz_promo>1?fmtKd(r.amz_promo):'–'}</td></tr>`; });
+    $('#promoNext').innerHTML = n + '</tbody>';
+    const amzBy = Object.fromEntries((PR.amazon_events||[]).map(e => [e.start.slice(0,7)+e.type, e]));
+    let p = '<thead><tr><th>Sale</th><th>Dates</th><th>Pro off</th><th>Shopify extra</th><th>Amazon extra</th></tr></thead><tbody>';
+    PR.measured.filter(m => m.start >= '2024-01-01').slice().reverse().forEach(m => {
+      const a = (PR.amazon_events||[]).find(e => e.type === m.type && e.start.slice(0,7) === m.start.slice(0,7));
+      p += `<tr><td>${PROMO_NAME[m.type]||m.type}</td><td class="sub">${MN[+m.start.slice(5,7)-1]} ${+m.start.slice(8)}${m.end===m.start?'':' to '+(m.end.slice(0,7)===m.start.slice(0,7)?'':MN[+m.end.slice(5,7)-1]+' ')+(+m.end.slice(8))} '${m.start.slice(2,4)}</td><td>${m.pro==null?'–':m.pro===0?'gift':'$'+m.pro}</td><td>${fmtKd(m.extra_r)} <span class="sub">(${Math.round(m.extra_o)} orders)</span></td><td>${a?fmtKd(a.extra):'–'}</td></tr>`; });
+    $('#promoPast').innerHTML = p + '</tbody>';
+  }
   const P = D.params;
   $('#notes').innerHTML = `
   <p><b>Shopify revenue = orders x AOV.</b> Orders come from a quality-weighted traffic index: each traffic segment (product pages, collections, homepage, landing pages, blog, other) is weighted by its own conversion rate over the last 12 months, so traffic moving between page types or a blog surge does not read as growth. Seasonality is applied once, at the order level, and the trend is damped (${P.phi} per month) so nothing runs away by late 2027.</p>
@@ -720,12 +781,13 @@ function drawMethod(){
   <p><b>One-offs are masked, not modeled.</b> The Joe Rogan mention (Jan to Feb 2025) is excluded from every trend and seasonal fit, so no repeat is assumed. Blog deindexing (Mar 2025 to Apr 2026) is excluded from blog seasonality, and the blog is held at its recent level rather than extrapolated through the recovery. Bulk Klaviyo imports (${D.flags.signup_imports.map(lab).join(', ')}) are excluded from signup trends.</p>
   <p><b>What Rogan was worth.</b> Taking Jan to Feb 2024 and scaling by how the rest of 2025 ran against 2024 gives the baseline. Against that, Jan to Feb 2025 had about ${fmtK(D.brand.rogan.clicks.excess)} extra Google brand clicks (${fmtK(D.brand.rogan.clicks.actual)} vs ${fmtK(D.brand.rogan.clicks.baseline)}), about ${fmtKd(D.brand.rogan.shop.excess)} extra Shopify revenue and ${fmtKd(D.brand.rogan.amz.excess)} extra Amazon revenue: roughly $${Math.round(D.brand.rogan.per_click)} of ecommerce revenue per extra branded click. Amazon brand searches hit 12.8k that January against about 2k in a normal month.</p>
   <p><b>Brand search as a driver.</b> Google brand clicks are projected like Amazon (own seasonal shape, recent level, damped year-over-year trend: ${(D.brand.slope*1200).toFixed(0)}% a year now). The brand lever uses elasticities measured on ${D.brand.n_pairs} year-over-year month pairs since 2025, Rogan excluded: Shopify orders ${D.brand.e_shop.toFixed(2)}, Amazon ${D.brand.e_amz.toFixed(2)}. These are correlations, not tests, so treat the lever as a risk range.</p>
-  <p><b>Amazon</b> uses the Targets tab history back to Jan 2023 and its own seasonal shape, weighted hard toward recent years because the Amazon Q4 peak has shrunk each year (November was 2.6x October in 2023, 2.0x in 2024, 1.25x in 2025). Level is the last 3 months; trend is the trailing 12-month year-over-year change (${(P.amz_slope*1200).toFixed(1)}% a year), damped. Seller Board raw sales are kept as a cross-check.</p>
+  <p><b>Amazon</b> uses the Targets tab history back to Jan 2023 and its own seasonal shape, weighted hard toward recent years because the Amazon Q4 peak has shrunk each year (November was 2.6x October in 2023, 2.0x in 2024, 1.25x in 2025). Prime Day and October Prime are measured from Seller Board and treated as dated events (Prime moved from July to June in 2026; counting it as "July seasonality" is what made the old model overshoot July 2026 by 98%). Level blends the last 3 and last 12 promo-free months, so it reacts to turns without chasing them; trend is the trailing 12-month year-over-year change (${(P.amz_slope*1200).toFixed(1)}% a year), damped. The Amazon holiday peak is the weakest part of the model: it has been over-forecast because the peak keeps shrinking.</p>
   <p><b>D/D/O</b> (direct, distributor, other) is projected flat at the 2026 average (${fmtKd(D.pnl.ddo_level)} a month). Earlier years included Amazon resellers, with some six-figure months, so nothing before Jan 2026 is used.</p>
   <p><b>Meta and Google spend</b> use the D2C demand calendar as their seasonal shape, with strength fitted per series (Meta ${P.meta_beta.toFixed(2)}x), and the trend from 2026. This is how August 2027 spend is predicted from what you typically spend in August plus where spend is trending.</p>
   <p><b>Month in progress.</b> ${lab(D.partial_month)} = actuals through ${D.nowcast ? D.nowcast.through : '–'} from the daily net income sheet (Shopify, Amazon, Meta, Google, Amazon ads; grayed projection days are ignored) plus the model's full-month value for the ${D.nowcast ? Math.round(D.nowcast.share_left*100) : '–'}% of the month still to come.</p>
   <p><b>Levers.</b> Meta: elasticity of paid sessions to spend measured on 2026 (${P.e_meta.toFixed(2)}), applied to the ${Math.round(D.shares.social*100)}% of orders that arrive via social. Email: elasticity of email revenue to 6-month signups (${P.e_email.toFixed(2)}). SMS: elasticity of Attentive revenue to 6-month SMS signups (${P.e_sms.toFixed(2)}). Both counted at ${P.email_incr*100}% incremental.</p>
-  <p><b>Finance basis.</b> History is the O&amp;F Targets tab (official monthly P&amp;L). Projected Shopify = Shopify net sales x ${D.fin_ratio.toFixed(3)} (Targets Shopify vs Shopify analytics, last 12 months). Net income = (Shopify + Amazon + D/D/O) x (1 − ${(D.pnl.cogs_pct*100).toFixed(1)}% COGS) − ad spend x ${D.pnl.ad_ratio.toFixed(2)} (Targets ad spend vs Meta + Google + Amazon ads) − fixed costs (other SMA, payroll, G&amp;A, other: the finance sheet's 2026 values, repeated for 2027). Plan = the Targets tab's Est. columns.</p>
+  <p><b>Finance basis.</b> History is the O&amp;F Targets tab (official monthly P&amp;L). Projected Shopify = Shopify net sales x ${D.fin_ratio.toFixed(3)} (Targets Shopify vs Shopify analytics, last 12 months). Net income = (Shopify + Amazon + D/D/O) x (1 − ${(D.pnl.cogs_pct*100).toFixed(1)}% COGS) − ad spend x ${D.pnl.ad_ratio.toFixed(2)} (Targets ad spend vs Meta + Google + Amazon ads) − fixed costs (other SMA, payroll, G&amp;A, other) projected from history: the average of the last 3 closed months on the Targets tab (${fmtKd(D.fixed_level)} a month). Nothing in the forecast reads the O&amp;F plan or the finance sheet's forward rows; the Targets Est. columns appear only as an optional comparison.</p>
+  <p><b>Bias correction.</b> Shopify is multiplied by ${D.bias_corr.toFixed(3)}: the average error of the model's own forecasts over the last ~18 months (54 realized 1 to 3 month forecasts), so it stops leaning high. Before this, its forecasts ran about 9% high.</p>
   <p><b>Still missing.</b> Google spend before Jun 2024. Search Console only keeps 16 months, so brand search starts Jan 2024 (from your sheet). Amazon Brand Analytics has gaps (2024 before Aug, 2025 after Sep). Attentive has no connector, so SMS updates when new exports are uploaded.</p>
   <p><b>Refresh.</b> Shopify sessions, orders and product mix plus Klaviyo signups and email revenue are re-pulled daily; the Iron Neck Master is re-read for spend, fixed costs and month-to-date actuals, and the Targets tab for closed months. The model refits each run, so the projection moves as new months land.</p>`;
 }
