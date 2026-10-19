@@ -248,7 +248,7 @@ table.mini td.sub{color:var(--ink-3);font-size:11px}
     <div class="chartbox" style="height:280px"><canvas id="cBt"></canvas></div>
     <div class="grid2 bt2">
       <div><h3>Average miss by horizon (Jan 2025 to now)</h3><div class="tablewrap"><table class="mini" id="btSum"></table></div></div>
-      <div><h3>Q3 2026, forecast from each month start</h3><div class="tablewrap"><table class="mini" id="btQ3"></table></div></div>
+      <div><h3>Q2 and Q3 2026, forecast made before each month</h3><div class="tablewrap"><table class="mini" id="btQ3"></table></div></div>
     </div>
   </div>
   <div class="gap"></div>
@@ -752,10 +752,18 @@ function drawMethod(){
     ['total','shop','amz'].forEach(f => [1,2,3].forEach(a => { const v = S[`${f}_${a}`]; if (!v) return;
       h += `<tr><td>${a===1?nm[f]:''}</td><td>${a}</td><td><b>${Math.round(v.model_mape*100)}%</b></td><td>${pct(v.model_bias)}</td><td>${Math.round(v.naive_mape*100)}%</td></tr>`; }));
     $('#btSum').innerHTML = h + '</tbody>';
-    let q = '<thead><tr><th>Month</th><th>Forecast from</th><th>Total forecast</th><th>Actual</th><th>Miss</th><th>Shopify</th><th>Amazon</th><th>Net income fc / actual</th></tr></thead><tbody>';
-    T.q3.forEach(r => { const m = r.forecast.total/r.actual.total-1;
-      q += `<tr><td>${lab(r.month)}</td><td>1 ${MN[+r.origin.slice(5)-1]}</td><td>${fmtKd(r.forecast.total)}</td><td>${fmtKd(r.actual.total)}</td><td class="${Math.abs(m)<=.1?'pos':'neg'}">${pct(m)}</td>
-        <td class="sub">${pct(r.forecast.shop/r.actual.shop-1)}</td><td class="sub">${pct(r.forecast.amz/r.actual.amz-1)}</td><td class="sub">${fmtKd(r.forecast.ni)} / ${fmtKd(r.actual.ni)}</td></tr>`; });
+    const get = (o, m) => T.broad.find(r => r.origin === o && r.month === m);
+    const cell = (r) => { if (!r) return '<td>–</td><td>–</td>'; const m = r.forecast.total/r.actual.total-1;
+      return `<td>${fmtKd(r.forecast.total)}</td><td class="${Math.abs(m)<=.1?'pos':'neg'}">${pct(m)}</td>`; };
+    let q = '<thead><tr><th>Month</th><th>Actual</th><th>Forecast on the 1st</th><th>Miss</th><th>Forecast at quarter start</th><th>Miss</th></tr></thead><tbody>';
+    [['2026-04','2026-05','2026-06'],['2026-07','2026-08','2026-09']].forEach(ms => {
+      const qs = ms[0]; let A = 0, F1 = 0, FQ = 0, ok = true;
+      ms.forEach(m => { const a = get(m, m), b = get(qs, m); if (!a || !b) { ok = false; return; }
+        A += a.actual.total; F1 += a.forecast.total; FQ += b.forecast.total;
+        q += `<tr><td>${lab(m)}</td><td>${fmtKd(a.actual.total)}</td>${cell(a)}${cell(b)}</tr>`; });
+      if (ok) { const m1 = F1/A-1, mq = FQ/A-1;
+        q += `<tr class="yr"><td>Q${Math.ceil(+qs.slice(5)/3)} total</td><td>${fmtKd(A)}</td><td>${fmtKd(F1)}</td><td class="${Math.abs(m1)<=.1?'pos':'neg'}">${pct(m1)}</td><td>${fmtKd(FQ)}</td><td class="${Math.abs(mq)<=.1?'pos':'neg'}">${pct(mq)}</td></tr>`; }
+    });
     $('#btQ3').innerHTML = q + '</tbody>';
   }
   // promo calendar
