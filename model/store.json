@@ -1,8 +1,8 @@
 {
  "meta": {
-  "generated": "2026-10-16",
+  "generated": "2026-10-19",
   "partial_month": "2026-10",
-  "mtd_days": 16,
+  "mtd_days": 19,
   "cogs_pct": 0.24,
   "rogan": [
    "2025-01",
@@ -33,13 +33,13 @@
   "amazon_ratio": 0.9962,
   "mtd": {
    "month": "2026-10",
-   "through": "2026-10-15",
-   "days": 15,
-   "shop": 60883,
-   "amazon": 62539,
-   "meta": 24252,
-   "google": 5957,
-   "amz_ads": 13081
+   "through": "2026-10-18",
+   "days": 18,
+   "shop": 71708,
+   "amazon": 69327,
+   "meta": 28348,
+   "google": 6669,
+   "amz_ads": 15311
   },
   "targets_source": "Iron Neck Operations & Finance > Targets (1wSEMec5fEH4VL4yYSpfzqeimqNBphoObVAZlS19sTHo). tgt_* = actuals; goal_* = the 'Est.' plan columns.",
   "brand_source": "gsc_brand_*: Search Console query 'iron neck' (web), 2024-2025 from the '2025 Branded Search on Google' sheet, Jun 2025 on from GSC export. amz_brand_*: Amazon Brand Analytics tab of the same sheet."
@@ -3438,50 +3438,50 @@
    "gsc_days": 30
   },
   "2026-10": {
-   "orders": 258,
-   "net": 59879,
-   "sessions": 22073,
-   "checkouts": 216,
+   "orders": 301,
+   "net": 69936,
+   "sessions": 25279,
+   "checkouts": 252,
    "lp": {
     "P": [
-     6326,
-     105
+     6952,
+     122
     ],
     "C": [
-     1544,
+     1760,
      21
     ],
     "H": [
-     2237,
-     54
+     2547,
+     62
     ],
     "L": [
-     3777,
-     19
+     4498,
+     29
     ],
     "B": [
-     7584,
-     2
+     8844,
+     3
     ]
    },
    "ref": {
     "search": [
-     9750,
-     68
+     11274,
+     80
     ],
     "direct": [
-     7608,
-     101
+     8528,
+     117
     ],
     "social": [
-     4281,
-     34
+     4956,
+     41
     ]
    },
-   "line_in": 42479,
-   "line_ha": 15424,
-   "email_rev": 11361,
-   "signups": 462,
+   "line_in": 49727,
+   "line_ha": 17897,
+   "email_rev": 12202,
+   "signups": 532,
    "amazon": null,
    "meta": null,
    "google": null,
@@ -3507,14 +3507,18 @@
    "goal_shop": 400000.0,
    "goal_amz": 200000.0,
    "goal_ddo": 35000.0,
-   "goal_ni": 122394.0
+   "goal_ni": 122394.0,
+   "lp": {},
+   "ref": {}
   },
   "2026-12": {
    "fixed": 157761,
    "goal_shop": 325000.0,
    "goal_amz": 200000.0,
    "goal_ddo": 35000.0,
-   "goal_ni": 90144.0
+   "goal_ni": 90144.0,
+   "lp": {},
+   "ref": {}
   }
  }
 }
