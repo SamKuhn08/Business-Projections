@@ -2,3 +2,5 @@ __pycache__/
 raw/
 *.pyc
 .netlify/
+backtest_out.json
+model/backtest_out.json
