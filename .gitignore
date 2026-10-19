@@ -4,3 +4,4 @@ raw/
 .netlify/
 backtest_out.json
 model/backtest_out.json
+model/model_out.json
