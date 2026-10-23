@@ -83,7 +83,11 @@ def main(raw, today):
         for m, v in fin.items():
             e = rec(m)
             for kk, vv in v.items():
-                if vv is not None: e[kk] = vv
+                if vv is None: continue
+                # Targets tab owns these: never let the finance sheet overwrite them
+                if kk == 'amazon' and e.get('tgt_amz') is not None: continue
+                if kk in ('goal_shop', 'goal_amz') and e.get('goal_ddo') is not None: continue
+                e[kk] = vv
 
     tg = load(raw, 'targets.json')           # {"YYYY-MM": {"tgt_shop":..,"tgt_amz":..,"tgt_ddo":..,"tgt_total":..,"tgt_cogs":..,"tgt_ad":..,
     if tg:                                   #   "tgt_other_sma":..,"tgt_payroll":..,"tgt_ga":..,"tgt_other":..,"tgt_ni":..}} closed months only
