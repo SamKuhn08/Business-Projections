@@ -5,3 +5,6 @@ raw/
 backtest_out.json
 model/backtest_out.json
 model/model_out.json
+__pycache__/
+channels/orders.json
+channels/raw/*.json

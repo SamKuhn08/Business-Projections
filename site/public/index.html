@@ -138,6 +138,31 @@ table.mini th,table.mini td{padding:6px 8px}
 table.mini td.sub{color:var(--ink-3);font-size:11px}
 .pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(0,107,214,.11);color:var(--blue);margin-left:6px;vertical-align:1px}
 .view{display:none}.view.on{display:block}
+/* channels tab */
+.chbar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;border-radius:16px;padding:10px 14px;margin-bottom:12px}
+.chbar .grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.chbar select{font:inherit;font-size:12px;border:1px solid var(--line);border-radius:9px;padding:5px 8px;background:var(--surface);color:var(--ink)}
+.chnote{font-size:11.5px;color:var(--ink-3);margin-left:auto}
+.best{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.best .b{border-radius:14px;padding:12px 14px}
+.best .b .q{font-size:10px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-4)}
+.best .b .a{font-size:17px;font-weight:700;margin-top:4px;display:flex;align-items:center;gap:7px}
+.best .b .v{font-size:12px;color:var(--ink-3);margin-top:2px}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+table.pil{font-size:12.5px}
+table.pil th{white-space:normal;vertical-align:bottom;text-transform:none;letter-spacing:0;font-size:11.5px;color:var(--ink);min-width:78px}
+table.pil td,table.pil th{padding:7px 7px}
+table.pil th .h{display:flex;align-items:center;justify-content:flex-end;gap:5px;font-weight:700}
+table.pil th:first-child,table.pil td:first-child{position:sticky;left:0;background:rgba(255,255,255,.95);z-index:2;min-width:150px;max-width:210px;white-space:normal}
+table.pil td.top{background:rgba(13,138,95,.11);font-weight:700}
+table.pil td .dl{display:block;font-size:10.5px;font-weight:600}
+table.pil tr.sec td{background:transparent;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-4);padding-top:14px;border-bottom:none;text-align:left}
+table.pil td.all,table.pil th.all{border-left:1px solid var(--line);color:var(--ink-2)}
+.info{position:relative;display:inline-flex;width:15px;height:15px;border-radius:50%;border:1px solid var(--ink-4);color:var(--ink-3);font-size:9.5px;font-weight:700;align-items:center;justify-content:center;cursor:help;font-style:normal;flex:none}
+.info .tip{display:none;position:absolute;top:20px;right:-6px;width:250px;background:var(--surface);color:var(--ink-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px;font-size:11.5px;font-weight:400;line-height:1.45;text-align:left;box-shadow:0 10px 30px rgba(15,30,60,.14);z-index:40;white-space:normal}
+.info:hover .tip,.info:focus .tip{display:block}
+.rowinfo{color:var(--ink-4);font-size:10.5px;display:block;font-weight:400}
+
 .gap{height:14px}
 .row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .row>div:first-child{flex:1;min-width:0}
@@ -152,6 +177,7 @@ table.mini td.sub{color:var(--ink-3);font-size:11px}
     <button class="on" data-v="overview">Projection</button>
     <button data-v="drivers">Drivers</button>
     <button data-v="table">Monthly table</button>
+    <button data-v="channels">Channels</button>
     <button data-v="method">Method &amp; accuracy</button>
   </div>
 </div></header>
@@ -233,6 +259,29 @@ table.mini td.sub{color:var(--ink-3);font-size:11px}
     <div class="row"><div><h2>Month by month</h2><p class="cap" id="tblcap">Includes the current lever settings.</p></div>
     <button class="btn" id="csv">Download CSV</button></div>
     <div class="tablewrap"><table id="tbl"></table></div>
+  </div>
+</section>
+
+
+<section class="view" id="v-channels">
+  <div class="chbar glass">
+    <div class="grp"><span class="tlabel">Range</span><div class="seg" id="chpre"></div>
+      <select id="chfrom" aria-label="Channel range start"></select><span>to</span><select id="chto" aria-label="Channel range end"></select></div>
+    <div class="grp"><span class="tlabel">Compare</span><div class="seg" id="chcmp"><button data-c="off">Off</button><button data-c="prev">Previous period</button><button data-c="ly">Last year</button></div></div>
+    <div class="grp"><span class="tlabel">Credit</span><div class="seg" id="chmodel"><button data-m="last">Last visit</button><button data-m="first">First visit</button></div>
+      <i class="info" tabindex="0">i<span class="tip"><b>Last visit</b> credits the visit that closed the sale. <b>First visit</b> credits the visit that first brought the customer to the site, looking back up to 30 days (Shopify's customer journey window). Paid ads usually look better on first visit, email and direct on last visit. The same order is never counted twice in one view.</span></i></div>
+    <span class="chnote" id="chnote"></span>
+  </div>
+  <div class="best" id="chbest"></div>
+  <div class="card">
+    <div class="row"><div><h2>Channel pillars</h2><p class="cap" id="chcap"></p></div></div>
+    <div class="tablewrap" style="max-height:none"><table class="pil" id="chtbl"></table></div>
+  </div>
+  <div class="gap"></div>
+  <div class="card">
+    <div class="row"><div><h2>Revenue by channel, monthly</h2><p class="cap">Website (Shopify) revenue after discounts, by the credit model selected above.</p></div></div>
+    <div class="legend" id="chleg"></div>
+    <div class="chartbox" style="height:300px"><canvas id="cCh"></canvas></div>
   </div>
 </section>
 
@@ -349,7 +398,7 @@ function init(){
   });
   box.addEventListener('input', e=>{ if(e.target.dataset.k){ L[e.target.dataset.k] = +e.target.value; $('#lv-'+e.target.dataset.k).textContent = pct(+e.target.value/100); render(); }});
   $('#reset').onclick = ()=>{ Object.keys(L).forEach(k=>L[k]=0); box.querySelectorAll('input').forEach(i=>i.value=0); box.querySelectorAll('[id^=lv-]').forEach(s=>s.textContent='0%'); render(); };
-  $('#tabs').onclick = e=>{ const v=e.target.dataset.v; if(!v) return; document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on', b===e.target)); document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on', s.id==='v-'+v)); if(v==='drivers') drawDrivers(); if(v==='method') drawMethod(); };
+  $('#tabs').onclick = e=>{ const v=e.target.dataset.v; if(!v) return; document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on', b===e.target)); document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on', s.id==='v-'+v)); if(v==='drivers') drawDrivers(); if(v==='method') drawMethod(); const ch = v==='channels'; ['#toolbar','#kpis','#ask'].forEach(id=>$(id).style.display = ch ? 'none' : ''); if(ch) drawChannels(); };
   $('#range').onclick = e=>{ const r=e.target.dataset.r; if(!r) return; range=r; document.querySelectorAll('#range button').forEach(b=>b.classList.toggle('on', b===e.target)); render(); };
   $('#csv').onclick = downloadCSV;
   PM = D.partial_month; PY = PM.slice(0,4); NY = String(+PY+1);
@@ -729,6 +778,153 @@ function drawDrivers(){
 }
 
 // ---------- method
+
+// ---------- channels tab
+const CHN = {
+  meta:{n:'Meta ads', c:'#1f6feb', paid:true, d:'Paid Facebook and Instagram ads: visits tagged utm_source facebook, fb, ig or instagram with medium paid, plus Social Snowball "whitelisting" creator ads, which run from the Meta ad account. Cost = Meta ad spend. Meta ads were not consistently UTM-tagged before March 2026, so earlier Meta ad orders mostly show up as Direct.'},
+  google:{n:'Google ads', c:'#f2b705', paid:true, d:'Paid Google: visits tagged utm_source google or adwords with medium paid, cpc or ppc (Search, Shopping, Performance Max, YouTube ads). Cost = Google Ads spend.'},
+  org_search:{n:'Organic search', c:'#0e8a6e', d:'Unpaid search: visits from Google, Bing, DuckDuckGo and other engines with no ad tag, plus free Google Shopping listings (medium product_sync). Visits that land on a blog article are taken out of sessions (blog readers rarely buy and would bury the conversion rate); they are counted separately in the note under the table.'},
+  org_social:{n:'Organic social', c:'#d6336c', d:'Unpaid social: visits from Instagram, Facebook, TikTok, Reddit, YouTube and similar with no paid tag: link in bio, shared posts, comments, Yotpo social links.'},
+  email:{n:'Email', c:'#7c5ce8', d:'Klaviyo emails (utm_source Klaviyo, medium email: campaigns and flows) and visits referred by email apps. No media cost.'},
+  sms:{n:'SMS', c:'#e8590c', d:'Attentive texts (utm_source attentive, medium sms: campaigns and journeys). No media cost.'},
+  affiliate:{n:'Affiliates & partners', c:'#8d6e63', d:'Social Snowball affiliates, creator codes and seeding links, Refersion, Truemed, GovX and other referring websites or partner apps. Cost = estimated 15% commission on this channel\'s revenue (the Social Snowball default rate).'},
+  ai:{n:'AI assistants', c:'#00a3bf', d:'Visits referred by ChatGPT, Perplexity, Gemini, Copilot and Claude. No media cost.'},
+  direct:{n:'Direct', c:'#6c7893', d:'Typed-in URL, bookmarks, links from apps that strip their source, and visits Shopify cannot trace. Often people who already know the brand. No media cost.'},
+};
+let CHD = null; const CHS = {preset:'ytd', from:null, to:null, cmp:'ly', model:'last'};
+async function drawChannels(){
+  if (!CHD) { try { CHD = await (await fetch('channels.json?v=' + Date.now())).json(); } catch(e) { $('#chcap').textContent = 'Channel data not available yet.'; return; } initChannels(); }
+  renderChannels();
+}
+function initChannels(){
+  const ms = CHD.months.filter(m => m >= '2025-01'), last = ms[ms.length-1], ly = last.slice(0,4);
+  const MNL = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const opts = ms.map(m=>`<option value="${m}">${MNL[+m.slice(5)-1]} ${m.slice(0,4)}</option>`).join('');
+  $('#chfrom').innerHTML = opts; $('#chto').innerHTML = opts;
+  const P = [['l3','Last 3 months'],['ytd',`${ly} YTD`],['l12','Last 12 months'],['y25',String(+ly-1)],['all','All (Jan 2025 on)'],['custom','Custom']];
+  $('#chpre').innerHTML = P.map(([k,l])=>`<button data-p="${k}">${l}</button>`).join('');
+  const setP = p => { CHS.preset = p; const r = {l3:[shiftM(last,-2), last], ytd:[ly+'-01', last], l12:[shiftM(last,-11), last], y25:[(+ly-1)+'-01', (+ly-1)+'-12'], all:[ms[0], last]}[p]; if (r) { CHS.from = r[0] < ms[0] ? ms[0] : r[0]; CHS.to = r[1]; } };
+  try { Object.assign(CHS, JSON.parse(localStorage.getItem('inproj_ch') || '{}')); } catch(e) {}
+  if (!CHS.from || !ms.includes(CHS.from) || CHS.preset !== 'custom') setP(CHS.preset || 'ytd');
+  $('#chpre').onclick = e => { const p = e.target.dataset.p; if (!p) return; if (p === 'custom') CHS.preset = 'custom'; else setP(p); renderChannels(); };
+  const onSel = () => { let a = $('#chfrom').value, b = $('#chto').value; if (a > b) [a,b] = [b,a]; CHS.preset = 'custom'; CHS.from = a; CHS.to = b; renderChannels(); };
+  $('#chfrom').onchange = onSel; $('#chto').onchange = onSel;
+  $('#chcmp').onclick = e => { const c = e.target.dataset.c; if (!c) return; CHS.cmp = c; renderChannels(); };
+  $('#chmodel').onclick = e => { const m = e.target.dataset.m; if (!m) return; CHS.model = m; renderChannels(); };
+  $('#chleg').innerHTML = CHD.channels.map(k=>`<span><i style="background:${CHN[k].c}"></i>${CHN[k].n}</span>`).join('');
+}
+function chAgg(from, to, model){
+  const ms = span(from, to).filter(m => CHD.months.includes(m));
+  const z = () => ({orders:0, rev:0, new:0, new_rev:0, sub:0, known:0, d:[0,0,0,0], dn:0, dsum:0, cust_rev:0, cust_n:0, repeat:0, ses:0, chk:0, cost:0});
+  const out = Object.fromEntries([...CHD.channels, 'all'].map(k => [k, z()]));
+  ms.forEach(m => {
+    const row = CHD.data[model][m] || {};
+    Object.entries(row).forEach(([k, r]) => { const tgt = [out.all]; if (out[k]) tgt.push(out[k]);
+      tgt.forEach(o => { ['orders','rev','new','new_rev','sub','known','dn','dsum','cust_rev','cust_n','repeat'].forEach(f => o[f] += r[f] || 0); r.d.forEach((v,i) => o.d[i] += v); }); });
+    CHD.channels.forEach(k => { const s = CHD.sessions[m][k] || [0,0]; out[k].ses += s[0]; out[k].chk += s[1]; out.all.ses += s[0]; out.all.chk += s[1]; });
+    const sp = CHD.spend[m] || {};
+    out.meta.cost += sp.meta || 0; out.google.cost += sp.google || 0;
+  });
+  out.affiliate.cost = out.affiliate.rev * CHD.aff_commission;
+  out.all.cost = out.meta.cost + out.google.cost + out.affiliate.cost;
+  Object.values(out).forEach(o => {
+    o.aov = o.orders ? o.rev / o.orders : null; o.cr = o.ses ? o.chk / o.ses : null; o.newShare = o.orders ? o.new / o.orders : null;
+    o.cpa = o.cost && o.new ? o.cost / o.new : null; o.cpo = o.cost && o.orders ? o.cost / o.orders : null; o.roas = o.cost ? o.rev / o.cost : null;
+    o.sameDay = o.dn ? o.d[0] / o.dn : null; o.week = o.dn ? (o.d[0] + o.d[1]) / o.dn : null; o.days = o.dn ? o.dsum / o.dn : null;
+    o.optin = o.known ? o.sub / o.known : null; o.ltv = o.cust_n ? o.cust_rev / o.cust_n : null; o.rep = o.cust_n ? o.repeat / o.cust_n : null;
+  });
+  out.__ms = ms; out.__bl = ms.reduce((a, m) => [a[0] + CHD.blog[m][0], a[1] + CHD.blog[m][1]], [0,0]);
+  return out;
+}
+function renderChannels(){
+  document.querySelectorAll('#chpre button').forEach(b => b.classList.toggle('on', b.dataset.p === CHS.preset));
+  document.querySelectorAll('#chcmp button').forEach(b => b.classList.toggle('on', b.dataset.c === CHS.cmp));
+  document.querySelectorAll('#chmodel button').forEach(b => b.classList.toggle('on', b.dataset.m === CHS.model));
+  $('#chfrom').value = CHS.from; $('#chto').value = CHS.to;
+  try { localStorage.setItem('inproj_ch', JSON.stringify(CHS)); } catch(e) {}
+  const A = chAgg(CHS.from, CHS.to, CHS.model);
+  const n = span(CHS.from, CHS.to).length;
+  const cm = CHS.cmp === 'prev' ? [shiftM(CHS.from, -n), shiftM(CHS.from, -1)] : CHS.cmp === 'ly' ? [shiftM(CHS.from, -12), shiftM(CHS.to, -12)] : null;
+  const C = cm && CHD.months.includes(cm[0]) ? chAgg(cm[0], cm[1], CHS.model) : null;
+  const partial = A.__ms.includes(CHD.months[CHD.months.length-1]);
+  $('#chnote').textContent = `${rangeLabel(CHS.from, CHS.to)}${C ? ` vs ${rangeLabel(cm[0], cm[1])}` : ''}${partial ? ' · current month to date' : ''}`;
+  const pc = v => v == null ? '–' : (v*100).toFixed(v < .1 ? 1 : 0) + '%';
+  const $k = v => v == null ? '–' : v === 0 ? '$0' : fmtKd(v);
+  const $0 = v => v == null ? '–' : fmt$(v);
+  const xr = v => v == null ? '–' : v.toFixed(1) + 'x';
+  const num = v => v == null ? '–' : Math.round(v).toLocaleString();
+  // rows: [label, key, fmt, better ('hi'|'lo'|null), note, minOrders]
+  const ROWS = [
+    ['Volume'],
+    ['Revenue', 'rev', $k, 'hi', 'Website revenue after discounts and refunds'],
+    ['Share of revenue', 'share', pc, 'hi'],
+    ['Orders', 'orders', num, 'hi'],
+    ['Sessions', 'ses', num, 'hi', 'Visits to the site (blog-article landings excluded)'],
+    ['Value'],
+    ['AOV', 'aov', $0, 'hi', 'Average order value'],
+    ['Customer value to date', 'ltv', $0, 'hi', 'Average total spend so far of new customers this channel brought in (all their orders since)'],
+    ['Repeat purchase rate', 'rep', pc, 'hi', 'Share of those new customers who have ordered again'],
+    ['Efficiency'],
+    ['Conversion rate', 'cr', pc, 'hi', 'Sessions that completed checkout (Shopify sessions, by the visit\'s own source)'],
+    ['Media cost', 'cost', v => v ? fmtKd(v) : '–', null, 'Ad spend (Meta, Google) or estimated affiliate commission'],
+    ['Cost per new customer', 'cpa', $0, 'lo', 'Media cost / new customers'],
+    ['Cost per order', 'cpo', $0, 'lo'],
+    ['Revenue per $1 of cost', 'roas', xr, 'hi', 'ROAS: revenue / media cost'],
+    ['Customers'],
+    ['New customer share', 'newShare', pc, 'hi', 'Orders that were the customer\'s first ever'],
+    ['New customers', 'new', num, 'hi'],
+    ['Email opt-in rate', 'optin', pc, 'hi', 'Buyers now subscribed to email marketing'],
+    ['Speed'],
+    ['Bought within a day', 'sameDay', pc, 'hi', 'Orders placed on the day of the first visit or the next'],
+    ['Bought within a week', 'week', pc, 'hi'],
+    ['Average days to purchase', 'days', v => v == null ? '–' : v.toFixed(1), 'lo', 'From first visit to order. Shopify tracks journeys for up to 30 days'],
+  ];
+  const total = A.all.rev || 1;
+  CHD.channels.forEach(k => A[k].share = A[k].rev / total); A.all.share = 1;
+  if (C) { const t2 = C.all.rev || 1; CHD.channels.forEach(k => C[k].share = C[k].rev / t2); C.all.share = 1; }
+  const cols = CHD.channels;
+  let h = '<thead><tr><th>KPI</th>' + cols.map(k => `<th><span class="h"><span class="dot" style="background:${CHN[k].c}"></span>${CHN[k].n}<i class="info" tabindex="0">i<span class="tip">${CHN[k].d}</span></i></span></th>`).join('') + '<th class="all"><span class="h">All website</span></th></tr></thead><tbody>';
+  const MIN = 20;   // channels with fewer orders than this cannot be "best" in a row
+  ROWS.forEach(r => {
+    if (r.length === 1) { h += `<tr class="sec"><td colspan="${cols.length + 2}">${r[0]}</td></tr>`; return; }
+    const [lab2, key, f, better, note] = r;
+    const vals = cols.map(k => A[k][key]);
+    const elig = cols.map((k, i) => vals[i] != null && A[k].orders >= MIN && !(key === 'cost' && !vals[i]));
+    let bi = -1;
+    if (better) vals.forEach((v, i) => { if (!elig[i]) return; if (bi < 0 || (better === 'hi' ? v > vals[bi] : v < vals[bi])) bi = i; });
+    const cell = (k, i) => { const v = A[k][key]; let d = '';
+      if (C && v != null && C[k][key] != null && C[k][key] !== 0) { const ch = ['share','aov','ltv','rep','cr','newShare','optin','sameDay','week','days'].includes(key) ? null : v / C[k][key] - 1;
+        const pp = ['share','rep','cr','newShare','optin','sameDay','week'].includes(key) ? (v - C[k][key]) * 100 : null;
+        const good = better === 'lo' ? -1 : 1;
+        if (pp != null) d = `<span class="dl ${pp*good >= 0 ? 'pos' : 'neg'}">${pp >= 0 ? '+' : ''}${pp.toFixed(1)} pts</span>`;
+        else { const rel = ch != null ? ch : v / C[k][key] - 1; d = `<span class="dl ${rel*good >= 0 ? 'pos' : 'neg'}">${pct(rel)}</span>`; } }
+      return `<td class="${i === bi ? 'top' : ''}">${f(v)}${d}</td>`; };
+    h += `<tr><td>${lab2}${note ? `<span class="rowinfo">${note}</span>` : ''}</td>${cols.map(cell).join('')}<td class="all">${f(A.all[key])}</td></tr>`;
+  });
+  $('#chtbl').innerHTML = h + '</tbody>';
+  const none = (CHD.data[CHS.model] && A.__ms.reduce((a, m) => a + ((CHD.data[CHS.model][m] || {}).none || {orders:0}).orders, 0)) || 0;
+  $('#chcap').innerHTML = `Shopify website orders only (Amazon cannot be split by channel). Green = best channel in that row among channels with at least ${MIN} orders. ${none ? `${num(none)} orders had no visit data (mostly shoppers who declined tracking cookies, plus draft or phone orders) and only appear in "All website". ` : ''}Blog-article landings: ${num(A.__bl[0])} sessions, ${num(A.__bl[1])} checkouts, kept out of the channel sessions. Hover the <i class="info" style="display:inline-flex">i</i> next to a channel for exactly what it includes.${(CHS.from < '2026-03' || (cm && cm[0] < '2026-03')) ? ' <b>Heads up:</b> Meta ads were not consistently UTM-tagged before March 2026, so for earlier months most Meta ad orders land in Direct. Meta looks smaller and Direct bigger than reality there, and year-over-year changes for those two are not apples to apples.' : ''}`;
+  // best-for cards
+  const pick = (key, better, filter) => { let b = null; cols.forEach(k => { const v = A[k][key]; if (v == null || A[k].orders < MIN || (filter && !filter(k))) return; if (!b || (better === 'hi' ? v > A[b][key] : v < A[b][key])) b = k; }); return b; };
+  const cards = [
+    ['Lowest ad cost per new customer', pick('cpa', 'lo', k => CHN[k].paid && A[k].cost > 0), k => `${$0(A[k].cpa)} per new customer` + (A.affiliate.cpa ? ` (affiliates ~${$0(A.affiliate.cpa)}, estimated)` : '')],
+    ['Highest-spending orders', pick('aov', 'hi'), k => `${$0(A[k].aov)} AOV`],
+    ['Most valuable customers', pick('ltv', 'hi'), k => `${$0(A[k].ltv)} spent per customer so far`],
+    ['Best conversion rate', pick('cr', 'hi'), k => `${pc(A[k].cr)} of sessions buy`],
+    ['Fastest to buy', pick('sameDay', 'hi'), k => `${pc(A[k].sameDay)} buy within a day`],
+    ['Most email subscribers', pick('optin', 'hi'), k => `${pc(A[k].optin)} of buyers opted in`],
+    ['Biggest revenue', pick('rev', 'hi'), k => `${$k(A[k].rev)} · ${pc(A[k].share)} of website`],
+  ];
+  $('#chbest').innerHTML = cards.filter(c => c[1]).map(([q, k, v]) => `<div class="b glass"><div class="q">${q}</div><div class="a"><span class="dot" style="background:${CHN[k].c}"></span>${CHN[k].n}</div><div class="v">${v(k)}</div></div>`).join('');
+  // monthly stacked chart over the range (at least 6 months shown for context)
+  const ms = span(CHS.from < shiftM(CHS.to, -5) ? CHS.from : shiftM(CHS.to, -5), CHS.to).filter(m => CHD.months.includes(m));
+  const ds = cols.map((k, i) => ({type:'bar', label:CHN[k].n, data:ms.map(m => ((CHD.data[CHS.model][m] || {})[k] || {rev:0}).rev), backgroundColor:ms.map(m => m >= CHS.from ? CHN[k].c : alpha(CHN[k].c, .35)), stack:'s', barPercentage:.8, categoryPercentage:.9, borderRadius: i === cols.length - 1 ? {topLeft:3, topRight:3} : 0}));
+  const o = baseOpts(); o.scales.x.stacked = true; o.scales.y.stacked = true;
+  o.plugins.tooltip.callbacks = {label: c => `${c.dataset.label}: ${fmt$(c.raw)}`, footer: it => `Total: ${fmt$(it.reduce((a, c) => a + c.raw, 0))}`};
+  if (charts.ch) charts.ch.destroy();
+  charts.ch = new Chart($('#cCh'), {data:{labels:ms.map(lab), datasets:ds}, options:o});
+}
+
 const PROMO_NAME = {presidents:"Presidents' Day", spring:'Spring / flash sale', memorial:'Memorial Day', fathers:"Father's Day", july4:'July 4th', prime_summer:'Prime Day', labor:'Labor Day', prime_oct:'October Prime', bfcm:'Veterans / BFCM', holiday:'Holiday sale'};
 function drawMethod(){
   const T = D.track;
