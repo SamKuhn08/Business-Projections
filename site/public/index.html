@@ -166,6 +166,7 @@ table.mini td.sub{color:var(--ink-3);font-size:11px}
 .dm td.dim{color:var(--ink-4)}
 .pos{color:var(--pos)}.neg{color:var(--neg)}
 .pill.warn{background:rgba(184,134,11,.14);color:#8a6408}
+.dm tr.yb td{background:rgba(184,134,11,.07)}
 @media(max-width:620px){.dmbar .seg{flex-wrap:wrap;border-radius:14px}.dm{padding:0}.dmbox{border-radius:0;min-height:100%;padding:14px 14px 30px}.dm .chartbox{height:280px}.dstats b{font-size:16px}}
 /* channels tab */
 .chbar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;border-radius:16px;padding:10px 14px;margin-bottom:12px}
@@ -801,7 +802,7 @@ function drawDrivers(){
   DRV = {cards, rows:[...hist, ...fut], fi};
   const exp = `<span class="dexp" aria-hidden="true">Expand <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 1h4v4M5 11H1V7M11 1 7 5M1 11l4-4"/></svg></span>`;
   const saleCard = (D.sales && D.sales.length) ? `<div class="card dcard" data-d="dSale" tabindex="0"><div class="dhead"><div><h2>Sale lift</h2><p class="cap">Shopify + Amazon revenue during each sale vs the same number of days right before it (evergreen). Multiplier = sale / evergreen. Father's Day 2026 left out (gift with purchase).</p></div>${exp}</div>
-    <div class="legend"><span><i style="background:var(--neutral)"></i>2024</span><span><i style="background:var(--ha)"></i>2025</span><span><i style="background:var(--in)"></i>2026</span><span><i style="background:transparent;border:1.5px dashed var(--ink-4)"></i>Prior days also on sale</span></div>
+    <div class="legend"><span><i style="background:var(--neutral)"></i>2024</span><span><i style="background:var(--ha)"></i>2025</span><span><i style="background:var(--in)"></i>2026</span><span><i style="background:var(--ddo)"></i>Holiday: vs that year's average MSRP day</span><span><i style="background:transparent;border:1.5px dashed var(--ink-4)"></i>Prior days also on sale</span></div>
     <div class="chartbox"><canvas id="dSale"></canvas></div></div>` : '';
   grid.innerHTML = saleCard + cards.map(c=>`<div class="card dcard" data-d="${c.id}" tabindex="0"><div class="dhead"><div><h2>${c.t}</h2><p class="cap">${c.c}</p></div>${exp}</div>
     <div class="legend">${[...c.sets, ...(c.two?[c.two]:[])].map(s=>`<span><i style="background:var(${s.color})"></i>${s.label}</span>`).join('')}${c.noProj?'':'<span><i class="dash"></i>Projection</span>'}</div>
@@ -833,13 +834,13 @@ const fmtD = d => { const [y,m,dd] = d.split('-'); return `${MN[+m-1]} ${+dd}`; 
 function drawSaleCard(){
   const S = D.sales;
   const o = baseOpts(); o.scales.y.ticks.callback = v => v + 'x'; o.scales.y.suggestedMax = 3;
-  o.plugins.tooltip.callbacks = {title: t => saleLab(S[t[0].dataIndex]), label: t => { const r = S[t.dataIndex]; return [`${fmtX(r.mult)}  (${r.days} days)`, `Sale ${fmtKd(r.sale)} vs evergreen ${fmtKd(r.evergreen)}`].concat(r.prior_sale ? ['Prior days were also on sale'] : []); }};
+  o.plugins.tooltip.callbacks = {title: t => saleLab(S[t[0].dataIndex]), label: t => { const r = S[t.dataIndex]; return [`${fmtX(r.mult)}  (${r.days} days)`, `Sale ${fmtKd(r.sale)} vs ${r.method === 'year' ? `${r.basis_year} average MSRP day x ${r.days}` : 'evergreen'} ${fmtKd(r.evergreen)}`].concat(r.prior_sale ? ['Prior days were also on sale'] : []); }};
   o.scales.x.ticks.callback = function(v){ const r = S[v]; return r.start.slice(5,7) === S[Math.max(0,v-1)].start.slice(5,7) && v ? '' : ''; };
   o.scales.x.ticks.display = false;
   const one = {id:'one', afterDatasetsDraw(c){ const y = c.scales.y.getPixelForValue(1), ctx = c.ctx; ctx.save(); ctx.strokeStyle = css('--ink-3'); ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(c.chartArea.left, y); ctx.lineTo(c.chartArea.right, y); ctx.stroke(); ctx.fillStyle = css('--ink-3'); ctx.font = '11px Inter'; ctx.fillText('1x = no lift', c.chartArea.left + 4, y - 4); ctx.restore(); }};
   if (charts.dSale) charts.dSale.destroy();
   charts.dSale = new Chart($('#dSale'), {type:'bar', data:{labels:S.map(saleLab), datasets:[{data:S.map(r=>r.mult),
-    backgroundColor:S.map(r => r.prior_sale ? 'transparent' : alpha(css(YC[r.start.slice(0,4)]||'--in'), .85)),
+    backgroundColor:S.map(r => r.prior_sale ? 'transparent' : r.method === 'year' ? alpha(css('--ddo'), .9) : alpha(css(YC[r.start.slice(0,4)]||'--in'), .85)),
     borderColor:S.map(r => r.prior_sale ? css('--ink-4') : 'transparent'), borderWidth:S.map(r => r.prior_sale ? 1.5 : 0), borderDash:[3,3], borderRadius:4}]}, options:o, plugins:[one]});
 }
 function openDM(id){
@@ -917,7 +918,7 @@ function renderSaleDM(){
   $('#dmbar').innerHTML = `<div class="grp"><span class="tlabel">Range</span>${segH('dmP', [['all','All'], ...yrs.map(y => [y, y])], DM.preset, 'p')}
     <input type="date" id="dmF" value="${DM.from}" aria-label="From"><span class="tlabel" style="width:auto">to</span><input type="date" id="dmT" value="${DM.to}" aria-label="To"></div>
     <div class="grp"><span class="tlabel">Sales whose prior days were also on sale</span>${segH('dmO', [['out','Leave out of totals'],['in','Include']], DM.ov, 'o')}
-    <i class="info" tabindex="0">i<span class="tip">Example: the Holiday sale starts the day after BFCM ends, so its "evergreen" days are BFCM days and its multiplier reads below 1. These rows are marked and, by default, left out of the totals A sale is marked when at least a quarter of its prior days were another sale (BFCM's lookback only catches a few October Prime days, so it counts).</span></i></div>`;
+    <i class="info" tabindex="0">i<span class="tip">Example: Father's Day 2025 started the day after Memorial Day ended, so its "evergreen" days were Memorial Day sale days. A sale is marked when at least a quarter of its prior days were another sale (BFCM's lookback only catches a few October Prime days, so it counts); marked sales are left out of the totals by default. Holiday is handled differently: it is compared to that year's average MSRP day.</span></i></div>`;
   const R = all.filter(r => r.start >= DM.from && r.end <= DM.to), T = R.filter(r => DM.ov === 'in' || !r.prior_sale);
   const tot = rs => { const a = rs.reduce((x,r)=>x+r.sale,0), b = rs.reduce((x,r)=>x+r.evergreen,0), d = rs.reduce((x,r)=>x+r.days,0); return {a, b, d, m: b ? a/b : null}; };
   const t = tot(T), med = (() => { const v = T.map(r => r.mult).sort((a,b)=>a-b); return v.length ? (v.length % 2 ? v[(v.length-1)/2] : (v[v.length/2-1] + v[v.length/2]) / 2) : null; })();
@@ -927,22 +928,22 @@ function renderSaleDM(){
     <div><small>Evergreen revenue</small><b>${fmtKd(t.b)}</b><span>${t.d ? fmtKd(t.b/t.d) + ' a day' : ''}</span></div>
     <div><small>Multiplier (all counted)</small><b>${fmtX(t.m)}</b><span>total sale / total evergreen</span></div>
     <div><small>Median sale</small><b>${fmtX(med)}</b><span>typical single sale</span></div>`;
-  $('#dml').innerHTML = `<span><i style="background:var(--in)"></i>Sale revenue</span><span><i style="background:var(--neutral)"></i>Evergreen (prior days)</span><span><i style="background:var(--ink);height:3px;border-radius:2px"></i>Multiplier (right axis)</span><span><i style="background:transparent;border:1.5px dashed var(--ink-4)"></i>Prior days also on sale</span>`;
+  $('#dml').innerHTML = `<span><i style="background:var(--in)"></i>Sale revenue</span><span><i style="background:var(--neutral)"></i>Evergreen (prior days)</span><span><i style="background:var(--ink);height:3px;border-radius:2px"></i>Multiplier (right axis)</span><span><i style="background:var(--ddo)"></i>Holiday: vs that year's average MSRP day</span><span><i style="background:transparent;border:1.5px dashed var(--ink-4)"></i>Prior days also on sale</span>`;
   const o = baseOpts(); o.scales.y2 = {position:'right', beginAtZero:true, grid:{display:false}, border:{display:false}, ticks:{color:css('--ink-3'), font:{size:11}, callback:v => v + 'x'}};
   o.scales.x.ticks.autoSkip = false; o.scales.x.ticks.maxRotation = 50; o.scales.x.ticks.minRotation = R.length > 8 ? 40 : 0;
   o.plugins.tooltip.callbacks = {title: tt => { const r = R[tt[0].dataIndex]; return `${r.name} ${r.start.slice(0,4)} · ${fmtD(r.start)} to ${fmtD(r.end)} (${r.days} days)`; },
     label: tt => tt.dataset.yAxisID === 'y2' ? `Multiplier: ${fmtX(tt.raw)}` : `${tt.dataset.label}: ${fmtKd(tt.raw)}`,
-    afterBody: tt => { const r = R[tt[0].dataIndex]; return [`Evergreen days: ${fmtD(r.prior_start)} to ${fmtD(r.prior_end)}`].concat(r.prior_sale ? ['Prior days were also on sale'] : []); }};
-  const ds = [{type:'bar', label:'Sale revenue', data:R.map(r=>r.sale), backgroundColor:R.map(r => r.prior_sale ? alpha(css('--in'),.35) : alpha(css('--in'),.85)), borderRadius:3, order:2},
-    {type:'bar', label:'Evergreen', data:R.map(r=>r.evergreen), backgroundColor:R.map(r => r.prior_sale ? alpha(css('--neutral'),.3) : alpha(css('--neutral'),.7)), borderRadius:3, order:2},
-    {type:'line', label:'Multiplier', yAxisID:'y2', data:R.map(r=>r.mult), borderColor:css('--ink'), borderWidth:0, showLine:false, pointRadius:5, pointHoverRadius:7, pointBackgroundColor:R.map(r => r.prior_sale ? '#fff' : css('--ink')), pointBorderColor:css('--ink'), pointBorderWidth:1.5, order:0}];
+    afterBody: tt => { const r = R[tt[0].dataIndex]; return [r.method === 'year' ? `Evergreen: ${r.basis_year} average MSRP day (${fmtKd(r.shop_day + (r.amz_day||0))}) x ${r.days} days` : `Evergreen days: ${fmtD(r.prior_start)} to ${fmtD(r.prior_end)}`].concat(r.prior_sale ? ['Prior days were also on sale'] : []); }};
+  const ds = [{type:'bar', label:'Sale revenue', data:R.map(r=>r.sale), backgroundColor:R.map(r => r.prior_sale ? alpha(css('--in'),.35) : r.method === 'year' ? alpha(css('--ddo'),.9) : alpha(css('--in'),.85)), borderRadius:3, order:2},
+    {type:'bar', label:'Evergreen', data:R.map(r=>r.evergreen), backgroundColor:R.map(r => r.prior_sale ? alpha(css('--neutral'),.3) : r.method === 'year' ? alpha(css('--ddo'),.35) : alpha(css('--neutral'),.7)), borderRadius:3, order:2},
+    {type:'line', label:'Multiplier', yAxisID:'y2', data:R.map(r=>r.mult), borderColor:css('--ink'), borderWidth:0, showLine:false, pointRadius:5, pointHoverRadius:7, pointBackgroundColor:R.map(r => r.prior_sale ? '#fff' : r.method === 'year' ? css('--ddo') : css('--ink')), pointBorderColor:R.map(r => r.method === 'year' ? css('--ddo') : css('--ink')), pointBorderWidth:1.5, order:0}];
   if (charts.cDm) charts.cDm.destroy();
   charts.cDm = new Chart($('#cDm'), {data:{labels:R.map(saleLab), datasets:ds}, options:o});
-  $('#dmn').innerHTML = `Shopify = net sales (after discounts and returns), Amazon = Seller Board sales. When Prime days on Amazon differ from the website sale (Prime Day 2024, October Prime 2025), each channel uses its own sale days and its own prior days. Included: every documented sale since 2024 that has finished. Not included: Father's Day 2026 (gift with purchase, not a discount) and 2023 (no promo doc).`;
+  $('#dmn').innerHTML = `Shopify = net sales (after discounts and returns), Amazon = Seller Board sales. When Prime days on Amazon differ from the website sale (Prime Day 2024, October Prime 2025), each channel uses its own sale days and its own prior days. Included: every documented sale since 2024 that has finished. Not included: Father's Day 2026 (gift with purchase, not a discount) and 2023 (no promo doc). <span style="color:#8a6408;font-weight:600">Holiday (gold)</span> starts the day after BFCM ends, so its evergreen is that year's average MSRP day (every day of the year not on a sale, Shopify + Amazon) times the holiday sale's days; it counts in the totals like the others.`;
   const disc = r => r.pro ? `$${r.pro} off Pro` : (r.note || (r.pro === 0 ? 'gift / bonus' : '–'));
-  const row = r => `<tr class="${!(DM.ov === 'in' || !r.prior_sale) ? 'fc' : ''}"><td>${r.name}${r.prior_sale ? '<span class="pill warn">prior days on sale</span>' : ''}${r.amz_missing ? '<span class="pill">Shopify only</span>' : ''}</td>
+  const row = r => `<tr class="${!(DM.ov === 'in' || !r.prior_sale) ? 'fc' : ''}${r.method === 'year' ? ' yb' : ''}"><td>${r.name}${r.method === 'year' ? '<span class="pill warn">vs year avg MSRP day</span>' : ''}${r.prior_sale ? '<span class="pill warn">prior days on sale</span>' : ''}${r.amz_missing ? '<span class="pill">Shopify only</span>' : ''}</td>
     <td>${fmtD(r.start)} to ${fmtD(r.end)}, ${r.start.slice(0,4)}</td><td>${r.days}</td><td class="dim" style="white-space:normal;max-width:180px">${disc(r)}</td>
-    <td>${fmt$(r.sale)}</td><td>${fmt$(r.evergreen)}<div class="dim" style="font-size:10.5px">${fmtD(r.prior_start)} to ${fmtD(r.prior_end)}${r.overlap_days && !r.prior_sale ? ` · ${r.overlap_days} on sale` : ''}</div></td>
+    <td>${fmt$(r.sale)}</td><td>${fmt$(r.evergreen)}<div class="dim" style="font-size:10.5px">${r.method === 'year' ? `${r.basis_year} avg MSRP day ${fmtKd(r.shop_day + (r.amz_day||0))} x ${r.days}` : `${fmtD(r.prior_start)} to ${fmtD(r.prior_end)}${r.overlap_days && !r.prior_sale ? ` · ${r.overlap_days} on sale` : ''}`}</div></td>
     <td><b>${fmtX(r.mult)}</b></td><td class="dim">${r.shop_prior ? fmtX(r.shop_sale/r.shop_prior) : '–'}</td><td class="dim">${r.amz_prior ? fmtX(r.amz_sale/r.amz_prior) : '–'}</td></tr>`;
   let body = '';
   const ys = [...new Set(R.map(r => r.start.slice(0,4)))].reverse();

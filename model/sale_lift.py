@@ -9,6 +9,7 @@ Amazon Prime days differ from the Shopify sale dates (Prime Day 2024, October Pr
 sale days and its own matching prior window.
 Included: documented sales from 2024 on that have finished. Excluded: Father's Day 2026 (gift with purchase, not a
 discount; Sam 2026-10-27) and 2023 (dates only inferred, no promo doc).
+Holiday (right after BFCM) instead uses 'that year's average MSRP day' x sale days as evergreen (method='year').
 Flag 'prior_sale': at least a quarter of the prior days were another sale, so evergreen is not MSRP; those are left out
 of totals by default (BFCM's lookback catches 2-4 October Prime days and is NOT flagged).
 """
@@ -30,6 +31,27 @@ def days(a, b):
 def prior(a, b):
     n = (D(b) - D(a)).days + 1
     return (D(a) - dt.timedelta(n)).isoformat(), (D(a) - dt.timedelta(1)).isoformat()
+
+
+YEAR_BASIS = {'holiday'}   # Sam 2026-10-27: Holiday follows BFCM, so compare it to that year's average MSRP day instead
+
+
+def msrp_day(y, shop, amz, P):
+    """Average full-price (no sale) day in calendar year y, per channel. Needs the whole year closed; Amazon needs amazon_years.json."""
+    yd = days(f'{y}-01-01', f'{y}-12-31')
+    if yd[-1] > max(shop): return None, None
+    s_sale, a_sale = set(), set()
+    for e in P:
+        if (e['type'], e['start']) in EXCLUDE: continue
+        s_sale.update(days(e['start'], e['end']))
+        a_sale.update(days(*e['amazon']) if e.get('amazon') else days(e['start'], e['end']))
+    sd = [d for d in yd if d not in s_sale]
+    shop_day = sum(shop.get(d, [0, 0])[1] for d in sd) / len(sd)
+    ay = json.load(open(os.path.join(HERE, 'amazon_years.json'))) if os.path.exists(os.path.join(HERE, 'amazon_years.json')) else {}
+    if y not in ay: return shop_day, None
+    on_sale = sum(r['sales'] for (st, en), r in amz.items() if st[:4] == y) + sum(x['sales'] for x in ay[y].get('extra_sale', []))
+    ad = [d for d in yd if d not in a_sale]
+    return shop_day, (ay[y]['sales'] - on_sale) / len(ad)
 
 
 def build(today=None):
@@ -60,6 +82,14 @@ def build(today=None):
                  shop_sale=round(s_sale), shop_prior=round(s_prior),
                  amz_sale=round(a['sales']) if a else None, amz_prior=round(a['prior_sales']) if a else None,
                  amz_start=aw[0], amz_end=aw[1], prior_sale=len(overlap) >= 0.25 * len(pdays), overlap_days=len(overlap), prior_days=len(pdays))
+        r['method'] = 'prior'
+        if e['type'] in YEAR_BASIS:
+            y = e['start'][:4]
+            ys, ya = msrp_day(y, shop, amz, P)
+            if ys is not None:
+                r.update(method='year', basis_year=y, shop_day=round(ys), amz_day=round(ya) if ya is not None else None,
+                         shop_prior=round(ys * r['days']), amz_prior=round(ya * r['days']) if (ya is not None and a) else r['amz_prior'],
+                         prior_sale=False, overlap_days=0)
         r['sale'] = r['shop_sale'] + (r['amz_sale'] or 0)
         r['evergreen'] = r['shop_prior'] + (r['amz_prior'] or 0)
         r['mult'] = round(r['sale'] / r['evergreen'], 3) if r['evergreen'] else None

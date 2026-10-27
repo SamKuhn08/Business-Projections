@@ -1,0 +1,5 @@
+{
+ "_about": "Amazon (Seller Board 'Sales', all marketplaces, USD) per calendar year, used by sale_lift.py for the Holiday sale's 'average MSRP day of that year'. 'extra_sale' = sale days in that year from a sale that is not in amazon_sale_windows.json (Holiday 2023 ran to Jan 10 2024). Add each finished year (2026 after Dec 31).",
+ "2024": {"sales": 1803257.38, "extra_sale": [{"start": "2024-01-01", "end": "2024-01-10", "sales": 82643.72}]},
+ "2025": {"sales": 1866133.40, "extra_sale": []}
+}
