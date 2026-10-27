@@ -993,13 +993,13 @@ function dayRows(){
   const out = [];
   Dy.months.forEach(m => {
     const R = Dy.rows.filter(r => r.date.slice(0,7) === m), F = Fm[m], n = R.length;
-    const ss = R.reduce((a,r)=>a+r.shop,0), sa = R.reduce((a,r)=>a+(r.amz||0),0), so = R.reduce((a,r)=>a+r.orders,0), sad = R.reduce((a,r)=>a+r.meta+r.google+r.amz_ads,0);
+    const ss = R.reduce((a,r)=>a+r.shop,0), sa = R.reduce((a,r)=>a+(r.amz||0),0), so = R.reduce((a,r)=>a+r.orders,0), sm = R.reduce((a,r)=>a+r.meta,0), sg = R.reduce((a,r)=>a+r.google,0), saa = R.reduce((a,r)=>a+r.amz_ads,0);
     const lyM = R[0].ly_date.slice(0,7), lyH = hm[lyM]; const lyDdo = lyH && lyH.tgt && lyH.tgt.ddo != null ? lyH.tgt.ddo / new Date(+lyM.slice(0,4), +lyM.slice(5), 0).getDate() : null;
     R.forEach(r => {
-      const shop = r.shop / ss * F.d2c, amz = sa ? (r.amz||0) / sa * F.amazon : F.amazon / n, ddo = F.ddo / n, ad = (r.meta + r.google + r.amz_ads) / sad * (F.meta + F.google + F.amzAds);
+      const shop = r.shop / ss * F.d2c, amz = sa ? (r.amz||0) / sa * F.amazon : F.amazon / n, ddo = F.ddo / n, meta = sm ? r.meta / sm * F.meta : 0, google = sg ? r.google / sg * F.google : 0, amzAds = saa ? r.amz_ads / saa * F.amzAds : 0, ad = meta + google + amzAds;
       const tot = shop + amz + ddo;
       const lys = r.ly_shop != null ? r.ly_shop * D.fin_ratio : null, lya = r.ly_amz;
-      out.push({date:r.date, m, role:r.role, shop, amz, ddo, total:tot, orders:r.orders / so * F.orders, ad, ni: tot * (1 - D.pnl.cogs_pct) - ad * D.pnl.ad_ratio - F.fixed / n,
+      out.push({date:r.date, m, role:r.role, shop, amz, ddo, total:tot, orders:r.orders / so * F.orders, ad, meta, google, amzAds, ni: tot * (1 - D.pnl.cogs_pct) - ad * D.pnl.ad_ratio - F.fixed / n,
         ly_date:r.ly_date, ly_shop:lys, ly_amz:lya, ly_orders:r.ly_orders, ly_total: lys != null && lya != null ? lys + lya + (lyDdo || 0) : null, ms:r.m_shop});
     });
   });
@@ -1007,7 +1007,7 @@ function dayRows(){
 }
 function renderDayDM(){
   const Dy = D.daily, all = dayRows(), R = DM.view === 'both' ? all : all.filter(r => r.m === DM.view);
-  const mets = {total:['Total revenue', fmtKd], shop:['Shopify', fmtKd], amz:['Amazon', fmtKd], orders:['Shopify orders', v => Math.round(v).toLocaleString()], ad:['Ad spend', fmtKd], ni:['Net income', fmtKd]};
+  const mets = {total:['Total revenue', fmtKd], shop:['Shopify', fmtKd], amz:['Amazon', fmtKd], orders:['Shopify orders', v => Math.round(v).toLocaleString()], ad:['Ad spend (all)', fmtKd], meta:['Meta spend', fmtKd], google:['Google spend', fmtKd], amzAds:['Amazon ads', fmtKd], ni:['Net income', fmtKd]};
   const lyKey = {total:'ly_total', shop:'ly_shop', amz:'ly_amz', orders:'ly_orders'};
   const title = DM.view === 'both' ? `Nov and Dec ${Dy.year}` : `${MNL_(DM.view)} ${DM.view.slice(0,4)}`;
   $('#dmt').textContent = `${title}, day by day`;
@@ -1020,20 +1020,21 @@ function renderDayDM(){
   const tile = (lab_, k, f, lyk) => { const v = S(k), p = peak(k), lv = lyk ? SL(lyk) : null;
     return `<div><small>${lab_}</small><b>${f(v)}</b><span>${k === 'ddo' ? `Spread evenly: ${f(v / R.length)} a day` : `Peak ${fmtD(p.date)} (${p.role.replace('BFCM (last days)','BFCM')}): ${f(p[k])}`}</span>${lv ? `<em class="cmp">Last year: ${f(lv)} <b class="${v >= lv ? 'pos' : 'neg'}">${pct(v/lv-1,0)}</b></em>` : ''}</div>`; };
   $('#dms').innerHTML = tile('Total revenue','total',fmtKd,'ly_total') + tile('Net income','ni',fmtKd) + tile('Shopify','shop',fmtKd,'ly_shop') + tile('Amazon','amz',fmtKd,'ly_amz') +
-    tile('D/D/O','ddo',fmtKd) + tile('Shopify orders','orders',v=>Math.round(v).toLocaleString(),'ly_orders') + tile('Ad spend','ad',fmtKd);
+    tile('D/D/O','ddo',fmtKd) + tile('Shopify orders','orders',v=>Math.round(v).toLocaleString(),'ly_orders') + tile('Ad spend','ad',fmtKd).replace('</span>', `</span><span class="spl"><i style="background:var(--in)"></i>Meta ${fmtKd(S('meta'))}<br><i style="background:var(--ddo)"></i>Google ${fmtKd(S('google'))}<br><i style="background:var(--amz)"></i>Amazon ads ${fmtKd(S('amzAds'))}</span>`);
   const k = DM.metric, f = mets[k][1], cum = DM.mode === 'cum', lk = lyKey[k], showLy = DM.ly === 'on' && lk && R.some(r => r[lk] != null);
   const run = arr => { let a = 0; return arr.map(v => v == null ? null : (a += v)); };
   const ds = [];
   if (k === 'total' && !cum) [['shop','Shopify','--in'],['amz','Amazon','--amz'],['ddo','D/D/O','--ddo']].forEach(([kk,l,c]) => ds.push({type:'bar', label:l, data:R.map(r=>r[kk]), backgroundColor:alpha(css(c),.8), stack:'s', borderRadius:2, order:2}));
+  else if (k === 'ad' && !cum) [['meta','Meta','--in'],['google','Google','--ddo'],['amzAds','Amazon ads','--amz']].forEach(([kk,l,c]) => ds.push({type:'bar', label:l, data:R.map(r=>r[kk]), backgroundColor:alpha(css(c),.8), stack:'s', borderRadius:2, order:2}));
   else if (!cum) ds.push({type:'bar', label:mets[k][0], data:R.map(r=>r[k]), backgroundColor:R.map(r => r[k] < 0 ? alpha(css('--neg'),.7) : alpha(css(k==='amz'?'--amz':k==='ad'?'--neutral':'--in'),.8)), borderRadius:2, order:2});
   else ds.push({type:'line', label:mets[k][0] + ' (running)', data:run(R.map(r=>r[k])), borderColor:css('--in'), backgroundColor:alpha(css('--in'),.12), fill:true, borderWidth:2.2, pointRadius:0, order:1});
   if (showLy) ds.push({type:'line', label:'Last year', data: cum ? run(R.map(r=>r[lk])) : R.map(r=>r[lk]), borderColor:css('--ink-3'), borderDash:[3,3], borderWidth:1.6, pointRadius:0, order:0});
-  const o = baseOpts(); if (k === 'total' && !cum) { o.scales.x.stacked = true; o.scales.y.stacked = true; }
+  const o = baseOpts(); if ((k === 'total' || k === 'ad') && !cum) { o.scales.x.stacked = true; o.scales.y.stacked = true; }
   o.scales.y.ticks.callback = v => k === 'orders' ? v : fmtKd(v); o.scales.y.beginAtZero = k !== 'ni';
   o.scales.x.ticks.autoSkip = true; o.scales.x.ticks.maxTicksLimit = 16;
   o.plugins.tooltip.callbacks = {title: t => { const r = R[t[0].dataIndex]; return `${WD[new Date(r.date+'T12:00').getDay()]} ${fmtD(r.date)} · ${r.role}`; },
     label: t => t.raw == null ? null : `${t.dataset.label}: ${f(t.raw)}`,
-    footer: t => { const r = R[t[0].dataIndex]; return (k === 'total' && !cum ? `Total: ${fmtKd(r.total)}\n` : '') + (showLy ? `Last year ${fmtD(r.ly_date)} '${r.ly_date.slice(2,4)}` : ''); }};
+    footer: t => { const r = R[t[0].dataIndex]; return (k === 'total' && !cum ? `Total: ${fmtKd(r.total)}\n` : '') + (k === 'ad' && !cum ? `Total ad spend: ${fmtKd(r.ad)}\n` : '') + (showLy ? `Last year ${fmtD(r.ly_date)} '${r.ly_date.slice(2,4)}` : ''); }};
   o.plugins.tooltip.filter = t => t.raw != null;
   const bands = {id:'bands', beforeDatasetsDraw(c){ const x = c.scales.x, ctx = c.ctx, a = c.chartArea, w = R.length > 1 ? x.getPixelForValue(1) - x.getPixelForValue(0) : a.right - a.left; let i = 0;
     while (i < R.length) { const g = PHN(R[i].role); let j = i; while (j + 1 < R.length && PHN(R[j+1].role) === g) j++;
@@ -1044,14 +1045,15 @@ function renderDayDM(){
   if (charts.cDm) charts.cDm.destroy();
   charts.cDm = new Chart($('#cDm'), {data:{labels:R.map(r => fmtD(r.date)), datasets:ds}, options:o, plugins:[bands]});
   $('#dml').innerHTML = (k === 'total' && !cum ? '<span><i style="background:var(--in)"></i>Shopify</span><span><i style="background:var(--amz)"></i>Amazon</span><span><i style="background:var(--ddo)"></i>D/D/O</span>' : '') +
+    (k === 'ad' && !cum ? '<span><i style="background:var(--in)"></i>Meta</span><span><i style="background:var(--ddo)"></i>Google</span><span><i style="background:var(--amz)"></i>Amazon ads</span>' : '') +
     (showLy ? '<span><i style="background:var(--ink-3);height:2px"></i>Last year</span>' : '') +
     '<span><i style="background:var(--in);opacity:.25"></i>Early access</span><span><i style="background:var(--ddo);opacity:.3"></i>Turkey Five + Cyber Tuesday</span><span><i style="background:var(--ha);opacity:.25"></i>Holiday sale</span>';
   $('#dmn').innerHTML = `BFCM ${fmtD(Dy.bfcm[0])} to ${fmtD(Dy.bfcm[1])} and Holiday ${Dy.holiday ? fmtD(Dy.holiday[0]) + ' to ' + fmtD(Dy.holiday[1]) : ''} from the 2026 promo doc; Veterans Day (supplements, shirts, accessories) is not treated as a revenue event. Thanksgiving ${fmtD(Dy.thanksgiving)}, Cyber Monday ${fmtD(Dy.rows.find(r=>r.role==='Cyber Monday').date)}. ` + (Dy.rows.some(r => r.ly_amz_outage) ? 'Last year: Amazon sold $0 Nov 20 to 26, 2025 (listing appears to have been down); those days are left out of the pattern, but the last-year line shows what really happened. ' : '') +
     `Season size (Nov + Dec) comes from the monthly model; it asks for ${Math.round((Dy.shop.k-1)*100)}% ${Dy.shop.k >= 1 ? 'more' : 'less'} Shopify sale lift than past seasons' pattern${Dy.amz ? ` and ${Math.round(Math.abs(Dy.amz.k-1)*100)}% ${Dy.amz.k >= 1 ? 'more' : 'less'} on Amazon` : ''}, so the lift above full price is scaled to fit while full-price days stay at October's level. ` +
     `Meta and Google spend per day follows Shopify's daily lift dampened (square root), Amazon ads follow Amazon's; month totals are the projection's.`;
   const tr = R.map(r => `<tr class="${PH[r.role] ? '' : 'fc'}"><td>${WD[new Date(r.date+'T12:00').getDay()]} ${fmtD(r.date)}</td><td style="text-align:left">${r.role}</td><td>${fmt$(r.shop)}</td><td>${fmt$(r.amz)}</td><td class="dim">${fmt$(r.ddo)}</td><td><b>${fmt$(r.total)}</b></td>
-    <td class="dim">${r.ly_total != null ? fmt$(r.ly_total) : '–'}</td><td>${Math.round(r.orders)}</td><td>${fmt$(r.ad)}</td><td class="${r.ni < 0 ? 'neg' : ''}">${fmt$(r.ni)}</td></tr>`).join('');
-  $('#dmtb').innerHTML = `<thead><tr><th>Day</th><th style="text-align:left">Phase</th><th>Shopify</th><th>Amazon</th><th>D/D/O</th><th>Total</th><th>Last year</th><th>Orders</th><th>Ad spend</th><th>Net income</th></tr></thead><tbody>${tr}</tbody>`;
+    <td class="dim">${r.ly_total != null ? fmt$(r.ly_total) : '–'}</td><td>${Math.round(r.orders)}</td><td>${fmt$(r.meta)}</td><td>${fmt$(r.google)}</td><td class="dim">${fmt$(r.amzAds)}</td><td>${fmt$(r.ad)}</td><td class="${r.ni < 0 ? 'neg' : ''}">${fmt$(r.ni)}</td></tr>`).join('');
+  $('#dmtb').innerHTML = `<thead><tr><th>Day</th><th style="text-align:left">Phase</th><th>Shopify</th><th>Amazon</th><th>D/D/O</th><th>Total</th><th>Last year</th><th>Orders</th><th>Meta</th><th>Google</th><th>Amazon ads</th><th>Ad spend</th><th>Net income</th></tr></thead><tbody>${tr}</tbody>`;
 }
 const MNL_ = m => ['January','February','March','April','May','June','July','August','September','October','November','December'][+m.slice(5)-1];
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#dm').hidden) closeDM(); });
