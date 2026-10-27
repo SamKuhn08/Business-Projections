@@ -166,6 +166,8 @@ table.mini td.sub{color:var(--ink-3);font-size:11px}
 .dm td.dim{color:var(--ink-4)}
 .pos{color:var(--pos)}.neg{color:var(--neg)}
 .pill.warn{background:rgba(184,134,11,.14);color:#8a6408}
+.dstats small.ihead{display:flex;align-items:center;gap:6px}
+.dstats .info .tip{text-transform:none;letter-spacing:0;color:var(--ink-2);font-size:11.5px;font-weight:400}
 .dm tr.yb td{background:rgba(184,134,11,.07)}
 @media(max-width:620px){.dmbar .seg{flex-wrap:wrap;border-radius:14px}.dm{padding:0}.dmbox{border-radius:0;min-height:100%;padding:14px 14px 30px}.dm .chartbox{height:280px}.dstats b{font-size:16px}}
 /* channels tab */
@@ -926,8 +928,8 @@ function renderSaleDM(){
     <div><small>Sale days</small><b>${t.d}</b><span>same number of evergreen days</span></div>
     <div><small>Sale revenue</small><b>${fmtKd(t.a)}</b><span>${t.d ? fmtKd(t.a/t.d) + ' a day' : ''}</span></div>
     <div><small>Evergreen revenue</small><b>${fmtKd(t.b)}</b><span>${t.d ? fmtKd(t.b/t.d) + ' a day' : ''}</span></div>
-    <div><small>Multiplier (all counted)</small><b>${fmtX(t.m)}</b><span>total sale / total evergreen</span></div>
-    <div><small>Median sale</small><b>${fmtX(med)}</b><span>typical single sale</span></div>`;
+    <div><small class="ihead">Multiplier (all counted) <i class="info" tabindex="0">i<span class="tip">All sale revenue in the range divided by all evergreen revenue in the range. Weighted by size, so big sales like BFCM move it the most.</span></i></small><b>${fmtX(t.m)}</b><span>total sale / total evergreen</span></div>
+    <div><small class="ihead">Median sale <i class="info" tabindex="0">i<span class="tip">Each counted sale's own multiplier (its sale revenue / its evergreen revenue), lined up from lowest to highest; this is the middle one (with an even count, the average of the two middle ones). Every sale counts once whatever its size, so it shows what a typical sale does and is not pulled around by BFCM or one outlier.</span></i></small><b>${fmtX(med)}</b><span>typical single sale</span></div>`;
   $('#dml').innerHTML = `<span><i style="background:var(--in)"></i>Sale revenue</span><span><i style="background:var(--neutral)"></i>Evergreen (prior days)</span><span><i style="background:var(--ink);height:3px;border-radius:2px"></i>Multiplier (right axis)</span><span><i style="background:var(--ddo)"></i>Holiday: vs that year's average MSRP day</span><span><i style="background:transparent;border:1.5px dashed var(--ink-4)"></i>Prior days also on sale</span>`;
   const o = baseOpts(); o.scales.y2 = {position:'right', beginAtZero:true, grid:{display:false}, border:{display:false}, ticks:{color:css('--ink-3'), font:{size:11}, callback:v => v + 'x'}};
   o.scales.x.ticks.autoSkip = false; o.scales.x.ticks.maxRotation = 50; o.scales.x.ticks.minRotation = R.length > 8 ? 40 : 0;
