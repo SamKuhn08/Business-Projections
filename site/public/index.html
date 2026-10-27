@@ -168,6 +168,10 @@ table.mini td.sub{color:var(--ink-3);font-size:11px}
 .pill.warn{background:rgba(184,134,11,.14);color:#8a6408}
 .dstats small.ihead{display:flex;align-items:center;gap:6px}
 .dstats .info .tip{text-transform:none;letter-spacing:0;color:var(--ink-2);font-size:11.5px;font-weight:400}
+.dstats .spl{display:block;font-size:11px;color:var(--ink-3);margin-top:5px;line-height:1.55}
+.dstats .spl i{display:inline-block;width:7px;height:7px;border-radius:2px;margin-right:5px;vertical-align:0}
+.dstats em.cmp{display:block;font-style:normal;font-size:11px;color:var(--ink-3);margin-top:6px;padding-top:6px;border-top:1px solid var(--line);line-height:1.5}
+.dstats em.cmp b{display:inline;font-size:11px;letter-spacing:0;margin:0}
 .dm tr.yb td{background:rgba(184,134,11,.07)}
 @media(max-width:620px){.dmbar .seg{flex-wrap:wrap;border-radius:14px}.dm{padding:0}.dmbox{border-radius:0;min-height:100%;padding:14px 14px 30px}.dm .chartbox{height:280px}.dstats b{font-size:16px}}
 /* channels tab */
@@ -847,7 +851,7 @@ function drawSaleCard(){
 }
 function openDM(id){
   const curY = +D.hist[D.hist.length-1].month.slice(0,4);
-  if (!DM || DM.id !== id) DM = id === 'dSale' ? {id, preset:'all', from:D.sales[0].start, to:D.sales[D.sales.length-1].end, ov:'out'} : {id, preset:'l24', cmp:'ly', type:'line'};
+  if (!DM || DM.id !== id) DM = id === 'dSale' ? {id, preset:'all', from:D.sales[0].start, to:D.sales[D.sales.length-1].end, ov:'out', sc:'off'} : {id, preset:'l24', cmp:'ly', type:'line'};
   $('#dm').hidden = false; document.body.style.overflow = 'hidden';
   renderDM(); setTimeout(() => $('#dmx').focus(), 30);
 }
@@ -915,21 +919,41 @@ function renderDriverDM(){
 function renderSaleDM(){
   const all = D.sales, yrs = [...new Set(all.map(r => r.start.slice(0,4)))];
   if (DM.preset !== 'custom') { const r = DM.preset === 'all' ? all : all.filter(x => x.start.startsWith(DM.preset)); DM.from = r[0].start; DM.to = r[r.length-1].end; }
+  const yb = d => (+d.slice(0,4) - 1) + d.slice(4);
+  if (DM.sc === 'ly') { DM.cf = yb(DM.from); DM.ct = yb(DM.to); }
+  if (DM.sc === 'custom' && !DM.cf) { DM.cf = yb(DM.from); DM.ct = yb(DM.to); }
   $('#dmt').textContent = 'Sale lift: sale vs evergreen';
   $('#dmc').innerHTML = `Shopify + Amazon revenue during each sale, against the same number of days immediately before it (evergreen, MSRP). Multiplier = sale revenue / evergreen revenue. Descriptive only: it does not change the forecast.`;
   $('#dmbar').innerHTML = `<div class="grp"><span class="tlabel">Range</span>${segH('dmP', [['all','All'], ...yrs.map(y => [y, y])], DM.preset, 'p')}
     <input type="date" id="dmF" value="${DM.from}" aria-label="From"><span class="tlabel" style="width:auto">to</span><input type="date" id="dmT" value="${DM.to}" aria-label="To"></div>
+    <div class="grp"><span class="tlabel">Compare to</span>${segH('dmK', [['off','Off'],['ly','Same dates last year'],['custom','Custom']], DM.sc, 'k')}${DM.sc !== 'off' ? `
+    <input type="date" id="dmCF" value="${DM.cf}" aria-label="Compare from"><span class="tlabel" style="width:auto">to</span><input type="date" id="dmCT" value="${DM.ct}" aria-label="Compare to"></div>` : '</div>'}
     <div class="grp"><span class="tlabel">Sales whose prior days were also on sale</span>${segH('dmO', [['out','Leave out of totals'],['in','Include']], DM.ov, 'o')}
     <i class="info" tabindex="0">i<span class="tip">Example: Father's Day 2025 started the day after Memorial Day ended, so its "evergreen" days were Memorial Day sale days. A sale is marked when at least a quarter of its prior days were another sale (BFCM's lookback only catches a few October Prime days, so it counts); marked sales are left out of the totals by default. Holiday is handled differently: it is compared to that year's average MSRP day.</span></i></div>`;
   const R = all.filter(r => r.start >= DM.from && r.end <= DM.to), T = R.filter(r => DM.ov === 'in' || !r.prior_sale);
-  const tot = rs => { const a = rs.reduce((x,r)=>x+r.sale,0), b = rs.reduce((x,r)=>x+r.evergreen,0), d = rs.reduce((x,r)=>x+r.days,0); return {a, b, d, m: b ? a/b : null}; };
-  const t = tot(T), med = (() => { const v = T.map(r => r.mult).sort((a,b)=>a-b); return v.length ? (v.length % 2 ? v[(v.length-1)/2] : (v[v.length/2-1] + v[v.length/2]) / 2) : null; })();
-  $('#dms').innerHTML = `<div><small>Sales counted</small><b>${T.length}</b><span>${R.length - T.length ? `${R.length - T.length} more shown, not counted` : 'in this range'}</span></div>
-    <div><small>Sale days</small><b>${t.d}</b><span>same number of evergreen days</span></div>
-    <div><small>Sale revenue</small><b>${fmtKd(t.a)}</b><span>${t.d ? fmtKd(t.a/t.d) + ' a day' : ''}</span></div>
-    <div><small>Evergreen revenue</small><b>${fmtKd(t.b)}</b><span>${t.d ? fmtKd(t.b/t.d) + ' a day' : ''}</span></div>
-    <div><small class="ihead">Multiplier (all counted) <i class="info" tabindex="0">i<span class="tip">All sale revenue in the range divided by all evergreen revenue in the range. Weighted by size, so big sales like BFCM move it the most.</span></i></small><b>${fmtX(t.m)}</b><span>total sale / total evergreen</span></div>
-    <div><small class="ihead">Median sale <i class="info" tabindex="0">i<span class="tip">Each counted sale's own multiplier (its sale revenue / its evergreen revenue), lined up from lowest to highest; this is the middle one (with an even count, the average of the two middle ones). Every sale counts once whatever its size, so it shows what a typical sale does and is not pulled around by BFCM or one outlier.</span></i></small><b>${fmtX(med)}</b><span>typical single sale</span></div>`;
+  const sumK = (rs, k) => rs.reduce((x,r) => x + (r[k] || 0), 0);
+  const tot = rs => { const a = sumK(rs,'sale'), b = sumK(rs,'evergreen'); return {a, b, d: sumK(rs,'days'), m: b ? a/b : null}; };
+  const stat = rs => { const a = sumK(rs,'sale'), b = sumK(rs,'evergreen'), v = rs.map(r => r.mult).sort((p,q)=>p-q);
+    return {n: rs.length, d: sumK(rs,'days'), a, b, as: sumK(rs,'shop_sale'), aa: sumK(rs,'amz_sale'), bs: sumK(rs,'shop_prior'), ba: sumK(rs,'amz_prior'), m: b ? a/b : null,
+      med: v.length ? (v.length % 2 ? v[(v.length-1)/2] : (v[v.length/2-1] + v[v.length/2]) / 2) : null}; };
+  const counted = rs => rs.filter(r => DM.ov === 'in' || !r.prior_sale);
+  const t = stat(T);
+  const RC = DM.sc !== 'off' && DM.cf && DM.ct ? all.filter(r => r.start >= DM.cf && r.end <= DM.ct) : null, c = RC ? stat(counted(RC)) : null;
+  const cl = c ? (DM.cf.slice(0,4) === DM.ct.slice(0,4) && DM.sc === 'ly' ? DM.cf.slice(0,4) : `${fmtD(DM.cf)} '${DM.cf.slice(2,4)} to ${fmtD(DM.ct)} '${DM.ct.slice(2,4)}`) : '';
+  // compare line: kind 'n' = count difference, '$' = % change, 'x' = multiplier difference
+  const cmpL = (cur, prev, kind, fmt) => { if (!c) return ''; if (!c.n) return `<em class="cmp">no sales in ${cl}</em>`;
+    if (cur == null || prev == null) return `<em class="cmp">${cl}: ${fmt(prev)}</em>`;
+    const dlt = kind === '$' ? (prev ? pct(cur/prev - 1, 0) : '–') : kind === 'x' ? ((cur - prev >= 0 ? '+' : '') + (cur - prev).toFixed(2) + 'x') : ((cur - prev >= 0 ? '+' : '') + (cur - prev));
+    return `<em class="cmp">${cl}: ${fmt(prev)} <b class="${cur >= prev ? 'pos' : 'neg'}">${dlt}</b></em>`; };
+  const split = (s_, a_) => `<span class="spl"><i style="background:var(--in)"></i>Shopify ${fmtKd(s_)}<br><i style="background:var(--amz)"></i>Amazon ${fmtKd(a_)}</span>`;
+  const splitC = (s_, a_, ps, pa) => c && c.n ? `<em class="cmp">${cl}: Shopify ${fmtKd(ps)} <b class="${s_ >= ps ? 'pos' : 'neg'}">${ps ? pct(s_/ps-1,0) : '–'}</b> · Amazon ${fmtKd(pa)} <b class="${a_ >= pa ? 'pos' : 'neg'}">${pa ? pct(a_/pa-1,0) : '–'}</b></em>` : '';
+  const num = v => v == null ? '–' : String(v);
+  $('#dms').innerHTML = `<div><small>Sales counted</small><b>${t.n}</b><span>${R.length - T.length ? `${R.length - T.length} more shown, not counted` : 'in this range'}</span>${cmpL(t.n, c && c.n, 'n', num)}</div>
+    <div><small>Sale days</small><b>${t.d}</b><span>same number of evergreen days</span>${cmpL(t.d, c && c.d, 'n', num)}</div>
+    <div><small>Sale revenue</small><b>${fmtKd(t.a)}</b><span>${t.d ? fmtKd(t.a/t.d) + ' a day' : ''}</span>${split(t.as, t.aa)}${cmpL(t.a, c && c.a, '$', fmtKd)}${splitC(t.as, t.aa, c && c.as, c && c.aa)}</div>
+    <div><small>Evergreen revenue</small><b>${fmtKd(t.b)}</b><span>${t.d ? fmtKd(t.b/t.d) + ' a day' : ''}</span>${split(t.bs, t.ba)}${cmpL(t.b, c && c.b, '$', fmtKd)}${splitC(t.bs, t.ba, c && c.bs, c && c.ba)}</div>
+    <div><small class="ihead">Multiplier (all counted) <i class="info" tabindex="0">i<span class="tip">All sale revenue in the range divided by all evergreen revenue in the range. Weighted by size, so big sales like BFCM move it the most.</span></i></small><b>${fmtX(t.m)}</b><span>total sale / total evergreen</span><span class="spl">Shopify ${t.bs ? fmtX(t.as/t.bs) : '–'} · Amazon ${t.ba ? fmtX(t.aa/t.ba) : '–'}</span>${cmpL(t.m, c && c.m, 'x', fmtX)}${c && c.n ? `<em class="cmp" style="border:0;padding-top:0;margin-top:2px">${cl}: Shopify ${c.bs ? fmtX(c.as/c.bs) : '–'} · Amazon ${c.ba ? fmtX(c.aa/c.ba) : '–'}</em>` : ''}</div>
+    <div><small class="ihead">Median sale <i class="info" tabindex="0">i<span class="tip">Each counted sale's own multiplier (its sale revenue / its evergreen revenue), lined up from lowest to highest; this is the middle one (with an even count, the average of the two middle ones). Every sale counts once whatever its size, so it shows what a typical sale does and is not pulled around by BFCM or one outlier.</span></i></small><b>${fmtX(t.med)}</b><span>typical single sale</span>${cmpL(t.med, c && c.med, 'x', fmtX)}</div>`;
   $('#dml').innerHTML = `<span><i style="background:var(--in)"></i>Sale revenue</span><span><i style="background:var(--neutral)"></i>Evergreen (prior days)</span><span><i style="background:var(--ink);height:3px;border-radius:2px"></i>Multiplier (right axis)</span><span><i style="background:var(--ddo)"></i>Holiday: vs that year's average MSRP day</span><span><i style="background:transparent;border:1.5px dashed var(--ink-4)"></i>Prior days also on sale</span>`;
   const o = baseOpts(); o.scales.y2 = {position:'right', beginAtZero:true, grid:{display:false}, border:{display:false}, ticks:{color:css('--ink-3'), font:{size:11}, callback:v => v + 'x'}};
   o.scales.x.ticks.autoSkip = false; o.scales.x.ticks.maxRotation = 50; o.scales.x.ticks.minRotation = R.length > 8 ? 40 : 0;
@@ -957,8 +981,9 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#dm').
 $('#dmx').onclick = closeDM;
 $('#dm').onclick = e => { if (e.target.id === 'dm') closeDM(); };
 $('#dmbar').onclick = e => { const b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.p) DM.preset = b.dataset.p; if (b.dataset.c) DM.cmp = b.dataset.c; if (b.dataset.y) DM.type = b.dataset.y; if (b.dataset.o) DM.ov = b.dataset.o; renderDM(); };
-$('#dmbar').onchange = e => { if (e.target.id === 'dmF') DM.from = e.target.value; if (e.target.id === 'dmT') DM.to = e.target.value; DM.preset = 'custom'; renderDM(); };
+  if (b.dataset.p) DM.preset = b.dataset.p; if (b.dataset.c) DM.cmp = b.dataset.c; if (b.dataset.y) DM.type = b.dataset.y; if (b.dataset.o) DM.ov = b.dataset.o; if (b.dataset.k) DM.sc = b.dataset.k; renderDM(); };
+$('#dmbar').onchange = e => { const id = e.target.id; if (id === 'dmCF' || id === 'dmCT') { DM[id === 'dmCF' ? 'cf' : 'ct'] = e.target.value; DM.sc = 'custom'; renderDM(); return; }
+  if (id === 'dmF') DM.from = e.target.value; if (id === 'dmT') DM.to = e.target.value; DM.preset = 'custom'; renderDM(); };
 
 // ---------- method
 
