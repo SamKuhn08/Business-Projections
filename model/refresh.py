@@ -150,6 +150,23 @@ def main(raw, today):
         D = json.load(open(out))
         D['track'] = dict(q3=[slim(r) for r in B['q3']], broad=[slim(r) for r in B['broad']], summary=B['summary'])
         json.dump(D, open(out, 'w'), default=float)
+    # ---- Nov/Dec day by day: the monthly model sets the season size, the daily calendar moves it between Nov and Dec
+    try:
+        import daily
+        D = json.load(open(out))
+        p, split = daily.build_season(D, int(today[:4]))
+        if p and today >= p['months'][0] + '-01':
+            split = {}     # season under way: keep the model's months (nowcast has the actuals); daily view still shown
+        if p:
+            p['model_months'] = {r['month']: dict(orders=r['orders'], amazon=r['amazon'], d2c=r['d2c']) for r in D['fut'] if r['month'] in split}
+            for r in D['fut']:
+                if r['month'] in split:
+                    r['orders'] = split[r['month']]['orders']; r['d2c'] = r['orders'] * r['aov']
+                    if 'amazon' in split[r['month']]: r['amazon'] = split[r['month']]['amazon']
+            D['daily'] = p
+            json.dump(D, open(out, 'w'), default=float)
+    except Exception as ex:
+        problems.append(f'daily season build failed: {ex}')
     # ---- sale lift per promo (descriptive, Drivers tab): Shopify daily + Amazon windows from Seller Board
     try:
         import sale_lift

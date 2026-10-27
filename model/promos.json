@@ -39,8 +39,8 @@
   {"type": "prime_summer", "start": "2026-06-23", "end": "2026-06-26", "pro": 200, "amazon": ["2026-06-23", "2026-06-26"]},
   {"type": "labor", "start": "2026-08-28", "end": "2026-09-11", "pro": 100},
   {"type": "prime_oct", "start": "2026-10-06", "end": "2026-10-08", "pro": 200, "amazon": ["2026-10-06", "2026-10-08"]},
-  {"type": "bfcm", "start": "2026-11-01", "end": "2026-12-01", "pro": 200, "note": "Veterans Day Nov 1-19 then BFCM Nov 20 - Dec 1"},
-  {"type": "holiday", "start": "2026-12-02", "end": "2026-12-31", "pro": 150},
+  {"type": "bfcm", "start": "2026-11-02", "end": "2026-12-02", "pro": 200, "note": "Early access BF / Cyber Monday, no code (updated doc 2026-10-26). Veterans Day Nov 9-15 is supplements, shirts and accessories only: not a revenue event (Sam 2026-10-27)"},
+  {"type": "holiday", "start": "2026-12-03", "end": "2026-12-31", "pro": 150},
 
   {"type": "presidents", "start": "2027-02-12", "end": "2027-02-18", "pro": 100, "assumed": true},
   {"type": "memorial", "start": "2027-05-28", "end": "2027-06-03", "pro": 150, "assumed": true},

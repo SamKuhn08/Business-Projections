@@ -249,7 +249,7 @@ table.pil td.all,table.pil th.all{border-left:1px solid var(--line);color:var(--
     </div>
     <div class="card">
       <div class="row">
-        <div><h2>Monthly revenue</h2><p class="cap">Actuals (O&amp;F Targets tab) solid, projection lighter. Shopify split by product funnel, then Amazon and D/D/O.</p></div>
+        <div><h2>Monthly revenue</h2><p class="cap">Actuals (O&amp;F Targets tab) solid, projection lighter. Shopify split by product funnel, then Amazon and D/D/O.<span id="dayhint"></span></p></div>
         <div class="seg" id="range"><button data-r="2023">2023+</button><button class="on" data-r="2025">2025+</button></div>
       </div>
       <div class="legend">
@@ -537,7 +537,11 @@ function drawRev(H, F, B){
   opts.plugins.tooltip.filter = c => c.raw != null;
   opts.scales.y.stacked = true;
   if (charts.rev) charts.rev.destroy();
-  opts.onClick = pickMonth(rows); opts.onHover = (e, els) => { e.native.target.style.cursor = els.length ? 'pointer' : 'default'; };
+  const pm = pickMonth(rows);
+  opts.onClick = (evt, els, chart) => { const pts = chart.getElementsAtEventForMode(evt, 'index', {intersect:false}, false); const m = pts.length ? rows[pts[0].index].month : null;
+    if (m && D.daily && D.daily.months.includes(m) && !(evt.native && evt.native.shiftKey)) openDM('day:' + m); else pm(evt, els, chart); };
+  opts.onHover = (e, els) => { e.native.target.style.cursor = els.length ? 'pointer' : 'default'; };
+  if (D.daily) $('#dayhint').innerHTML = ` <b style="color:var(--blue)">Click ${D.daily.months.map(lab).join(' or ')} for the day-by-day view.</b>`;
   charts.rev = new Chart($('#cRev'), {data:{labels:rows.map(r=>lab(r.month)), datasets:sets}, options:opts, plugins:[todayLine, rangeBand]});
   charts.rev.$months = rows.map(r=>r.month);
 }
@@ -851,14 +855,15 @@ function drawSaleCard(){
 }
 function openDM(id){
   const curY = +D.hist[D.hist.length-1].month.slice(0,4);
-  if (!DM || DM.id !== id) DM = id === 'dSale' ? {id, preset:'all', from:D.sales[0].start, to:D.sales[D.sales.length-1].end, ov:'out', sc:'off'} : {id, preset:'l24', cmp:'ly', type:'line'};
+  if (id.startsWith('day:')) DM = {id:'day', view:id.slice(4), metric:'total', mode:'daily', ly:'on'};
+  else if (!DM || DM.id !== id) DM = id === 'dSale' ? {id, preset:'all', from:D.sales[0].start, to:D.sales[D.sales.length-1].end, ov:'out', sc:'off'} : {id, preset:'l24', cmp:'ly', type:'line'};
   $('#dm').hidden = false; document.body.style.overflow = 'hidden';
   renderDM(); setTimeout(() => $('#dmx').focus(), 30);
 }
 function closeDM(){ $('#dm').hidden = true; document.body.style.overflow = ''; if (charts.cDm) { charts.cDm.destroy(); delete charts.cDm; }
   const el = document.querySelector(`.dcard[data-d="${DM && DM.id}"]`); if (el) el.focus(); }
 function segH(id, opts, cur, attr){ return `<div class="seg" id="${id}">${opts.map(([v,t]) => `<button data-${attr}="${v}" class="${v===cur?'on':''}">${t}</button>`).join('')}</div>`; }
-function renderDM(){ DM.id === 'dSale' ? renderSaleDM() : renderDriverDM(); }
+function renderDM(){ DM.id === 'dSale' ? renderSaleDM() : DM.id === 'day' ? renderDayDM() : renderDriverDM(); }
 
 function renderDriverDM(){
   const c = DRV.cards.find(x => x.id === DM.id), rows = DRV.rows, fi = DRV.fi, ms = rows.map(r => r.month);
@@ -977,12 +982,84 @@ function renderSaleDM(){
     body += `<tr class="yr"><td>${y}</td><td></td><td>${tt.d}</td><td></td><td>${fmt$(tt.a)}</td><td>${fmt$(tt.b)}</td><td>${fmtX(tt.m)}</td><td></td><td></td></tr>` + rs.map(row).join(''); });
   $('#dmtb').innerHTML = `<thead><tr><th>Sale</th><th>Dates</th><th>Days</th><th>Discount</th><th>Sale revenue</th><th>Evergreen (prior days)</th><th>Multiplier</th><th>Shopify</th><th>Amazon</th></tr></thead><tbody>${body}</tbody>`;
 }
+
+// ---------- Nov / Dec day by day (projection tab)
+const PH = {'MSRP':null, 'Early access':'--in', 'Thanksgiving':'--ddo', 'Black Friday':'--ddo', 'Saturday':'--ddo', 'Sunday':'--ddo', 'Cyber Monday':'--ddo', 'Cyber Tuesday':'--ddo', 'BFCM (last days)':'--in', 'Holiday sale':'--ha'};
+const PHN = r => ['Thanksgiving','Black Friday','Saturday','Sunday','Cyber Monday','Cyber Tuesday'].includes(r) ? 'Turkey Five + Cyber Tue' : r === 'BFCM (last days)' ? 'Early access' : r;
+const WD = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+function dayRows(){
+  const Dy = D.daily, Fm = {}; [...D.fut].forEach(r => { if (Dy.months.includes(r.month)) Fm[r.month] = calc(r); });
+  const hm = {}; D.hist.forEach(h => hm[h.month] = h);
+  const out = [];
+  Dy.months.forEach(m => {
+    const R = Dy.rows.filter(r => r.date.slice(0,7) === m), F = Fm[m], n = R.length;
+    const ss = R.reduce((a,r)=>a+r.shop,0), sa = R.reduce((a,r)=>a+(r.amz||0),0), so = R.reduce((a,r)=>a+r.orders,0), sad = R.reduce((a,r)=>a+r.meta+r.google+r.amz_ads,0);
+    const lyM = R[0].ly_date.slice(0,7), lyH = hm[lyM]; const lyDdo = lyH && lyH.tgt && lyH.tgt.ddo != null ? lyH.tgt.ddo / new Date(+lyM.slice(0,4), +lyM.slice(5), 0).getDate() : null;
+    R.forEach(r => {
+      const shop = r.shop / ss * F.d2c, amz = sa ? (r.amz||0) / sa * F.amazon : F.amazon / n, ddo = F.ddo / n, ad = (r.meta + r.google + r.amz_ads) / sad * (F.meta + F.google + F.amzAds);
+      const tot = shop + amz + ddo;
+      const lys = r.ly_shop != null ? r.ly_shop * D.fin_ratio : null, lya = r.ly_amz;
+      out.push({date:r.date, m, role:r.role, shop, amz, ddo, total:tot, orders:r.orders / so * F.orders, ad, ni: tot * (1 - D.pnl.cogs_pct) - ad * D.pnl.ad_ratio - F.fixed / n,
+        ly_date:r.ly_date, ly_shop:lys, ly_amz:lya, ly_orders:r.ly_orders, ly_total: lys != null && lya != null ? lys + lya + (lyDdo || 0) : null, ms:r.m_shop});
+    });
+  });
+  return out;
+}
+function renderDayDM(){
+  const Dy = D.daily, all = dayRows(), R = DM.view === 'both' ? all : all.filter(r => r.m === DM.view);
+  const mets = {total:['Total revenue', fmtKd], shop:['Shopify', fmtKd], amz:['Amazon', fmtKd], orders:['Shopify orders', v => Math.round(v).toLocaleString()], ad:['Ad spend', fmtKd], ni:['Net income', fmtKd]};
+  const lyKey = {total:'ly_total', shop:'ly_shop', amz:'ly_amz', orders:'ly_orders'};
+  const title = DM.view === 'both' ? `Nov and Dec ${Dy.year}` : `${MNL_(DM.view)} ${DM.view.slice(0,4)}`;
+  $('#dmt').textContent = `${title}, day by day`;
+  $('#dmc').innerHTML = `Projected. Full-price days stay at this October's level (Shopify ${fmtKd(Dy.shop.base * D.fin_ratio)} a day); sale days follow the same day of past seasons (weighted to 2025), lined up on Thanksgiving for BFCM and on the calendar date for the Holiday sale. Month totals match the bars on the Projection tab.`;
+  $('#dmbar').innerHTML = `<div class="grp"><span class="tlabel">Month</span>${segH('dmV', [...Dy.months.map(m => [m, MNL_(m)]), ['both','Both']], DM.view, 'v')}</div>
+    <div class="grp"><span class="tlabel">Chart</span><select id="dmM" aria-label="Metric">${Object.entries(mets).map(([k,[t]]) => `<option value="${k}" ${k===DM.metric?'selected':''}>${t}</option>`).join('')}</select>${segH('dmD', [['daily','Per day'],['cum','Running total']], DM.mode, 'd')}</div>
+    <div class="grp"><span class="tlabel">Last year</span>${segH('dmL', [['on','Show'],['off','Hide']], DM.ly, 'l')}<i class="info" tabindex="0">i<span class="tip">Last year's actual. Through BFCM it is the same weekday 364 days earlier, so Thanksgiving, Black Friday and Cyber Monday line up; in the Holiday sale it is the same calendar date, so Christmas and Dec 31 line up. Shopify and Amazon only (D/D/O spread evenly). No daily ad spend or net income history.</span></i></div>`;
+  const S = k => R.reduce((a,r)=>a+(r[k]||0),0), SL = k => R.every(r => r[k] != null) ? S(k) : null;
+  const peak = k => R.reduce((b,r) => !b || r[k] > b[k] ? r : b, null);
+  const tile = (lab_, k, f, lyk) => { const v = S(k), p = peak(k), lv = lyk ? SL(lyk) : null;
+    return `<div><small>${lab_}</small><b>${f(v)}</b><span>${k === 'ddo' ? `Spread evenly: ${f(v / R.length)} a day` : `Peak ${fmtD(p.date)} (${p.role.replace('BFCM (last days)','BFCM')}): ${f(p[k])}`}</span>${lv ? `<em class="cmp">Last year: ${f(lv)} <b class="${v >= lv ? 'pos' : 'neg'}">${pct(v/lv-1,0)}</b></em>` : ''}</div>`; };
+  $('#dms').innerHTML = tile('Total revenue','total',fmtKd,'ly_total') + tile('Net income','ni',fmtKd) + tile('Shopify','shop',fmtKd,'ly_shop') + tile('Amazon','amz',fmtKd,'ly_amz') +
+    tile('D/D/O','ddo',fmtKd) + tile('Shopify orders','orders',v=>Math.round(v).toLocaleString(),'ly_orders') + tile('Ad spend','ad',fmtKd);
+  const k = DM.metric, f = mets[k][1], cum = DM.mode === 'cum', lk = lyKey[k], showLy = DM.ly === 'on' && lk && R.some(r => r[lk] != null);
+  const run = arr => { let a = 0; return arr.map(v => v == null ? null : (a += v)); };
+  const ds = [];
+  if (k === 'total' && !cum) [['shop','Shopify','--in'],['amz','Amazon','--amz'],['ddo','D/D/O','--ddo']].forEach(([kk,l,c]) => ds.push({type:'bar', label:l, data:R.map(r=>r[kk]), backgroundColor:alpha(css(c),.8), stack:'s', borderRadius:2, order:2}));
+  else if (!cum) ds.push({type:'bar', label:mets[k][0], data:R.map(r=>r[k]), backgroundColor:R.map(r => r[k] < 0 ? alpha(css('--neg'),.7) : alpha(css(k==='amz'?'--amz':k==='ad'?'--neutral':'--in'),.8)), borderRadius:2, order:2});
+  else ds.push({type:'line', label:mets[k][0] + ' (running)', data:run(R.map(r=>r[k])), borderColor:css('--in'), backgroundColor:alpha(css('--in'),.12), fill:true, borderWidth:2.2, pointRadius:0, order:1});
+  if (showLy) ds.push({type:'line', label:'Last year', data: cum ? run(R.map(r=>r[lk])) : R.map(r=>r[lk]), borderColor:css('--ink-3'), borderDash:[3,3], borderWidth:1.6, pointRadius:0, order:0});
+  const o = baseOpts(); if (k === 'total' && !cum) { o.scales.x.stacked = true; o.scales.y.stacked = true; }
+  o.scales.y.ticks.callback = v => k === 'orders' ? v : fmtKd(v); o.scales.y.beginAtZero = k !== 'ni';
+  o.scales.x.ticks.autoSkip = true; o.scales.x.ticks.maxTicksLimit = 16;
+  o.plugins.tooltip.callbacks = {title: t => { const r = R[t[0].dataIndex]; return `${WD[new Date(r.date+'T12:00').getDay()]} ${fmtD(r.date)} · ${r.role}`; },
+    label: t => t.raw == null ? null : `${t.dataset.label}: ${f(t.raw)}`,
+    footer: t => { const r = R[t[0].dataIndex]; return (k === 'total' && !cum ? `Total: ${fmtKd(r.total)}\n` : '') + (showLy ? `Last year ${fmtD(r.ly_date)} '${r.ly_date.slice(2,4)}` : ''); }};
+  o.plugins.tooltip.filter = t => t.raw != null;
+  const bands = {id:'bands', beforeDatasetsDraw(c){ const x = c.scales.x, ctx = c.ctx, a = c.chartArea, w = R.length > 1 ? x.getPixelForValue(1) - x.getPixelForValue(0) : a.right - a.left; let i = 0;
+    while (i < R.length) { const g = PHN(R[i].role); let j = i; while (j + 1 < R.length && PHN(R[j+1].role) === g) j++;
+      const col = PH[R[i].role]; const x0 = x.getPixelForValue(i) - w/2, x1 = x.getPixelForValue(j) + w/2;
+      if (col) { ctx.save(); ctx.fillStyle = alpha(css(col), .07); ctx.fillRect(x0, a.top, x1 - x0, a.bottom - a.top); ctx.restore(); }
+      ctx.save(); ctx.font = '600 10.5px Inter'; const tw = ctx.measureText(g).width; if (x1 - x0 > tw + 10) { ctx.fillStyle = css('--ink-3'); ctx.fillText(g, x0 + 5, a.top + 12); } ctx.restore();
+      i = j + 1; } }};
+  if (charts.cDm) charts.cDm.destroy();
+  charts.cDm = new Chart($('#cDm'), {data:{labels:R.map(r => fmtD(r.date)), datasets:ds}, options:o, plugins:[bands]});
+  $('#dml').innerHTML = (k === 'total' && !cum ? '<span><i style="background:var(--in)"></i>Shopify</span><span><i style="background:var(--amz)"></i>Amazon</span><span><i style="background:var(--ddo)"></i>D/D/O</span>' : '') +
+    (showLy ? '<span><i style="background:var(--ink-3);height:2px"></i>Last year</span>' : '') +
+    '<span><i style="background:var(--in);opacity:.25"></i>Early access</span><span><i style="background:var(--ddo);opacity:.3"></i>Turkey Five + Cyber Tuesday</span><span><i style="background:var(--ha);opacity:.25"></i>Holiday sale</span>';
+  $('#dmn').innerHTML = `BFCM ${fmtD(Dy.bfcm[0])} to ${fmtD(Dy.bfcm[1])} and Holiday ${Dy.holiday ? fmtD(Dy.holiday[0]) + ' to ' + fmtD(Dy.holiday[1]) : ''} from the 2026 promo doc; Veterans Day (supplements, shirts, accessories) is not treated as a revenue event. Thanksgiving ${fmtD(Dy.thanksgiving)}, Cyber Monday ${fmtD(Dy.rows.find(r=>r.role==='Cyber Monday').date)}. ` + (Dy.rows.some(r => r.ly_amz_outage) ? 'Last year: Amazon sold $0 Nov 20 to 26, 2025 (listing appears to have been down); those days are left out of the pattern, but the last-year line shows what really happened. ' : '') +
+    `Season size (Nov + Dec) comes from the monthly model; it asks for ${Math.round((Dy.shop.k-1)*100)}% ${Dy.shop.k >= 1 ? 'more' : 'less'} Shopify sale lift than past seasons' pattern${Dy.amz ? ` and ${Math.round(Math.abs(Dy.amz.k-1)*100)}% ${Dy.amz.k >= 1 ? 'more' : 'less'} on Amazon` : ''}, so the lift above full price is scaled to fit while full-price days stay at October's level. ` +
+    `Meta and Google spend per day follows Shopify's daily lift dampened (square root), Amazon ads follow Amazon's; month totals are the projection's.`;
+  const tr = R.map(r => `<tr class="${PH[r.role] ? '' : 'fc'}"><td>${WD[new Date(r.date+'T12:00').getDay()]} ${fmtD(r.date)}</td><td style="text-align:left">${r.role}</td><td>${fmt$(r.shop)}</td><td>${fmt$(r.amz)}</td><td class="dim">${fmt$(r.ddo)}</td><td><b>${fmt$(r.total)}</b></td>
+    <td class="dim">${r.ly_total != null ? fmt$(r.ly_total) : '–'}</td><td>${Math.round(r.orders)}</td><td>${fmt$(r.ad)}</td><td class="${r.ni < 0 ? 'neg' : ''}">${fmt$(r.ni)}</td></tr>`).join('');
+  $('#dmtb').innerHTML = `<thead><tr><th>Day</th><th style="text-align:left">Phase</th><th>Shopify</th><th>Amazon</th><th>D/D/O</th><th>Total</th><th>Last year</th><th>Orders</th><th>Ad spend</th><th>Net income</th></tr></thead><tbody>${tr}</tbody>`;
+}
+const MNL_ = m => ['January','February','March','April','May','June','July','August','September','October','November','December'][+m.slice(5)-1];
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#dm').hidden) closeDM(); });
 $('#dmx').onclick = closeDM;
 $('#dm').onclick = e => { if (e.target.id === 'dm') closeDM(); };
 $('#dmbar').onclick = e => { const b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.p) DM.preset = b.dataset.p; if (b.dataset.c) DM.cmp = b.dataset.c; if (b.dataset.y) DM.type = b.dataset.y; if (b.dataset.o) DM.ov = b.dataset.o; if (b.dataset.k) DM.sc = b.dataset.k; renderDM(); };
-$('#dmbar').onchange = e => { const id = e.target.id; if (id === 'dmCF' || id === 'dmCT') { DM[id === 'dmCF' ? 'cf' : 'ct'] = e.target.value; DM.sc = 'custom'; renderDM(); return; }
+  if (b.dataset.p) DM.preset = b.dataset.p; if (b.dataset.c) DM.cmp = b.dataset.c; if (b.dataset.y) DM.type = b.dataset.y; if (b.dataset.o) DM.ov = b.dataset.o; if (b.dataset.k) DM.sc = b.dataset.k; if (b.dataset.v) DM.view = b.dataset.v; if (b.dataset.d) DM.mode = b.dataset.d; if (b.dataset.l) DM.ly = b.dataset.l; renderDM(); };
+$('#dmbar').onchange = e => { const id = e.target.id; if (id === 'dmM') { DM.metric = e.target.value; renderDM(); return; } if (id === 'dmCF' || id === 'dmCT') { DM[id === 'dmCF' ? 'cf' : 'ct'] = e.target.value; DM.sc = 'custom'; renderDM(); return; }
   if (id === 'dmF') DM.from = e.target.value; if (id === 'dmT') DM.to = e.target.value; DM.preset = 'custom'; renderDM(); };
 
 // ---------- method
