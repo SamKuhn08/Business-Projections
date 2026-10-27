@@ -1,0 +1,252 @@
+[
+ {
+  "start": "2024-02-05",
+  "end": "2024-02-19",
+  "prior_start": "2024-01-21",
+  "prior_end": "2024-02-04",
+  "sales": 61540.22,
+  "prior_sales": 63753.15,
+  "refunds": 61,
+  "prior_refunds": 109
+ },
+ {
+  "start": "2024-03-19",
+  "end": "2024-03-24",
+  "prior_start": "2024-03-13",
+  "prior_end": "2024-03-18",
+  "sales": 27074.96,
+  "prior_sales": 20456.13,
+  "refunds": 21,
+  "prior_refunds": 27
+ },
+ {
+  "start": "2024-04-29",
+  "end": "2024-05-05",
+  "prior_start": "2024-04-22",
+  "prior_end": "2024-04-28",
+  "sales": 29625.65,
+  "prior_sales": 37850.95,
+  "refunds": 18,
+  "prior_refunds": 10
+ },
+ {
+  "start": "2024-06-03",
+  "end": "2024-06-16",
+  "prior_start": "2024-05-20",
+  "prior_end": "2024-06-02",
+  "sales": 71059.66,
+  "prior_sales": 62740.71,
+  "refunds": 36,
+  "prior_refunds": 25
+ },
+ {
+  "start": "2024-07-01",
+  "end": "2024-07-08",
+  "prior_start": "2024-06-23",
+  "prior_end": "2024-06-30",
+  "sales": 24718.41,
+  "prior_sales": 22527.33,
+  "refunds": 20,
+  "prior_refunds": 14
+ },
+ {
+  "start": "2024-07-16",
+  "end": "2024-07-17",
+  "prior_start": "2024-07-14",
+  "prior_end": "2024-07-15",
+  "sales": 41620.91,
+  "prior_sales": 4322.08,
+  "refunds": 6,
+  "prior_refunds": 8
+ },
+ {
+  "start": "2024-08-25",
+  "end": "2024-09-07",
+  "prior_start": "2024-08-11",
+  "prior_end": "2024-08-24",
+  "sales": 56539.49,
+  "prior_sales": 54599.65,
+  "refunds": 32,
+  "prior_refunds": 23
+ },
+ {
+  "start": "2024-10-08",
+  "end": "2024-10-09",
+  "prior_start": "2024-10-06",
+  "prior_end": "2024-10-07",
+  "sales": 25788.45,
+  "prior_sales": 7312.81,
+  "refunds": 3,
+  "prior_refunds": 5
+ },
+ {
+  "start": "2024-11-01",
+  "end": "2024-11-30",
+  "prior_start": "2024-10-02",
+  "prior_end": "2024-10-31",
+  "sales": 245812.3,
+  "prior_sales": 126005.87,
+  "refunds": 99,
+  "prior_refunds": 79
+ },
+ {
+  "start": "2024-12-01",
+  "end": "2024-12-31",
+  "prior_start": "2024-10-31",
+  "prior_end": "2024-11-30",
+  "sales": 263643.6,
+  "prior_sales": 249758.87,
+  "refunds": 112,
+  "prior_refunds": 101
+ },
+ {
+  "start": "2025-02-14",
+  "end": "2025-02-24",
+  "prior_start": "2025-02-03",
+  "prior_end": "2025-02-13",
+  "sales": 80782.09,
+  "prior_sales": 60156.78,
+  "refunds": 39,
+  "prior_refunds": 52
+ },
+ {
+  "start": "2025-03-17",
+  "end": "2025-03-24",
+  "prior_start": "2025-03-09",
+  "prior_end": "2025-03-16",
+  "sales": 37099.87,
+  "prior_sales": 35997.17,
+  "refunds": 25,
+  "prior_refunds": 27
+ },
+ {
+  "start": "2025-04-25",
+  "end": "2025-04-27",
+  "prior_start": "2025-04-22",
+  "prior_end": "2025-04-24",
+  "sales": 20475.88,
+  "prior_sales": 8282.88,
+  "refunds": 8,
+  "prior_refunds": 12
+ },
+ {
+  "start": "2025-05-23",
+  "end": "2025-06-01",
+  "prior_start": "2025-05-13",
+  "prior_end": "2025-05-22",
+  "sales": 47307.79,
+  "prior_sales": 41143.12,
+  "refunds": 26,
+  "prior_refunds": 25
+ },
+ {
+  "start": "2025-06-02",
+  "end": "2025-06-23",
+  "prior_start": "2025-05-11",
+  "prior_end": "2025-06-01",
+  "sales": 97914.56,
+  "prior_sales": 95522.38,
+  "refunds": 65,
+  "prior_refunds": 56
+ },
+ {
+  "start": "2025-07-08",
+  "end": "2025-07-11",
+  "prior_start": "2025-07-04",
+  "prior_end": "2025-07-07",
+  "sales": 82955.77,
+  "prior_sales": 11117.3,
+  "refunds": 14,
+  "prior_refunds": 9
+ },
+ {
+  "start": "2025-08-29",
+  "end": "2025-09-08",
+  "prior_start": "2025-08-18",
+  "prior_end": "2025-08-28",
+  "sales": 44913.54,
+  "prior_sales": 43578.44,
+  "refunds": 20,
+  "prior_refunds": 38
+ },
+ {
+  "start": "2025-10-07",
+  "end": "2025-10-08",
+  "prior_start": "2025-10-05",
+  "prior_end": "2025-10-06",
+  "sales": 36320.58,
+  "prior_sales": 5066.26,
+  "refunds": 5,
+  "prior_refunds": 1
+ },
+ {
+  "start": "2025-10-31",
+  "end": "2025-12-02",
+  "prior_start": "2025-09-28",
+  "prior_end": "2025-10-30",
+  "sales": 207545.18,
+  "prior_sales": 141168.76,
+  "refunds": 111,
+  "prior_refunds": 71
+ },
+ {
+  "start": "2025-12-03",
+  "end": "2025-12-31",
+  "prior_start": "2025-11-04",
+  "prior_end": "2025-12-02",
+  "sales": 164256.07,
+  "prior_sales": 181539.56,
+  "refunds": 99,
+  "prior_refunds": 104
+ },
+ {
+  "start": "2026-02-13",
+  "end": "2026-02-19",
+  "prior_start": "2026-02-06",
+  "prior_end": "2026-02-12",
+  "sales": 27435.51,
+  "prior_sales": 23912.27,
+  "refunds": 23,
+  "prior_refunds": 19
+ },
+ {
+  "start": "2026-05-22",
+  "end": "2026-05-28",
+  "prior_start": "2026-05-15",
+  "prior_end": "2026-05-21",
+  "sales": 35963.79,
+  "prior_sales": 26992.31,
+  "refunds": 24,
+  "prior_refunds": 24
+ },
+ {
+  "start": "2026-06-23",
+  "end": "2026-06-26",
+  "prior_start": "2026-06-19",
+  "prior_end": "2026-06-22",
+  "sales": 57064.24,
+  "prior_sales": 22075.99,
+  "refunds": 14,
+  "prior_refunds": 23
+ },
+ {
+  "start": "2026-08-28",
+  "end": "2026-09-11",
+  "prior_start": "2026-08-13",
+  "prior_end": "2026-08-27",
+  "sales": 62636.12,
+  "prior_sales": 61737.95,
+  "refunds": 41,
+  "prior_refunds": 58
+ },
+ {
+  "start": "2026-10-06",
+  "end": "2026-10-08",
+  "prior_start": "2026-10-03",
+  "prior_end": "2026-10-05",
+  "sales": 24653.22,
+  "prior_sales": 10920.59,
+  "refunds": 11,
+  "prior_refunds": 6
+ }
+]

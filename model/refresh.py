@@ -150,6 +150,13 @@ def main(raw, today):
         D = json.load(open(out))
         D['track'] = dict(q3=[slim(r) for r in B['q3']], broad=[slim(r) for r in B['broad']], summary=B['summary'])
         json.dump(D, open(out, 'w'), default=float)
+    # ---- sale lift per promo (descriptive, Drivers tab): Shopify daily + Amazon windows from Seller Board
+    try:
+        import sale_lift
+        D = json.load(open(out)); D['sales'] = sale_lift.build(); json.dump(D, open(out, 'w'), default=float)
+        if any(r['amz_missing'] for r in D['sales']): problems.append('sale lift: a finished sale has no Amazon window in amazon_sale_windows.json')
+    except Exception as ex:
+        problems.append(f'sale lift failed: {ex}')
     print('touched months:', sorted(touched))
     print('PROBLEMS:' if problems else 'OK: no validation problems', *problems, sep='\n  ')
     sys.exit(1 if problems else 0)

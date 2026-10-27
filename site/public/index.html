@@ -138,6 +138,35 @@ table.mini th,table.mini td{padding:6px 8px}
 table.mini td.sub{color:var(--ink-3);font-size:11px}
 .pill{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(0,107,214,.11);color:var(--blue);margin-left:6px;vertical-align:1px}
 .view{display:none}.view.on{display:block}
+/* driver deep dive */
+.drivers .card.dcard{cursor:pointer;transition:transform .18s var(--ease-out),box-shadow .18s var(--ease-out)}
+.drivers .card.dcard:hover{transform:translateY(-2px);box-shadow:0 1px 1px rgba(16,32,64,.05),0 18px 36px -16px rgba(16,42,92,.42),var(--inset)}
+.drivers .card.dcard:active{transform:scale(.995)}
+.dhead{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.dexp{flex:none;display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--ink-3);border:1px solid var(--gbr);background:rgba(255,255,255,.6);border-radius:999px;padding:3px 9px;transition:color .16s,background .16s}
+.dcard:hover .dexp{color:var(--blue);background:#fff}
+.dm{position:fixed;inset:0;z-index:60;background:rgba(16,32,64,.30);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);display:flex;align-items:flex-start;justify-content:center;padding:4vh 16px 6vh;overflow:auto}
+.dm[hidden]{display:none}
+.dmbox{width:min(1200px,100%);border-radius:20px;padding:18px 20px 20px;background:rgba(255,255,255,.90);animation:dmin .2s var(--ease-out)}
+@keyframes dmin{from{opacity:0;transform:translateY(8px) scale(.985)}to{opacity:1;transform:none}}
+.dmtop{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:6px}
+.dmx{flex:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink-2);font-size:18px;line-height:1;cursor:pointer}
+.dmx:hover{color:var(--ink)}
+.dmbar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:8px 0 14px}
+.dmbar .grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.dmbar select,.dmbar input[type=date]{font:inherit;font-size:12px;border:1px solid var(--line);border-radius:9px;padding:5px 8px;background:var(--surface);color:var(--ink)}
+.dstats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px}
+.dstats div{background:rgba(255,255,255,.7);border:1px solid var(--gbr);border-radius:12px;padding:10px 12px}
+.dstats small{display:block;font-size:10px;font-weight:700;color:var(--ink-4);text-transform:uppercase;letter-spacing:.07em}
+.dstats b{display:block;font-size:19px;font-variant-numeric:tabular-nums;letter-spacing:-.02em;margin-top:2px}
+.dstats span{font-size:11.5px;color:var(--ink-3)}
+.dm .chartbox{height:360px}
+.dm .tablewrap{max-height:420px;margin-top:14px;border:1px solid var(--line)}
+.dm tbody tr{cursor:default}
+.dm td.dim{color:var(--ink-4)}
+.pos{color:var(--pos)}.neg{color:var(--neg)}
+.pill.warn{background:rgba(184,134,11,.14);color:#8a6408}
+@media(max-width:620px){.dmbar .seg{flex-wrap:wrap;border-radius:14px}.dm{padding:0}.dmbox{border-radius:0;min-height:100%;padding:14px 14px 30px}.dm .chartbox{height:280px}.dstats b{font-size:16px}}
 /* channels tab */
 .chbar{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;border-radius:16px;padding:10px 14px;margin-bottom:12px}
 .chbar .grp{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -253,6 +282,17 @@ table.pil td.all,table.pil th.all{border-left:1px solid var(--line);color:var(--
 <section class="view" id="v-drivers">
   <div class="drivers small" id="driverGrid"></div>
 </section>
+<div class="dm" id="dm" hidden role="dialog" aria-modal="true" aria-labelledby="dmt">
+  <div class="dmbox glass">
+    <div class="dmtop"><div><h2 id="dmt"></h2><p class="cap" id="dmc" style="margin:0"></p></div><button class="dmx" id="dmx" aria-label="Close">×</button></div>
+    <div class="dmbar" id="dmbar"></div>
+    <div class="dstats" id="dms"></div>
+    <div class="legend" id="dml"></div>
+    <div class="chartbox"><canvas id="cDm"></canvas></div>
+    <p class="cap" id="dmn" style="margin:10px 0 0"></p>
+    <div class="tablewrap"><table id="dmtb"></table></div>
+  </div>
+</div>
 
 <section class="view" id="v-table">
   <div class="card">
@@ -731,12 +771,12 @@ function drawDrivers(){
      y:v=>fmtK(v), sets:[
       {label:'Non-blog sessions', color:'--in', h:H(h=>h.sessions - h.seg.B.ses), f:Fz((r,a)=> a ? r.sessions-r.seg.B.ses : Object.entries(r.seg).filter(([k])=>k!=='B').reduce((s,[,v])=>s+v.ses,0))},
       {label:'Blog sessions', color:'--neutral', h:H(h=>h.seg.B.ses), f:Fz((r,a)=> a ? r.seg.B.ses : r.seg.B.ses)}]},
-    {id:'dCR', t:'Conversion rate (non-blog sessions)', c:'Orders / non-blog sessions. Rose through 2025 to H1 2026 as the Harness funnel scaled, then fell from July 2026.',
+    {id:'dCR', agg:'avg', t:'Conversion rate (non-blog sessions)', c:'Orders / non-blog sessions. Rose through 2025 to H1 2026 as the Harness funnel scaled, then fell from July 2026.',
      y:v=>(v*100).toFixed(1)+'%', sets:[
       {label:'Conversion rate', color:'--in', h:H(h=>{const c=Object.values(h.seg).reduce((a,s)=>a+s.conv,0); return (h.orders/(h.sessions-h.seg.B.ses));}), f:Fz((r,a)=> a ? r.orders/(r.sessions-r.seg.B.ses) : (r.orders - r.seg.B.ses*r.seg.B.cr)/Object.entries(r.seg).filter(([k])=>k!=='B').reduce((s,[,v])=>s+v.ses,0))}]},
-    {id:'dAOV', t:'AOV', c:`Driven by product mix: fitted $${Math.round(D.a_in)} per Iron Neck order vs $${Math.round(D.a_ha)} per Harness order (last 18 months).`,
+    {id:'dAOV', agg:'avg', t:'AOV', c:`Driven by product mix: fitted $${Math.round(D.a_in)} per Iron Neck order vs $${Math.round(D.a_ha)} per Harness order (last 18 months).`,
      y:v=>'$'+Math.round(v), sets:[{label:'AOV', color:'--in', h:H(h=>h.aov), f:Fz((r,a)=>r.aov)}]},
-    {id:'dMix', t:'Harness + accessories share of Shopify revenue', c:'The 2026 funnel split. Higher share means more orders at a lower AOV.',
+    {id:'dMix', agg:'avg', t:'Harness + accessories share of Shopify revenue', c:'The 2026 funnel split. Higher share means more orders at a lower AOV.',
      y:v=>Math.round(v*100)+'%', sets:[{label:'Harness share', color:'--ha', h:H(h=>h.line_ha/(h.line_in+h.line_ha)), f:Fz((r,a)=> a ? r.line_ha/(r.line_in+r.line_ha) : r.ha_share)}]},
     {id:'dBrand', t:'Brand search', c:`Google clicks on "iron neck" (Search Console) and Amazon brand searches (Brand Analytics, partial). Rogan added ~${fmtK(D.brand.rogan.clicks.excess)} Google clicks in Jan to Feb 2025; it is excluded from trend and seasonality.`,
      y:v=>fmtK(v), sets:[{label:'Google brand clicks', color:'--in', h:H(h=>h.brand_clicks), f:Fz((r,a)=>r.brand_clicks)},
@@ -758,7 +798,12 @@ function drawDrivers(){
     {id:'dAmz', t:'Amazon revenue', c:'Targets tab history from Jan 2023. Own seasonal shape, recent years weighted most; Q4 peak has shrunk each year.',
      y:v=>'$'+fmtK(v), sets:[{label:'Amazon', color:'--amz', h:H(h=>h.amazon), f:Fz((r,a)=>r.amazon)}]},
   ];
-  grid.innerHTML = cards.map(c=>`<div class="card"><h2>${c.t}</h2><p class="cap">${c.c}</p>
+  DRV = {cards, rows:[...hist, ...fut], fi};
+  const exp = `<span class="dexp" aria-hidden="true">Expand <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 1h4v4M5 11H1V7M11 1 7 5M1 11l4-4"/></svg></span>`;
+  const saleCard = (D.sales && D.sales.length) ? `<div class="card dcard" data-d="dSale" tabindex="0"><div class="dhead"><div><h2>Sale lift</h2><p class="cap">Shopify + Amazon revenue during each sale vs the same number of days right before it (evergreen). Multiplier = sale / evergreen. Father's Day 2026 left out (gift with purchase).</p></div>${exp}</div>
+    <div class="legend"><span><i style="background:var(--neutral)"></i>2024</span><span><i style="background:var(--ha)"></i>2025</span><span><i style="background:var(--in)"></i>2026</span><span><i style="background:transparent;border:1.5px dashed var(--ink-4)"></i>Prior days also on sale</span></div>
+    <div class="chartbox"><canvas id="dSale"></canvas></div></div>` : '';
+  grid.innerHTML = saleCard + cards.map(c=>`<div class="card dcard" data-d="${c.id}" tabindex="0"><div class="dhead"><div><h2>${c.t}</h2><p class="cap">${c.c}</p></div>${exp}</div>
     <div class="legend">${[...c.sets, ...(c.two?[c.two]:[])].map(s=>`<span><i style="background:var(${s.color})"></i>${s.label}</span>`).join('')}${c.noProj?'':'<span><i class="dash"></i>Projection</span>'}</div>
     <div class="chartbox"><canvas id="${c.id}"></canvas></div></div>`).join('');
   cards.forEach(c=>{
@@ -775,7 +820,142 @@ function drawDrivers(){
     if (charts[c.id]) charts[c.id].destroy();
     charts[c.id] = new Chart($('#'+c.id), {type:'line', data:{labels, datasets:ds}, options:o, plugins});
   });
+  if (D.sales && D.sales.length) drawSaleCard();
+  grid.querySelectorAll('.dcard').forEach(el => { el.onclick = () => openDM(el.dataset.d); el.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openDM(el.dataset.d); } }; });
 }
+
+// ---------- driver deep dive (its own range, independent of the top toolbar)
+let DRV = null, DM = null;
+const YC = {2024:'--neutral', 2025:'--ha', 2026:'--in', 2027:'--amz'};
+const saleLab = r => `${r.name.replace('Black Friday / Cyber Monday','BFCM')} '${r.start.slice(2,4)}`;
+const fmtX = v => v == null ? '–' : v.toFixed(2) + 'x';
+const fmtD = d => { const [y,m,dd] = d.split('-'); return `${MN[+m-1]} ${+dd}`; };
+function drawSaleCard(){
+  const S = D.sales;
+  const o = baseOpts(); o.scales.y.ticks.callback = v => v + 'x'; o.scales.y.suggestedMax = 3;
+  o.plugins.tooltip.callbacks = {title: t => saleLab(S[t[0].dataIndex]), label: t => { const r = S[t.dataIndex]; return [`${fmtX(r.mult)}  (${r.days} days)`, `Sale ${fmtKd(r.sale)} vs evergreen ${fmtKd(r.evergreen)}`].concat(r.prior_sale ? ['Prior days were also on sale'] : []); }};
+  o.scales.x.ticks.callback = function(v){ const r = S[v]; return r.start.slice(5,7) === S[Math.max(0,v-1)].start.slice(5,7) && v ? '' : ''; };
+  o.scales.x.ticks.display = false;
+  const one = {id:'one', afterDatasetsDraw(c){ const y = c.scales.y.getPixelForValue(1), ctx = c.ctx; ctx.save(); ctx.strokeStyle = css('--ink-3'); ctx.setLineDash([3,3]); ctx.beginPath(); ctx.moveTo(c.chartArea.left, y); ctx.lineTo(c.chartArea.right, y); ctx.stroke(); ctx.fillStyle = css('--ink-3'); ctx.font = '11px Inter'; ctx.fillText('1x = no lift', c.chartArea.left + 4, y - 4); ctx.restore(); }};
+  if (charts.dSale) charts.dSale.destroy();
+  charts.dSale = new Chart($('#dSale'), {type:'bar', data:{labels:S.map(saleLab), datasets:[{data:S.map(r=>r.mult),
+    backgroundColor:S.map(r => r.prior_sale ? 'transparent' : alpha(css(YC[r.start.slice(0,4)]||'--in'), .85)),
+    borderColor:S.map(r => r.prior_sale ? css('--ink-4') : 'transparent'), borderWidth:S.map(r => r.prior_sale ? 1.5 : 0), borderDash:[3,3], borderRadius:4}]}, options:o, plugins:[one]});
+}
+function openDM(id){
+  const curY = +D.hist[D.hist.length-1].month.slice(0,4);
+  if (!DM || DM.id !== id) DM = id === 'dSale' ? {id, preset:'all', from:D.sales[0].start, to:D.sales[D.sales.length-1].end, ov:'out'} : {id, preset:'l24', cmp:'ly', type:'line'};
+  $('#dm').hidden = false; document.body.style.overflow = 'hidden';
+  renderDM(); setTimeout(() => $('#dmx').focus(), 30);
+}
+function closeDM(){ $('#dm').hidden = true; document.body.style.overflow = ''; if (charts.cDm) { charts.cDm.destroy(); delete charts.cDm; }
+  const el = document.querySelector(`.dcard[data-d="${DM && DM.id}"]`); if (el) el.focus(); }
+function segH(id, opts, cur, attr){ return `<div class="seg" id="${id}">${opts.map(([v,t]) => `<button data-${attr}="${v}" class="${v===cur?'on':''}">${t}</button>`).join('')}</div>`; }
+function renderDM(){ DM.id === 'dSale' ? renderSaleDM() : renderDriverDM(); }
+
+function renderDriverDM(){
+  const c = DRV.cards.find(x => x.id === DM.id), rows = DRV.rows, fi = DRV.fi, ms = rows.map(r => r.month);
+  const lastA = ms[fi-1], curY = +lastA.slice(0,4);
+  const firstWith = Math.min(...c.sets.map(s => { const i = s.h.findIndex(v => v != null); return i < 0 ? fi : i; }));
+  const P = {l12:[ms[Math.max(firstWith, fi-12)], lastA], l24:[ms[Math.max(firstWith, fi-24)], lastA], ytd:[`${curY}-01`, ms.includes(`${curY}-12`) ? `${curY}-12` : lastA],
+    ['y'+(curY-1)]:[`${curY-1}-01`, `${curY-1}-12`], ['y'+(curY-2)]:[`${curY-2}-01`, `${curY-2}-12`], all:[ms[firstWith], lastA], proj:[lastA, ms[ms.length-1]], full:[ms[firstWith], ms[ms.length-1]]};
+  if (DM.preset !== 'custom') [DM.from, DM.to] = P[DM.preset];
+  if (DM.from < ms[0]) DM.from = ms[0]; if (DM.to > ms[ms.length-1]) DM.to = ms[ms.length-1]; if (DM.from > DM.to) DM.to = DM.from;
+  $('#dmt').textContent = c.t; $('#dmc').textContent = c.c;
+  const opt = (sel) => ms.map((m,i) => `<option value="${m}" ${m===sel?'selected':''}>${lab(m)}${i>=fi?' (proj.)':''}</option>`).join('');
+  $('#dmbar').innerHTML = `<div class="grp"><span class="tlabel">Range</span>${segH('dmP', [['l12','Last 12 mo'],['l24','Last 24 mo'],['ytd',curY+''],['y'+(curY-1),(curY-1)+''],['y'+(curY-2),(curY-2)+''],['all','All history'],['proj','Projection'],['full','History + projection']], DM.preset, 'p')}
+    <select id="dmF" aria-label="From">${opt(DM.from)}</select><span class="tlabel" style="width:auto">to</span><select id="dmT" aria-label="To">${opt(DM.to)}</select></div>
+    <div class="grp"><span class="tlabel">Compare</span>${segH('dmC', [['off','Off'],['ly','Same months last year']], DM.cmp, 'c')}</div>
+    <div class="grp"><span class="tlabel">Chart</span>${segH('dmY', [['line','Line'],['bar','Bars']], DM.type, 'y')}</div>`;
+  const i0 = ms.indexOf(DM.from), i1 = ms.indexOf(DM.to), idx = []; for (let i = i0; i <= i1; i++) idx.push(i);
+  const val = (s, i) => i < 0 ? null : (i < fi ? s.h[i] : s.f[i]);
+  const sum = c.agg !== 'avg';
+  const agg = arr => { const v = arr.filter(x => x != null); return v.length ? (sum ? v.reduce((a,b)=>a+b,0) : v.reduce((a,b)=>a+b,0)/v.length) : null; };
+  const nP = idx.filter(i => i >= fi).length;
+  // stats: one row of tiles per series (max 3)
+  $('#dms').innerHTML = c.sets.slice(0,3).map(s => {
+    const cur = idx.map(i => val(s, i)), ly = idx.map(i => val(s, i-12));
+    const a = agg(cur), b = DM.cmp === 'ly' ? agg(idx.map((i,k) => cur[k] != null ? val(s, i-12) : null)) : null;
+    const pk = idx.reduce((best, i) => { const v = val(s,i); return v != null && (best == null || v > val(s,best)) ? i : best; }, null);
+    const lo = idx.reduce((best, i) => { const v = val(s,i); return v != null && (best == null || v < val(s,best)) ? i : best; }, null);
+    const last = idx.filter(i => i < fi && val(s,i) != null).pop();
+    const pre = c.sets.length > 1 ? s.label + ' · ' : '';
+    return `<div><small>${pre}${sum ? 'Total' : 'Average'}</small><b>${a == null ? '–' : c.y(a)}</b><span>${idx.length} months${nP ? `, ${nP} projected` : ''}</span></div>` +
+      (DM.cmp === 'ly' ? `<div><small>${pre}vs same months last year</small><b class="${a != null && b ? (a >= b ? 'pos' : 'neg') : ''}">${a != null && b ? pct(a/b-1, 0) : '–'}</b><span>${b == null ? 'no data a year earlier' : (sum ? 'was ' : 'avg was ') + c.y(b)}</span></div>` : '') +
+      `<div><small>${pre}Peak month</small><b>${pk == null ? '–' : c.y(val(s,pk))}</b><span>${pk == null ? '' : lab(ms[pk]) + (pk >= fi ? ' (proj.)' : '')}</span></div>` +
+      `<div><small>${pre}Low month</small><b>${lo == null ? '–' : c.y(val(s,lo))}</b><span>${lo == null ? '' : lab(ms[lo]) + (lo >= fi ? ' (proj.)' : '')}</span></div>` +
+      (c.sets.length === 1 ? `<div><small>Latest actual</small><b>${last == null ? '–' : c.y(val(s,last))}</b><span>${last == null ? '' : lab(ms[last])}</span></div>` : '');
+  }).join('');
+  $('#dml').innerHTML = c.sets.map(s => `<span><i style="background:var(${s.color})"></i>${s.label}</span>`).join('') + (nP ? '<span><i class="dash"></i>Projection</span>' : '') + (DM.cmp === 'ly' ? '<span><i style="background:var(--ink-4);opacity:.45"></i>Same month last year</span>' : '');
+  // chart
+  const labels = idx.map(i => lab(ms[i])), ds = [], bar = DM.type === 'bar';
+  c.sets.forEach(s => {
+    const col = css(s.color);
+    if (bar) ds.push({type:'bar', label:s.label, data:idx.map(i => val(s,i)), backgroundColor:idx.map(i => i >= fi ? alpha(col,.35) : alpha(col,.85)), borderRadius:3, order:2});
+    else { ds.push({type:'line', label:s.label, data:idx.map(i => i < fi ? val(s,i) : null), borderColor:col, borderWidth:2.2, pointRadius:idx.length > 30 ? 0 : 2.5, pointBackgroundColor:col, order:1});
+      if (nP) ds.push({type:'line', label:s.label + ' (proj.)', data:idx.map(i => i >= fi-1 ? val(s,i) : null), borderColor:col, borderDash:[5,4], borderWidth:2, pointRadius:0, order:1}); }
+    if (DM.cmp === 'ly') ds.push({type:'line', label:s.label + ' last year', data:idx.map(i => val(s, i-12)), borderColor:alpha(col,.45), borderWidth:1.6, borderDash:[2,3], pointRadius:0, order:0});
+  });
+  const o = baseOpts(); o.scales.y.ticks.callback = c.y; o.plugins.tooltip.filter = t => t.raw != null;
+  o.plugins.tooltip.callbacks = {label: t => `${t.dataset.label}: ${c.y(t.raw)}`};
+  const ti = idx.indexOf(fi); o.plugins.today = {index: ti > 0 ? ti : null};
+  if (charts.cDm) charts.cDm.destroy();
+  charts.cDm = new Chart($('#cDm'), {data:{labels, datasets:ds}, options:o, plugins:[todayLine]});
+  $('#dmn').textContent = c.mark ? 'Shaded months in the main view (Rogan) are excluded from trend and seasonality.' : '';
+  // table
+  const head = `<thead><tr><th>Month</th>${c.sets.map(s => `<th>${s.label}</th>${DM.cmp === 'ly' ? '<th>Last year</th><th>Change</th>' : ''}`).join('')}</tr></thead>`;
+  const body = idx.slice().reverse().map(i => `<tr class="${i >= fi ? 'fc' : ''}"><td>${lab(ms[i])}${i >= fi ? '<span class="pill">proj.</span>' : ''}</td>${c.sets.map(s => { const v = val(s,i), p = val(s,i-12);
+    return `<td>${v == null ? '–' : c.y(v)}</td>` + (DM.cmp === 'ly' ? `<td class="dim">${p == null ? '–' : c.y(p)}</td><td class="${v != null && p ? (v >= p ? 'pos' : 'neg') : ''}">${v != null && p ? pct(v/p-1, 0) : '–'}</td>` : ''); }).join('')}</tr>`).join('');
+  $('#dmtb').innerHTML = head + '<tbody>' + body + '</tbody>';
+}
+
+function renderSaleDM(){
+  const all = D.sales, yrs = [...new Set(all.map(r => r.start.slice(0,4)))];
+  if (DM.preset !== 'custom') { const r = DM.preset === 'all' ? all : all.filter(x => x.start.startsWith(DM.preset)); DM.from = r[0].start; DM.to = r[r.length-1].end; }
+  $('#dmt').textContent = 'Sale lift: sale vs evergreen';
+  $('#dmc').innerHTML = `Shopify + Amazon revenue during each sale, against the same number of days immediately before it (evergreen, MSRP). Multiplier = sale revenue / evergreen revenue. Descriptive only: it does not change the forecast.`;
+  $('#dmbar').innerHTML = `<div class="grp"><span class="tlabel">Range</span>${segH('dmP', [['all','All'], ...yrs.map(y => [y, y])], DM.preset, 'p')}
+    <input type="date" id="dmF" value="${DM.from}" aria-label="From"><span class="tlabel" style="width:auto">to</span><input type="date" id="dmT" value="${DM.to}" aria-label="To"></div>
+    <div class="grp"><span class="tlabel">Sales whose prior days were also on sale</span>${segH('dmO', [['out','Leave out of totals'],['in','Include']], DM.ov, 'o')}
+    <i class="info" tabindex="0">i<span class="tip">Example: the Holiday sale starts the day after BFCM ends, so its "evergreen" days are BFCM days and its multiplier reads below 1. These rows are marked and, by default, left out of the totals A sale is marked when at least a quarter of its prior days were another sale (BFCM's lookback only catches a few October Prime days, so it counts).</span></i></div>`;
+  const R = all.filter(r => r.start >= DM.from && r.end <= DM.to), T = R.filter(r => DM.ov === 'in' || !r.prior_sale);
+  const tot = rs => { const a = rs.reduce((x,r)=>x+r.sale,0), b = rs.reduce((x,r)=>x+r.evergreen,0), d = rs.reduce((x,r)=>x+r.days,0); return {a, b, d, m: b ? a/b : null}; };
+  const t = tot(T), med = (() => { const v = T.map(r => r.mult).sort((a,b)=>a-b); return v.length ? (v.length % 2 ? v[(v.length-1)/2] : (v[v.length/2-1] + v[v.length/2]) / 2) : null; })();
+  $('#dms').innerHTML = `<div><small>Sales counted</small><b>${T.length}</b><span>${R.length - T.length ? `${R.length - T.length} more shown, not counted` : 'in this range'}</span></div>
+    <div><small>Sale days</small><b>${t.d}</b><span>same number of evergreen days</span></div>
+    <div><small>Sale revenue</small><b>${fmtKd(t.a)}</b><span>${t.d ? fmtKd(t.a/t.d) + ' a day' : ''}</span></div>
+    <div><small>Evergreen revenue</small><b>${fmtKd(t.b)}</b><span>${t.d ? fmtKd(t.b/t.d) + ' a day' : ''}</span></div>
+    <div><small>Multiplier (all counted)</small><b>${fmtX(t.m)}</b><span>total sale / total evergreen</span></div>
+    <div><small>Median sale</small><b>${fmtX(med)}</b><span>typical single sale</span></div>`;
+  $('#dml').innerHTML = `<span><i style="background:var(--in)"></i>Sale revenue</span><span><i style="background:var(--neutral)"></i>Evergreen (prior days)</span><span><i style="background:var(--ink);height:3px;border-radius:2px"></i>Multiplier (right axis)</span><span><i style="background:transparent;border:1.5px dashed var(--ink-4)"></i>Prior days also on sale</span>`;
+  const o = baseOpts(); o.scales.y2 = {position:'right', beginAtZero:true, grid:{display:false}, border:{display:false}, ticks:{color:css('--ink-3'), font:{size:11}, callback:v => v + 'x'}};
+  o.scales.x.ticks.autoSkip = false; o.scales.x.ticks.maxRotation = 50; o.scales.x.ticks.minRotation = R.length > 8 ? 40 : 0;
+  o.plugins.tooltip.callbacks = {title: tt => { const r = R[tt[0].dataIndex]; return `${r.name} ${r.start.slice(0,4)} · ${fmtD(r.start)} to ${fmtD(r.end)} (${r.days} days)`; },
+    label: tt => tt.dataset.yAxisID === 'y2' ? `Multiplier: ${fmtX(tt.raw)}` : `${tt.dataset.label}: ${fmtKd(tt.raw)}`,
+    afterBody: tt => { const r = R[tt[0].dataIndex]; return [`Evergreen days: ${fmtD(r.prior_start)} to ${fmtD(r.prior_end)}`].concat(r.prior_sale ? ['Prior days were also on sale'] : []); }};
+  const ds = [{type:'bar', label:'Sale revenue', data:R.map(r=>r.sale), backgroundColor:R.map(r => r.prior_sale ? alpha(css('--in'),.35) : alpha(css('--in'),.85)), borderRadius:3, order:2},
+    {type:'bar', label:'Evergreen', data:R.map(r=>r.evergreen), backgroundColor:R.map(r => r.prior_sale ? alpha(css('--neutral'),.3) : alpha(css('--neutral'),.7)), borderRadius:3, order:2},
+    {type:'line', label:'Multiplier', yAxisID:'y2', data:R.map(r=>r.mult), borderColor:css('--ink'), borderWidth:0, showLine:false, pointRadius:5, pointHoverRadius:7, pointBackgroundColor:R.map(r => r.prior_sale ? '#fff' : css('--ink')), pointBorderColor:css('--ink'), pointBorderWidth:1.5, order:0}];
+  if (charts.cDm) charts.cDm.destroy();
+  charts.cDm = new Chart($('#cDm'), {data:{labels:R.map(saleLab), datasets:ds}, options:o});
+  $('#dmn').innerHTML = `Shopify = net sales (after discounts and returns), Amazon = Seller Board sales. When Prime days on Amazon differ from the website sale (Prime Day 2024, October Prime 2025), each channel uses its own sale days and its own prior days. Included: every documented sale since 2024 that has finished. Not included: Father's Day 2026 (gift with purchase, not a discount) and 2023 (no promo doc).`;
+  const disc = r => r.pro ? `$${r.pro} off Pro` : (r.note || (r.pro === 0 ? 'gift / bonus' : '–'));
+  const row = r => `<tr class="${!(DM.ov === 'in' || !r.prior_sale) ? 'fc' : ''}"><td>${r.name}${r.prior_sale ? '<span class="pill warn">prior days on sale</span>' : ''}${r.amz_missing ? '<span class="pill">Shopify only</span>' : ''}</td>
+    <td>${fmtD(r.start)} to ${fmtD(r.end)}, ${r.start.slice(0,4)}</td><td>${r.days}</td><td class="dim" style="white-space:normal;max-width:180px">${disc(r)}</td>
+    <td>${fmt$(r.sale)}</td><td>${fmt$(r.evergreen)}<div class="dim" style="font-size:10.5px">${fmtD(r.prior_start)} to ${fmtD(r.prior_end)}${r.overlap_days && !r.prior_sale ? ` · ${r.overlap_days} on sale` : ''}</div></td>
+    <td><b>${fmtX(r.mult)}</b></td><td class="dim">${r.shop_prior ? fmtX(r.shop_sale/r.shop_prior) : '–'}</td><td class="dim">${r.amz_prior ? fmtX(r.amz_sale/r.amz_prior) : '–'}</td></tr>`;
+  let body = '';
+  const ys = [...new Set(R.map(r => r.start.slice(0,4)))].reverse();
+  ys.forEach(y => { const rs = R.filter(r => r.start.startsWith(y)).reverse(), tt = tot(rs.filter(r => DM.ov === 'in' || !r.prior_sale));
+    body += `<tr class="yr"><td>${y}</td><td></td><td>${tt.d}</td><td></td><td>${fmt$(tt.a)}</td><td>${fmt$(tt.b)}</td><td>${fmtX(tt.m)}</td><td></td><td></td></tr>` + rs.map(row).join(''); });
+  $('#dmtb').innerHTML = `<thead><tr><th>Sale</th><th>Dates</th><th>Days</th><th>Discount</th><th>Sale revenue</th><th>Evergreen (prior days)</th><th>Multiplier</th><th>Shopify</th><th>Amazon</th></tr></thead><tbody>${body}</tbody>`;
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#dm').hidden) closeDM(); });
+$('#dmx').onclick = closeDM;
+$('#dm').onclick = e => { if (e.target.id === 'dm') closeDM(); };
+$('#dmbar').onclick = e => { const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.p) DM.preset = b.dataset.p; if (b.dataset.c) DM.cmp = b.dataset.c; if (b.dataset.y) DM.type = b.dataset.y; if (b.dataset.o) DM.ov = b.dataset.o; renderDM(); };
+$('#dmbar').onchange = e => { if (e.target.id === 'dmF') DM.from = e.target.value; if (e.target.id === 'dmT') DM.to = e.target.value; DM.preset = 'custom'; renderDM(); };
 
 // ---------- method
 
