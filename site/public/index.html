@@ -870,9 +870,10 @@ function drawDrivers(){
      y:v=>'$'+Math.round(v), sets:[{label:'AOV', color:'--in', h:H(h=>h.aov), f:Fz((r,a)=>r.aov)}]},
     {id:'dMix', agg:'avg', t:'Harness + accessories share of Shopify revenue', c:'The 2026 funnel split. Higher share means more orders at a lower AOV.',
      y:v=>Math.round(v*100)+'%', sets:[{label:'Harness share', color:'--ha', h:H(h=>h.line_ha/(h.line_in+h.line_ha)), f:Fz((r,a)=> a ? r.line_ha/(r.line_in+r.line_ha) : r.ha_share)}]},
-    {id:'dBrand', t:'Brand search', c:`Google clicks on "iron neck" (Search Console) and Amazon brand searches (Brand Analytics, partial). Rogan added ~${fmtK(D.brand.rogan.clicks.excess)} Google clicks in Jan to Feb 2025; it is excluded from trend and seasonality.`,
+    {id:'dBrand', t:'Brand search', c:`Google clicks and impressions on "iron neck" searches (Search Console; impressions on the right axis) and Amazon brand searches (Brand Analytics, partial). Rogan added ~${fmtK(D.brand.rogan.clicks.excess)} Google clicks in Jan to Feb 2025; it is excluded from trend and seasonality.`,
      y:v=>fmtK(v), sets:[{label:'Google brand clicks', color:'--in', h:H(h=>h.brand_clicks), f:Fz((r,a)=>r.brand_clicks)},
-                        {label:'Amazon brand searches', color:'--amz', h:H(h=>h.amz_brand), f:Fz(()=>null)}], mark:['2025-01','2025-02']},
+                        {label:'Amazon brand searches', color:'--amz', h:H(h=>h.amz_brand), f:Fz(()=>null)}], mark:['2025-01','2025-02'],
+     two:{label:'Google brand impressions (right axis)', color:'--ha', h:H(h=>h.brand_impr), f:Fz(()=>null)}},
     {id:'dDdo', t:'D/D/O revenue', c:`Direct, distributor and other. Pre-2026 included Amazon resellers that are gone, so the projection is the 2026 average only (${fmtKd(D.pnl.ddo_level)} a month), flat.`,
      y:v=>'$'+fmtK(v), sets:[{label:'D/D/O', color:'--ddo', h:H(h=>h.tgt?h.tgt.ddo:null), f:Fz((r,a)=> a ? r.tgt.ddo : r.ddo)}]},
     {id:'dEmail', t:'Email revenue', c:'Klaviyo-attributed email revenue (SMS moved to Attentive in Oct 2024).',
@@ -906,7 +907,7 @@ function drawDrivers(){
     const o = baseOpts(); o.scales.y.ticks.callback = c.y; o.plugins.today = {index: fi};
     o.plugins.tooltip.filter = t => t.raw != null;
     o.plugins.tooltip.callbacks = {label: t => `${t.dataset.label}: ${t.dataset.yAxisID==='y2' ? Math.round(t.raw).toLocaleString() : c.y(t.raw)}`};
-    if (c.two){ add(c.two, 'y2'); o.scales.y2 = {display:false, beginAtZero:true}; }
+    if (c.two){ add(c.two, 'y2'); o.scales.y2 = {display:true, position:'right', beginAtZero:true, grid:{display:false}, border:{display:false}, ticks:{color:css('--ink-3'), font:{size:11}, callback:v => fmtK(v)}}; }
     const plugins = [todayLine];
     if (c.mark) plugins.push({id:'mark', beforeDatasetsDraw(ch){ const x=ch.scales.x, ctx=ch.ctx; c.mark.forEach(m=>{ const i=[...hist,...fut].findIndex(r=>r.month===m); if(i<0) return; const w=x.getPixelForValue(1)-x.getPixelForValue(0); ctx.save(); ctx.fillStyle=alpha(css('--neutral'),.18); ctx.fillRect(x.getPixelForValue(i)-w/2, ch.chartArea.top, w, ch.chartArea.bottom-ch.chartArea.top); ctx.restore(); }); const i=[...hist,...fut].findIndex(r=>r.month===c.mark[0]); ctx.save(); ctx.fillStyle=css('--ink-3'); ctx.font='11px Inter'; ctx.fillText('Rogan', x.getPixelForValue(i)+6, ch.chartArea.top+12); ctx.restore(); }});
     if (charts[c.id]) charts[c.id].destroy();
@@ -947,7 +948,8 @@ function segH(id, opts, cur, attr){ return `<div class="seg" id="${id}">${opts.m
 function renderDM(){ DM.id === 'dSale' ? renderSaleDM() : DM.id === 'day' ? renderDayDM() : renderDriverDM(); urlSave(); }
 
 function renderDriverDM(){
-  const c = DRV.cards.find(x => x.id === DM.id), rows = DRV.rows, fi = DRV.fi, ms = rows.map(r => r.month);
+  const c0 = DRV.cards.find(x => x.id === DM.id), rows = DRV.rows, fi = DRV.fi, ms = rows.map(r => r.month);
+  const c = {...c0, sets: c0.two ? [...c0.sets, {...c0.two, y2:true}] : c0.sets};
   const lastA = ms[fi-1], curY = +lastA.slice(0,4);
   const firstWith = Math.min(...c.sets.map(s => { const i = s.h.findIndex(v => v != null); return i < 0 ? fi : i; }));
   const P = {l12:[ms[Math.max(firstWith, fi-12)], lastA], l24:[ms[Math.max(firstWith, fi-24)], lastA], ytd:[`${curY}-01`, ms.includes(`${curY}-12`) ? `${curY}-12` : lastA],
@@ -966,7 +968,7 @@ function renderDriverDM(){
   const agg = arr => { const v = arr.filter(x => x != null); return v.length ? (sum ? v.reduce((a,b)=>a+b,0) : v.reduce((a,b)=>a+b,0)/v.length) : null; };
   const nP = idx.filter(i => i >= fi).length;
   // stats: one row of tiles per series (max 3)
-  $('#dms').innerHTML = c.sets.slice(0,3).map(s => {
+  $('#dms').innerHTML = c.sets.filter(s => s.h.some(v => v != null)).slice(0,3).map(s => {
     const cur = idx.map(i => val(s, i)), ly = idx.map(i => val(s, i-12));
     const a = agg(cur), b = DM.cmp === 'ly' ? agg(idx.map((i,k) => cur[k] != null ? val(s, i-12) : null)) : null;
     const pk = idx.reduce((best, i) => { const v = val(s,i); return v != null && (best == null || v > val(s,best)) ? i : best; }, null);
@@ -984,12 +986,13 @@ function renderDriverDM(){
   const labels = idx.map(i => lab(ms[i])), ds = [], bar = DM.type === 'bar';
   c.sets.forEach(s => {
     const col = css(s.color);
-    if (bar) ds.push({type:'bar', label:s.label, data:idx.map(i => val(s,i)), backgroundColor:idx.map(i => i >= fi ? alpha(col,.35) : alpha(col,.85)), borderRadius:3, order:2});
-    else { ds.push({type:'line', label:s.label, data:idx.map(i => i < fi ? val(s,i) : null), borderColor:col, borderWidth:2.2, pointRadius:idx.length > 30 ? 0 : 2.5, pointBackgroundColor:col, order:1});
-      if (nP) ds.push({type:'line', label:s.label + ' (proj.)', data:idx.map(i => i >= fi-1 ? val(s,i) : null), borderColor:col, borderDash:[5,4], borderWidth:2, pointRadius:0, order:1}); }
-    if (DM.cmp === 'ly') ds.push({type:'line', label:s.label + ' last year', data:idx.map(i => val(s, i-12)), borderColor:alpha(col,.45), borderWidth:1.6, borderDash:[2,3], pointRadius:0, order:0});
+    if (bar) ds.push({type:'bar', yAxisID: s.y2 ? 'y2' : 'y', label:s.label, data:idx.map(i => val(s,i)), backgroundColor:idx.map(i => i >= fi ? alpha(col,.35) : alpha(col,.85)), borderRadius:3, order:2});
+    else { ds.push({type:'line', yAxisID: s.y2 ? 'y2' : 'y', label:s.label, data:idx.map(i => i < fi ? val(s,i) : null), borderColor:col, borderWidth:2.2, pointRadius:idx.length > 30 ? 0 : 2.5, pointBackgroundColor:col, order:1});
+      if (nP) ds.push({type:'line', yAxisID: s.y2 ? 'y2' : 'y', label:s.label + ' (proj.)', data:idx.map(i => i >= fi-1 ? val(s,i) : null), borderColor:col, borderDash:[5,4], borderWidth:2, pointRadius:0, order:1}); }
+    if (DM.cmp === 'ly') ds.push({type:'line', yAxisID: s.y2 ? 'y2' : 'y', label:s.label + ' last year', data:idx.map(i => val(s, i-12)), borderColor:alpha(col,.45), borderWidth:1.6, borderDash:[2,3], pointRadius:0, order:0});
   });
-  const o = baseOpts(); o.scales.y.ticks.callback = c.y; o.plugins.tooltip.filter = t => t.raw != null;
+  const o = baseOpts(); o.scales.y.ticks.callback = c.y;
+  if (c.sets.some(s => s.y2)) o.scales.y2 = {position:'right', beginAtZero:true, grid:{display:false}, border:{display:false}, ticks:{color:css('--ink-3'), font:{size:11}, callback:c.y}}; o.plugins.tooltip.filter = t => t.raw != null;
   o.plugins.tooltip.callbacks = {label: t => `${t.dataset.label}: ${c.y(t.raw)}`};
   const ti = idx.indexOf(fi); o.plugins.today = {index: ti > 0 ? ti : null};
   if (charts.cDm) charts.cDm.destroy();
