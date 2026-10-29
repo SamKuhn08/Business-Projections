@@ -8,3 +8,4 @@ model/model_out.json
 __pycache__/
 channels/orders.json
 channels/raw/*.json
+raw_run/

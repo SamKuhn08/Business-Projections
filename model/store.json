@@ -1,8 +1,8 @@
 {
  "meta": {
-  "generated": "2026-10-19",
+  "generated": "2026-10-29",
   "partial_month": "2026-10",
-  "mtd_days": 19,
+  "mtd_days": 29,
   "cogs_pct": 0.24,
   "rogan": [
    "2025-01",
@@ -33,13 +33,13 @@
   "amazon_ratio": 0.9962,
   "mtd": {
    "month": "2026-10",
-   "through": "2026-10-18",
-   "days": 18,
-   "shop": 71708,
-   "amazon": 69327,
-   "meta": 28348,
-   "google": 6669,
-   "amz_ads": 15311
+   "through": "2026-10-28",
+   "days": 28,
+   "shop": 104324,
+   "amazon": 112475,
+   "meta": 41540,
+   "google": 10967,
+   "amz_ads": 20528
   },
   "targets_source": "Iron Neck Operations & Finance > Targets (1wSEMec5fEH4VL4yYSpfzqeimqNBphoObVAZlS19sTHo). tgt_* = actuals; goal_* = the 'Est.' plan columns.",
   "brand_source": "gsc_brand_*: Search Console query 'iron neck' (web), 2024-2025 from the '2025 Branded Search on Google' sheet, Jun 2025 on from GSC export. amz_brand_*: Amazon Brand Analytics tab of the same sheet."
@@ -3438,56 +3438,56 @@
    "gsc_days": 30
   },
   "2026-10": {
-   "orders": 301,
-   "net": 69936,
-   "sessions": 25279,
-   "checkouts": 252,
+   "orders": 435,
+   "net": 102581,
+   "sessions": 38125,
+   "checkouts": 376,
    "lp": {
     "P": [
-     6952,
-     122
+     9618,
+     183
     ],
     "C": [
-     1760,
-     21
+     2513,
+     34
     ],
     "H": [
-     2547,
-     62
+     3821,
+     88
     ],
     "L": [
-     4498,
-     29
+     7401,
+     45
     ],
     "B": [
-     8844,
-     3
+     13766,
+     6
     ]
    },
    "ref": {
     "search": [
-     11274,
-     80
+     17624,
+     116
     ],
     "direct": [
-     8528,
-     117
+     12362,
+     175
     ],
     "social": [
-     4956,
-     41
+     7330,
+     63
     ]
    },
-   "line_in": 49727,
-   "line_ha": 17897,
-   "email_rev": 12202,
-   "signups": 532,
+   "line_in": 72856,
+   "line_ha": 26209,
+   "email_rev": 21464,
+   "signups": 1137,
    "amazon": null,
    "meta": null,
    "google": null,
    "amz_ads": null,
    "sheet_shop": null,
-   "fixed": 136661,
+   "fixed": 134811.0,
    "sms_rev": 10059,
    "sms_camp_rev": 1205,
    "sms_flow_rev": 8854,
@@ -3503,7 +3503,7 @@
    "gsc_days": 14
   },
   "2026-11": {
-   "fixed": 159761,
+   "fixed": 159911.0,
    "goal_shop": 400000.0,
    "goal_amz": 200000.0,
    "goal_ddo": 35000.0,
@@ -3512,7 +3512,7 @@
    "ref": {}
   },
   "2026-12": {
-   "fixed": 157761,
+   "fixed": 147911.0,
    "goal_shop": 325000.0,
    "goal_amz": 200000.0,
    "goal_ddo": 35000.0,

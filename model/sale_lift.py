@@ -98,7 +98,35 @@ def build(today=None):
     return out
 
 
+def todo(today):
+    """Seller Board periods the refresh must pull: finished sales with no Amazon window yet, and the last 14 closed days."""
+    P = json.load(open(os.path.join(HERE, 'promos.json')))['events']
+    ap = os.path.join(HERE, 'amazon_sale_windows.json')
+    have = {(r['start'], r['end']) for r in (json.load(open(ap)) if os.path.exists(ap) else [])}
+    ts = lambda d: int(dt.datetime(D(d).year, D(d).month, D(d).day, tzinfo=dt.timezone.utc).timestamp())
+    win = []
+    for e in P:
+        if e['start'] < '2024-01-01' or e.get('assumed') or (e['type'], e['start']) in EXCLUDE or e['end'] >= today: continue
+        a, b = e['amazon'] if e.get('amazon') else (e['start'], e['end'])
+        if (a, b) in have: continue
+        ps, pe = prior(a, b)
+        win.append(dict(start=a, end=b, prior_start=ps, prior_end=pe, period=dict(start=ts(a), end=ts(b), compare_to_start=ts(ps), compare_to_end=ts(pe))))
+    dp = os.path.join(HERE, 'amazon_daily.json')
+    have_d = json.load(open(dp)) if os.path.exists(dp) else {}
+    days_ = [d for d in days((D(today) - dt.timedelta(14)).isoformat(), (D(today) - dt.timedelta(1)).isoformat())]
+    years = []
+    yp = os.path.join(HERE, 'amazon_years.json')
+    hy = json.load(open(yp)) if os.path.exists(yp) else {}
+    y = str(D(today).year - 1)
+    if y not in hy and y >= '2024':
+        years.append(dict(year=y, period=dict(start=ts(f'{y}-01-01'), end=ts(f'{y}-12-31'))))
+    return dict(sale_windows=win, daily=[dict(day=d, period=dict(start=ts(d), end=ts(d))) for d in days_], years=years)
+
+
 if __name__ == '__main__':
+    import sys
+    if len(sys.argv) > 2 and sys.argv[1] == '--todo':
+        print(json.dumps(todo(sys.argv[2]), indent=1)); raise SystemExit
     for r in build():
         print(f"{r['start']} {r['name']:28} {r['days']:3}d  sale {r['sale']:>9,}  evergreen {r['evergreen']:>9,}  x{r['mult']}"
               f"  shop x{r['shop_sale']/max(r['shop_prior'],1):.2f}" + ('  PRIOR OVERLAPS SALE' if r['prior_sale'] else '') + ('  (no Amazon)' if r['amz_missing'] else ''))

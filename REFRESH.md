@@ -14,10 +14,12 @@ Layout
 
 Let TODAY = today's date (America/Chicago). Let START = the first day of the month two months before TODAY's month (e.g. TODAY 2026-11-05 -> START 2026-09-01).
 
-1. Get the repo: add_repo `SamKuhn08/Business-Projections` (access push), then `git clone --depth 1 https://github.com/SamKuhn08/business-projections work` and `mkdir -p work/raw`. Work in `work/model/`.
+1. Get the repo: add_repo `SamKuhn08/Business-Projections` (access push), then `git clone --depth 1 https://github.com/SamKuhn08/Business-Projections work` and `mkdir -p work/raw`. Work in `work/model/`.
    START = the EARLIER of (first day of `store.json` `meta.partial_month`) and (first day of the month two months before TODAY). This guarantees every month since the last saved store gets re-pulled.
 
-2. Shopify (run-analytics-query). Save each result's `rows` array to the named file as `{"rows": [...]}` exactly as returned:
+2. Shopify. Use the Shopify `graphql_query` tool with `shopifyqlQuery` (the `run-analytics-query` tool started failing on 2026-10-27 with "Structured content does not match the tool's output schema"; use it only if GraphQL is unavailable). Several queries fit in one call with aliases, e.g.
+   `{ a: shopifyqlQuery(query: "FROM sales SHOW ... ") { tableData { rows } parseErrors } b: shopifyqlQuery(query: "...") { tableData { rows } parseErrors } }`
+   Save each query's `tableData.rows` to the named file as `{"rows": [...]}` exactly as returned (rows are objects in column order; refresh.py accepts objects or lists, null = ""). If `parseErrors` is not empty, fix the query:
    - `raw/totals.json`   `FROM sales SHOW orders, gross_sales, discounts, net_sales, total_sales, average_order_value TIMESERIES month SINCE START UNTIL today`
    - `raw/sessions.json` `FROM sessions SHOW sessions, sessions_with_cart_additions, sessions_that_completed_checkout, conversion_rate TIMESERIES month SINCE START UNTIL today`
    - `raw/landing.json`  `FROM sessions SHOW sessions, sessions_that_completed_checkout GROUP BY landing_page_type TIMESERIES month SINCE START UNTIL today`
@@ -45,12 +47,17 @@ Let TODAY = today's date (America/Chicago). Let START = the first day of the mon
 4b. Seller Board fallback (Seller Board MCP, account_id `5aaaf62b-5d4a-11ee-85dc-e4434b601800`). For every COMPLETED month since START that the finance sheet has NOT filled yet, call `dashboard_period` with that month's UTC period (start = 00:00 on the 1st, end = 00:00 on the last day, unix seconds; one call can hold several months). If it returns status "preparing", call again with identical arguments. From `data.Info` take `Sales`, `ProductRefunds` (negative) and `Advertising` (negative) and add to `raw/finance.json` for that month:
    `"amazon": round((Sales + ProductRefunds) * store.meta.amazon_ratio)`, `"amz_ads": round(-Advertising)`, plus `"sb_sales"`, `"sb_refunds"`, `"sb_ads"` (raw, positive). When the sheet later fills the month, its value overwrites this.
 
+4d. Amazon daily, finished sales and closed years (Seller Board `dashboard_period`, account above). Run `python3 sale_lift.py --todo TODAY` in `work/model/`: it prints the periods to pull.
+   - `daily`: one period per day (up to 12 periods per call; re-call with identical arguments while status is "preparing"). Write `raw/amazon_daily.json` = `{"YYYY-MM-DD": [Sales, Orders, Units, -Advertising]}` (Advertising is negative in Seller Board; store it positive). Feeds the Nov/Dec daily view's October baseline and last-year line.
+   - `sale_windows` (usually empty): for each, pull its `period` (it carries compare_to_start/compare_to_end) and append to `raw/amazon_sale_windows.json` a list item `{start, end, prior_start, prior_end, sales: Sales, prior_sales: compare Sales}` using the start/end/prior dates printed. Feeds the Sale lift card.
+   - `years` (only in January): pull the year's period and write `raw/amazon_years.json` = `{"YYYY": {"sales": Sales, "extra_sale": []}}`. Feeds the Holiday sale's "average MSRP day of that year".
+
 5. Run `python3 refresh.py ../raw TODAY`. It must print `OK: no validation problems`. If it prints PROBLEMS, fix the raw files (usually a missed month or a wrong column) and rerun. If still failing, stop: do not deploy, and report the problems.
    `site/public/chart.umd.js` is in the repo; if it is missing, `npm i chart.js@4.4.1` in a scratch folder and copy `node_modules/chart.js/dist/chart.umd.js`.
 
 6. Deploy `site/` to Netlify: call the Netlify deploy-site tool with siteId `be4fcd15-2584-493e-bfba-c84821ac650d`, then run the `npx -y @netlify/mcp@latest --site-id ... --proxy-path ...` command it returns from inside `site/`. Confirm `https://ironneck-revenue-projection.netlify.app/data.json` shows `generated` = TODAY (WebFetch).
 
-7. Commit and push from `work/`: `git add model/store.json model/shop_daily.json site/public/data.json` (plus any code you had to fix), commit as `Daily refresh TODAY`, `git push origin HEAD:main`. If the push is rejected as non-fast-forward, `git pull --rebase origin main` and push again. Do not write to the claude.ai Project.
+7. Commit and push from `work/`: `git add model/store.json model/shop_daily.json model/amazon_daily.json model/amazon_sale_windows.json model/amazon_years.json site/public/data.json` (plus any code you had to fix), commit as `Daily refresh TODAY`, `git push origin HEAD:main`. If the push is rejected as non-fast-forward, `git pull --rebase origin main` and push again. Do not write to the claude.ai Project.
 
 8. Report in two lines: projected current-year total revenue vs the same period last year (not vs plan), and anything that moved more than 5% vs yesterday's `data.json` (compare the first three projected months' `d2c` and `amazon`; fetch yesterday's values from the live data.json BEFORE deploying).
 
@@ -82,11 +89,11 @@ Put monthly values into `store.json` under each month (`meta`, `google`). Google
 - Fixed costs are projected from the last 3 closed months on the Targets tab. Nothing in the forecast reads the O&F plan or the finance sheet's forward rows (Sam, 2026-10-19: the model forecasts from history only; plan is a comparison option on the page).
 - refresh.py runs `backtest.py` after the model and writes the track record into data.json (`track`), shown on the Method & accuracy tab: every month start since Jan 2025 refit on data known then, scored against Targets actuals and a same-month-last-year benchmark.
 
-## Channels tab (added 2026-10-26)
+## Channels tab (added 2026-10-26; refresh MONTHLY, on the first daily run of each month)
 Website (Shopify) orders split by traffic channel. Code in `channels/`, the page reads `site/public/channels.json` (aggregated by month and channel, no customer-level data). The per-order file `channels/orders.json` holds Shopify customer IDs, so it stays out of git (see .gitignore) and lives only in the working session.
 1. Orders: page the Shopify Admin GraphQL `orders` query (`first: 250`, `sortKey: CREATED_AT`, `query: "created_at:>=YYYY-MM-DD"`), following `endCursor` until `hasNextPage` is false. Field selection (aliases matter, build.py reads them):
    `pageInfo { hasNextPage endCursor } nodes { c: createdAt a: currentSubtotalPriceSet { s: shopMoney { a: amount } } u: customer { i: id o: numberOfOrders e: defaultEmailAddress { m: marketingState } } j: customerJourneySummary { d: daysToConversion f: firstVisit { s: source u: utmParameters { s: source m: medium } } l: lastVisit { s: source u: utmParameters { s: source m: medium } } } }`
-   Save each page as `channels/raw/orders_<n>.json`, run `python3 extract_orders.py` (merges into orders.json; re-pulled orders replace old copies). If orders.json is missing (new session), pull from 2025-01-01 (about 67 pages); otherwise pull the last 35 days.
+   Save each page as `channels/raw/orders_<n>.json`, run `python3 extract_orders.py` (merges into orders.json; re-pulled orders replace old copies). orders.json is never committed (customer ids), so a scheduled run always starts without it: pull from 2025-01-01 (about 70 pages of 250). Hand the paging to a subagent so the pages land in tool-result files instead of your context, then point `extract_orders.py` at them (it also reads `channels/raw/*.json`). Do this on the first daily run of each month only; on other days skip the Channels steps.
 2. Sessions: ShopifyQL `FROM sessions SHOW sessions, sessions_that_completed_checkout GROUP BY month, referrer_source, utm_source, utm_medium SINCE <first of last month> UNTIL today`; replace those months in `sessions_raw.json` (`[month, referrer_source, utm_source, utm_medium, sessions, checkouts]`).
 3. Blog: same query with `WHERE landing_page_type = 'Blog Article'` grouped by month, referrer_source; replace those months in `blog_sessions.json`.
 4. `python3 build.py` (Meta and Google spend from `model/store.json`), commit code + `site/public/channels.json`, deploy.

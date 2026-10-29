@@ -17,7 +17,11 @@ def load(raw, name):
     if not os.path.exists(p):
         return None
     d = json.load(open(p))
-    return d['rows'] if isinstance(d, dict) and 'rows' in d else d
+    rows = d['rows'] if isinstance(d, dict) and 'rows' in d else d
+    # ShopifyQL via GraphQL (shopifyqlQuery.tableData.rows) gives dicts in column order; run-analytics-query gives lists
+    if isinstance(rows, list) and rows and isinstance(rows[0], dict):
+        rows = [['' if v is None else v for v in r.values()] for r in rows]   # null product_type = '' as before
+    return rows
 
 
 def ym(s): return s[:7]
@@ -109,6 +113,21 @@ def main(raw, today):
         for r in sd:
             if r[0] < today: daily[r[0]] = [int(r[1]), float(r[2])]     # closed days only
         json.dump(dict(sorted(daily.items())), open(dp, 'w'))
+    ad = load(raw, 'amazon_daily.json')     # {"YYYY-MM-DD": [sales, orders, units, ad_spend]} Seller Board, closed days
+    if ad:
+        p = os.path.join(HERE, 'amazon_daily.json'); cur = json.load(open(p)) if os.path.exists(p) else {}
+        for k, v in ad.items():
+            if k < today: cur[k] = v
+        json.dump(dict(sorted(cur.items())), open(p, 'w'))
+    sw = load(raw, 'amazon_sale_windows.json')   # [{start,end,prior_start,prior_end,sales,prior_sales}] for newly finished sales
+    if sw:
+        p = os.path.join(HERE, 'amazon_sale_windows.json'); cur = json.load(open(p))
+        have = {(r['start'], r['end']) for r in cur}
+        cur += [r for r in sw if (r['start'], r['end']) not in have]
+        json.dump(cur, open(p, 'w'), indent=1)
+    ay = load(raw, 'amazon_years.json')      # {"YYYY": {"sales":..,"extra_sale":[]}} after a year closes
+    if ay:
+        p = os.path.join(HERE, 'amazon_years.json'); cur = json.load(open(p)); cur.update(ay); json.dump(cur, open(p, 'w'), indent=1)
     mtd = load(raw, 'mtd.json')              # {"month","through","days","shop","amazon","meta","google","amz_ads"} closed days of the month in progress
     if mtd: store['meta']['mtd'] = mtd
 
