@@ -94,6 +94,17 @@ def project(xs, months, mask, horizon_months, level_n=3, trend_n=12, seas=None, 
     return out, s, slope
 
 
+def shop_bias(*a, **k):
+    """Bias correction always uses the in-sample horizon (backtest of past 1-3 month forecasts)."""
+    global FULL_HORIZON
+    save, FULL_HORIZON = FULL_HORIZON, False
+    try: return _shop_bias(*a, **k)
+    finally: FULL_HORIZON = save
+
+
+FULL_HORIZON = False   # projection_log.py: reconstructed snapshots project all the way to HORIZON_END
+
+
 def fit(cut, events=True):
     """Fit on months[:cut] and forecast the next len(horizon) months. Returns dict of series.
     events=True: movable promos (promos.json) are measured from daily orders and taken out of the order and
@@ -106,7 +117,7 @@ def fit(cut, events=True):
     last = months[-1]
     y, m = int(last[:4]), int(last[5:7])
     horizon = []
-    n_ahead = (CUT - cut) if cut < CUT else max(12, (int(HORIZON_END[:4]) - y) * 12 + int(HORIZON_END[5:]) - m)
+    n_ahead = (CUT - cut) if (cut < CUT and not FULL_HORIZON) else max(12, (int(HORIZON_END[:4]) - y) * 12 + int(HORIZON_END[5:]) - m)
     for _ in range(n_ahead):
         m += 1
         if m == 13: y, m = y + 1, 1
@@ -332,7 +343,7 @@ def _fit_cached(cut):
     return _FITS[cut]
 
 
-def shop_bias(cut):
+def _shop_bias(cut):
     """Multiplier that removes the Shopify model's recent average error, using only forecasts whose months had
     closed before `cut` (21-origin backtest: bias +9% -> -1%, MAPE 24.0% -> 23.1%)."""
     errs = []

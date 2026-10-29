@@ -193,6 +193,14 @@ def main(raw, today):
         if any(r['amz_missing'] for r in D['sales']): problems.append('sale lift: a finished sale has no Amazon window in amazon_sale_windows.json')
     except Exception as ex:
         problems.append(f'sale lift failed: {ex}')
+    # ---- projection history: record today's base-case projection, rebuild history.json (Projection history tab)
+    if not problems:
+        try:
+            import projection_log
+            projection_log.record(json.load(open(out)), today, note='daily refresh')
+            projection_log.write(today)
+        except Exception as ex:
+            problems.append(f'projection history failed: {ex}')
     print('touched months:', sorted(touched))
     print('PROBLEMS:' if problems else 'OK: no validation problems', *problems, sep='\n  ')
     sys.exit(1 if problems else 0)
