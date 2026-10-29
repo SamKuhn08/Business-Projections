@@ -216,6 +216,7 @@ table.pil td.all,table.pil th.all{border-left:1px solid var(--line);color:var(--
     <button data-v="channels">Channels</button>
     <button data-v="method">Method &amp; accuracy</button>
   </div>
+  <button class="btn" id="share" title="Copy a link to exactly this view">Copy link</button>
 </div></header>
 <div class="wrap">
 
@@ -386,6 +387,53 @@ const LEVERS = [
 const L = Object.fromEntries(LEVERS.map(l => [l.k, 0]));
 let D, charts = {}, range = '2025', MONTHS_ALL = [], PM, PY, NY;
 const RG = {preset:'y0', from:null, to:null}, CP = {mode:'ly', from:null, to:null};
+// ---------- shareable URL: the view lives in the query string (history.replaceState, no reload, no network)
+const Q0 = new URLSearchParams(location.search);
+let URL_READY = false, urlT = 0;
+const curTab = () => { const b = document.querySelector('#tabs button.on'); return b ? b.dataset.v : 'overview'; };
+function urlSave(){
+  if (!URL_READY) return;
+  cancelAnimationFrame(urlT); urlT = requestAnimationFrame(() => {
+    const q = new URLSearchParams(), v = curTab();
+    if (v !== 'overview') q.set('v', v);
+    if (v !== 'channels') {
+      q.set('r', RG.preset === 'custom' ? `${RG.from}~${RG.to}` : RG.preset);
+      if (CP.mode !== 'ly') q.set('c', CP.mode === 'custom' ? `${CP.from}~${CP.to}` : CP.mode);
+      const lv = Object.entries(L).filter(([,x]) => x).map(([k,x]) => `${k}:${x}`).join(',');
+      if (lv) q.set('lv', lv);
+      if (range !== '2025') q.set('cr', range);
+    } else if (typeof CHS !== 'undefined' && CHS.from) {
+      q.set('ch', CHS.preset === 'custom' ? `${CHS.from}~${CHS.to}` : CHS.preset);
+      if (CHS.cmp !== 'ly') q.set('chc', CHS.cmp);
+      if (CHS.model !== 'last') q.set('chm', CHS.model);
+    }
+    if (DM && !$('#dm').hidden) { q.set('d', DM.id); Object.entries(DM).forEach(([k,x]) => { if (k !== 'id' && x != null) q.set('d.' + k, x); }); }
+    const s2 = q.toString().replace(/%7E/g, '~').replace(/%3A/g, ':').replace(/%2C/g, ',');
+    const url = location.pathname + (s2 ? '?' + s2 : '') + location.hash;
+    if (url !== location.pathname + location.search + location.hash) history.replaceState(null, '', url);
+  });
+}
+function urlLoad(){
+  // range and compare (override the remembered ones)
+  const r = Q0.get('r');
+  if (r) { if (r.includes('~')) { const [a,b] = r.split('~'); if (MONTHS_ALL.includes(a) && MONTHS_ALL.includes(b)) Object.assign(RG, {preset:'custom', from:a, to:b}); } else setRange(r); }
+  const c = Q0.get('c');
+  if (c) { if (c.includes('~')) { const [a,b] = c.split('~'); Object.assign(CP, {mode:'custom', from:a, to:b}); } else CP.mode = c; }
+  else if (r) CP.mode = 'ly';
+  const lv = Q0.get('lv');
+  if (lv) lv.split(',').forEach(p => { const [k,x] = p.split(':'); if (k in L && !isNaN(+x)) { L[k] = +x; const i = document.querySelector(`#levers input[data-k="${k}"]`); if (i) i.value = x; const t = $('#lv-'+k); if (t) t.textContent = pct(+x/100); } });
+  const cr = Q0.get('cr'); if (cr) { range = cr; document.querySelectorAll('#range button').forEach(b => b.classList.toggle('on', b.dataset.r === cr)); }
+}
+function urlLoadAfter(){
+  const v = Q0.get('v'); if (v) { const b = document.querySelector(`#tabs button[data-v="${v}"]`); if (b) b.click(); }
+  const d = Q0.get('d');
+  if (d) { try { const st = {id:d}; Q0.forEach((x, k) => { if (k.startsWith('d.')) st[k.slice(2)] = x; }); const id = st.id === 'day' ? 'day:' + st.view : st.id;
+    const go = () => { openDM(id); Object.assign(DM, st); renderDM(); urlSave(); };
+    if (st.id === 'day' || st.id === 'dSale' || DRV) go(); else { const b = document.querySelector('#tabs button[data-v="drivers"]'); if (!b.classList.contains('on')) b.click(); go(); } } catch(e) {} }
+  URL_READY = true; urlSave();
+}
+function chUrl(){ const ch = Q0.get('ch'); if (!ch) return null; const o = {}; if (ch.includes('~')) { const [a,b] = ch.split('~'); Object.assign(o, {preset:'custom', from:a, to:b}); } else o.preset = ch;
+  if (Q0.get('chc')) o.cmp = Q0.get('chc'); if (Q0.get('chm')) o.model = Q0.get('chm'); return o; }
 const AIURL = 'https://ironneck-projection-ai.sam-09a.workers.dev';
 
 function calc(r){
@@ -445,7 +493,7 @@ function init(){
   });
   box.addEventListener('input', e=>{ if(e.target.dataset.k){ L[e.target.dataset.k] = +e.target.value; $('#lv-'+e.target.dataset.k).textContent = pct(+e.target.value/100); render(); }});
   $('#reset').onclick = ()=>{ Object.keys(L).forEach(k=>L[k]=0); box.querySelectorAll('input').forEach(i=>i.value=0); box.querySelectorAll('[id^=lv-]').forEach(s=>s.textContent='0%'); render(); };
-  $('#tabs').onclick = e=>{ const v=e.target.dataset.v; if(!v) return; document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on', b===e.target)); document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on', s.id==='v-'+v)); if(v==='drivers') drawDrivers(); if(v==='method') drawMethod(); const ch = v==='channels'; ['#toolbar','#kpis','#ask'].forEach(id=>$(id).style.display = ch ? 'none' : ''); if(ch) drawChannels(); };
+  $('#tabs').onclick = e=>{ const v=e.target.dataset.v; if(!v) return; document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on', b===e.target)); document.querySelectorAll('.view').forEach(s=>s.classList.toggle('on', s.id==='v-'+v)); if(v==='drivers') drawDrivers(); if(v==='method') drawMethod(); const ch = v==='channels'; ['#toolbar','#kpis','#ask'].forEach(id=>$(id).style.display = ch ? 'none' : ''); if(ch) drawChannels(); urlSave(); };
   $('#range').onclick = e=>{ const r=e.target.dataset.r; if(!r) return; range=r; document.querySelectorAll('#range button').forEach(b=>b.classList.toggle('on', b===e.target)); render(); };
   $('#csv').onclick = downloadCSV;
   PM = D.partial_month; PY = PM.slice(0,4); NY = String(+PY+1);
@@ -462,6 +510,11 @@ function init(){
   const onCmp = () => { let a = $('#cfrom').value, b = $('#cto').value; if (a > b) [a,b] = [b,a]; CP.mode = 'custom'; CP.from = a; CP.to = b; syncBar(); renderRangeOnly(); };
   $('#cfrom').onchange = onCmp; $('#cto').onchange = onCmp;
   try { const sv = JSON.parse(localStorage.getItem('inproj_range') || 'null'); if (sv && MONTHS_ALL.includes(sv.from) && MONTHS_ALL.includes(sv.to)) { Object.assign(RG, sv.rg); Object.assign(CP, sv.cp); } } catch(e) {}
+  urlLoad();
+  $('#share').onclick = async () => { urlSave(); await new Promise(r => requestAnimationFrame(() => r()));
+    let ok = false; try { await navigator.clipboard.writeText(location.href); ok = true; } catch(e) {}
+    if (!ok) { const t = document.createElement('textarea'); t.value = location.href; document.body.appendChild(t); t.select(); try { ok = document.execCommand('copy'); } catch(e) {} t.remove(); }
+    const b = $('#share'); b.textContent = ok ? 'Link copied' : 'Copy failed'; setTimeout(() => b.textContent = 'Copy link', 1600); };
   if (RG.preset !== 'custom' || !RG.from) setRange(RG.preset || 'y0');
   syncBar();
   $('#tbl').addEventListener('click', e => { const tr = e.target.closest('tr[data-m]'); if (!tr || !MONTHS_ALL.includes(tr.dataset.m)) return; pickRange(tr.dataset.m, e.shiftKey);
@@ -470,6 +523,7 @@ function init(){
   initAsk();
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', ()=>{ render(); if($('#v-drivers').classList.contains('on')) drawDrivers(); });
   render();
+  urlLoadAfter();
 }
 
 function series(){
@@ -496,6 +550,7 @@ function render(){
   drawTot(H, F, B);
   drawNi(H, F);
   drawTable(H, F);
+  urlSave();
 }
 
 function baseOpts(extra={}){
@@ -597,6 +652,7 @@ function syncBar(){
   $('#ccust').classList.toggle('off', !cm);
   if (cm) { if (MONTHS_ALL.includes(cm[0])) $('#cfrom').value = cm[0]; if (MONTHS_ALL.includes(cm[1])) $('#cto').value = cm[1]; }
   try { localStorage.setItem('inproj_range', JSON.stringify({from:RG.from, to:RG.to, rg:RG, cp:CP})); } catch(e) {}
+  urlSave();
 }
 function renderRangeOnly(){ const {H, F} = series(); renderRange(H, F); Object.values(charts).forEach(c => c && c.$months && c.draw()); markTable(); }
 function markTable(){ document.querySelectorAll('#tbl tr[data-m]').forEach(tr => tr.classList.toggle('sel', tr.dataset.m >= RG.from && tr.dataset.m <= RG.to)); }
@@ -860,10 +916,10 @@ function openDM(id){
   $('#dm').hidden = false; document.body.style.overflow = 'hidden';
   renderDM(); setTimeout(() => $('#dmx').focus(), 30);
 }
-function closeDM(){ $('#dm').hidden = true; document.body.style.overflow = ''; if (charts.cDm) { charts.cDm.destroy(); delete charts.cDm; }
+function closeDM(){ $('#dm').hidden = true; document.body.style.overflow = ''; setTimeout(urlSave, 0); if (charts.cDm) { charts.cDm.destroy(); delete charts.cDm; }
   const el = document.querySelector(`.dcard[data-d="${DM && DM.id}"]`); if (el) el.focus(); }
 function segH(id, opts, cur, attr){ return `<div class="seg" id="${id}">${opts.map(([v,t]) => `<button data-${attr}="${v}" class="${v===cur?'on':''}">${t}</button>`).join('')}</div>`; }
-function renderDM(){ DM.id === 'dSale' ? renderSaleDM() : DM.id === 'day' ? renderDayDM() : renderDriverDM(); }
+function renderDM(){ DM.id === 'dSale' ? renderSaleDM() : DM.id === 'day' ? renderDayDM() : renderDriverDM(); urlSave(); }
 
 function renderDriverDM(){
   const c = DRV.cards.find(x => x.id === DM.id), rows = DRV.rows, fi = DRV.fi, ms = rows.map(r => r.month);
@@ -1092,6 +1148,7 @@ function initChannels(){
   $('#chpre').innerHTML = P.map(([k,l])=>`<button data-p="${k}">${l}</button>`).join('');
   const setP = p => { CHS.preset = p; const r = {l3:[shiftM(last,-2), last], ytd:[ly+'-01', last], l12:[shiftM(last,-11), last], y25:[(+ly-1)+'-01', (+ly-1)+'-12'], all:[ms[0], last]}[p]; if (r) { CHS.from = r[0] < ms[0] ? ms[0] : r[0]; CHS.to = r[1]; } };
   try { Object.assign(CHS, JSON.parse(localStorage.getItem('inproj_ch') || '{}')); } catch(e) {}
+  const cu = chUrl(); if (cu) { Object.assign(CHS, cu); Q0.delete('ch'); }
   if (!CHS.from || !ms.includes(CHS.from) || CHS.preset !== 'custom') setP(CHS.preset || 'ytd');
   $('#chpre').onclick = e => { const p = e.target.dataset.p; if (!p) return; if (p === 'custom') CHS.preset = 'custom'; else setP(p); renderChannels(); };
   const onSel = () => { let a = $('#chfrom').value, b = $('#chto').value; if (a > b) [a,b] = [b,a]; CHS.preset = 'custom'; CHS.from = a; CHS.to = b; renderChannels(); };
@@ -1129,6 +1186,7 @@ function renderChannels(){
   document.querySelectorAll('#chmodel button').forEach(b => b.classList.toggle('on', b.dataset.m === CHS.model));
   $('#chfrom').value = CHS.from; $('#chto').value = CHS.to;
   try { localStorage.setItem('inproj_ch', JSON.stringify(CHS)); } catch(e) {}
+  urlSave();
   const A = chAgg(CHS.from, CHS.to, CHS.model);
   const n = span(CHS.from, CHS.to).length;
   const cm = CHS.cmp === 'prev' ? [shiftM(CHS.from, -n), shiftM(CHS.from, -1)] : CHS.cmp === 'ly' ? [shiftM(CHS.from, -12), shiftM(CHS.to, -12)] : null;
